@@ -5,17 +5,26 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 // every reload, wiping the dry matter and dry weight off loads. 0% is never a real
 // reading, so it is read back as unset, which also repairs loads already saved that way.
 function dmOrNull(v){const n=Number(v);return v===null||v===undefined||v===''||!Number.isFinite(n)||n<=0?null:n}
-function loadState(){let s;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){};s=s||structuredClone(defaults);s.commodities=Array.isArray(s.commodities)?s.commodities:[];s.commodities=s.commodities.filter(c=>c&&String(c.name||'').trim()).map((c,i)=>({id:c.id||uid(),name:String(c.name).trim(),order:Number.isFinite(c.order)?c.order:i}));s.commodities.sort((a,b)=>a.order-b.order);s.commodities.forEach((c,i)=>c.order=i);s.commoditiesEnabled=s.commoditiesEnabled!==false;const commodityIds=new Set(s.commodities.map(c=>c.id));s.fields=Array.isArray(s.fields)?s.fields:[];s.fields.forEach(f=>{f.size=Number(f.size)||0;f.note=f.note||'';f.commodityId=commodityIds.has(f.commodityId)?f.commodityId:''});s.trucks=Array.isArray(s.trucks)?s.trucks:[];s.trucks.forEach((t,i)=>{t.id=t.id||uid();t.primaryColor=t.primaryColor||t.color||['#1f7a3f','#1d4ed8','#b45309','#7e22ce'][i%4];t.secondaryColor=t.secondaryColor||t.primaryColor;t.driver=typeof t.driver==='string'?t.driver:'';t.active=t.active!==false;t.order=Number.isFinite(t.order)?t.order:i});s.trucks.sort((a,b)=>a.order-b.order);s.storages=Array.isArray(s.storages)?s.storages:[];if(!s.storages.length)s.storages=[{id:uid(),name:'Unassigned'}];s.lastStorageId=s.lastStorageId||s.storages[0].id;s.lastFieldId=s.fields.some(f=>f.id===s.lastFieldId)?s.lastFieldId:(s.fields[0]&&s.fields[0].id)||'';s.loads=Array.isArray(s.loads)?s.loads:[];s.trash=Array.isArray(s.trash)?s.trash:[];const cutoff=Date.now()-30*24*60*60*1000;s.trash=s.trash.filter(l=>!l.deletedAt||new Date(l.deletedAt).getTime()>cutoff);s.archive=Array.isArray(s.archive)?s.archive:[];s.archive.forEach(a=>{a.id=a.id||uid();a.loads=Array.isArray(a.loads)?a.loads:[];a.trucks=Array.isArray(a.trucks)?a.trucks:[];a.storages=Array.isArray(a.storages)?a.storages:[]});s.loads.concat(s.trash).forEach(l=>{const lf=s.fields.find(f=>f.id===l.fieldId);if(!l.detailsStamped){if(lf&&!l.commodityId&&typeof l.commodityName!=='string')l.commodityId=lf.commodityId||'';if(typeof l.commodityName!=='string')l.commodityName=l.commodityId?(s.commodities.find(c=>c.id===l.commodityId)?.name||''):'';if(typeof l.fieldNote!=='string')l.fieldNote=lf?String(lf.note||'').trim():'';l.detailsStamped=true}l.commodityId=typeof l.commodityId==='string'?l.commodityId:'';l.commodityName=typeof l.commodityName==='string'?l.commodityName:'';l.fieldNote=String(l.fieldNote||'').trim()});s.loads.forEach(l=>{l.id=l.id||uid();l.storageId=l.storageId||'';l.storageName=l.storageName||'';l.driverName=typeof l.driverName==='string'?l.driverName:(s.trucks.find(t=>t.id===l.truckId)?.driver||'');l.manualDryMatter=dmOrNull(l.manualDryMatter);l.dmReadingId=l.dmReadingId||null;l.dmValue=dmOrNull(l.dmValue);if(!(Number(l.fraction)>0))l.fraction=l.type==='3/4'?.75:l.type==='1/2'?.5:1;if(!l.loadWeightMode)l.loadWeightMode=l.type==='Custom'?'custom':'history'});s.loadWeightHistory=Array.isArray(s.loadWeightHistory)?s.loadWeightHistory:[];s.loadWeightHistory=s.loadWeightHistory.filter(r=>r&&r.truckId&&Number(r.weight)>0&&r.effective).map(r=>({id:r.id||uid(),truckId:r.truckId,commodityId:commodityIds.has(r.commodityId)?r.commodityId:'',weight:Number(r.weight),effective:r.effective,created:r.created||new Date().toISOString()}));s.dmReadings=Array.isArray(s.dmReadings)?s.dmReadings:[];s.dmReadings=s.dmReadings.filter(r=>r&&Number(r.value)>0&&r.effective&&Number.isFinite(new Date(r.effective).getTime())).map(r=>({id:r.id||uid(),value:Number(r.value),effective:r.effective,created:r.created||new Date().toISOString()}));s.unit=['t','Tn','kg','lb'].includes(s.unit)?s.unit:'t';if(!s.dmReadings.length){s.dmReadings=[{id:uid(),value:Number(s.dryMatter)||35,effective:'1970-01-01T00:00:00.000Z',created:new Date().toISOString()}]}s.darkMode=!!s.darkMode;s.keepAwake=!!s.keepAwake;s.theme=sanitizeTheme(s.theme);s.driverMode=!!s.driverMode;s.cycleTimeBreakMinutes=clampCycleBreakMinutes(s.cycleTimeBreakMinutes);s.rateWindowHours=clampRateWindowHours(s.rateWindowHours);s.textScale=clampTextScale(s.textScale);s.licenseFarmName=typeof s.licenseFarmName==='string'?s.licenseFarmName.trim():'';s.licenseActivatedAt=s.licenseActivatedAt&&Number.isFinite(new Date(s.licenseActivatedAt).getTime())?s.licenseActivatedAt:null;s.licenseGraceDays=clampGraceDays(s.licenseGraceDays);
+function loadState(){let s;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){};s=s||structuredClone(defaults);s.commodities=Array.isArray(s.commodities)?s.commodities:[];s.commodities=s.commodities.filter(c=>c&&String(c.name||'').trim()).map((c,i)=>({id:c.id||uid(),name:String(c.name).trim(),order:Number.isFinite(c.order)?c.order:i}));s.commodities.sort((a,b)=>a.order-b.order);s.commodities.forEach((c,i)=>c.order=i);s.commoditiesEnabled=s.commoditiesEnabled!==false;const commodityIds=new Set(s.commodities.map(c=>c.id));s.fields=Array.isArray(s.fields)?s.fields:[];s.fields.forEach(f=>{f.size=Number(f.size)||0;f.note=f.note||'';f.commodityId=commodityIds.has(f.commodityId)?f.commodityId:''});s.trucks=Array.isArray(s.trucks)?s.trucks:[];s.trucks.forEach((t,i)=>{t.id=t.id||uid();t.primaryColor=t.primaryColor||t.color||['#1f7a3f','#1d4ed8','#b45309','#7e22ce'][i%4];t.secondaryColor=t.secondaryColor||t.primaryColor;t.driver=typeof t.driver==='string'?t.driver:'';t.active=t.active!==false;t.order=Number.isFinite(t.order)?t.order:i;t.tareWeightKg=Number(t.tareWeightKg)>0?Number(t.tareWeightKg):0});s.trucks.sort((a,b)=>a.order-b.order);s.storages=Array.isArray(s.storages)?s.storages:[];if(!s.storages.length)s.storages=[{id:uid(),name:'Unassigned'}];s.lastStorageId=s.lastStorageId||s.storages[0].id;s.lastFieldId=s.fields.some(f=>f.id===s.lastFieldId)?s.lastFieldId:(s.fields[0]&&s.fields[0].id)||'';s.loads=Array.isArray(s.loads)?s.loads:[];s.trash=Array.isArray(s.trash)?s.trash:[];const cutoff=Date.now()-30*24*60*60*1000;s.trash=s.trash.filter(l=>!l.deletedAt||new Date(l.deletedAt).getTime()>cutoff);s.archive=Array.isArray(s.archive)?s.archive:[];s.archive.forEach(a=>{a.id=a.id||uid();a.loads=Array.isArray(a.loads)?a.loads:[];a.trucks=Array.isArray(a.trucks)?a.trucks:[];a.storages=Array.isArray(a.storages)?a.storages:[]});s.loads.concat(s.trash).forEach(l=>{const lf=s.fields.find(f=>f.id===l.fieldId);if(!l.detailsStamped){if(lf&&!l.commodityId&&typeof l.commodityName!=='string')l.commodityId=lf.commodityId||'';if(typeof l.commodityName!=='string')l.commodityName=l.commodityId?(s.commodities.find(c=>c.id===l.commodityId)?.name||''):'';if(typeof l.fieldNote!=='string')l.fieldNote=lf?String(lf.note||'').trim():'';l.detailsStamped=true}l.commodityId=typeof l.commodityId==='string'?l.commodityId:'';l.commodityName=typeof l.commodityName==='string'?l.commodityName:'';l.fieldNote=String(l.fieldNote||'').trim()});s.loads.forEach(l=>{l.id=l.id||uid();l.storageId=l.storageId||'';l.storageName=l.storageName||'';l.driverName=typeof l.driverName==='string'?l.driverName:(s.trucks.find(t=>t.id===l.truckId)?.driver||'');l.manualDryMatter=dmOrNull(l.manualDryMatter);l.dmReadingId=l.dmReadingId||null;l.dmValue=dmOrNull(l.dmValue);if(!(Number(l.fraction)>0))l.fraction=l.type==='3/4'?.75:l.type==='1/2'?.5:1;if(!l.loadWeightMode)l.loadWeightMode=l.type==='Custom'?'custom':'history'});s.loadWeightHistory=Array.isArray(s.loadWeightHistory)?s.loadWeightHistory:[];s.loadWeightHistory=s.loadWeightHistory.filter(r=>r&&r.truckId&&Number(r.weight)>0&&r.effective).map(r=>({id:r.id||uid(),truckId:r.truckId,commodityId:commodityIds.has(r.commodityId)?r.commodityId:'',weight:Number(r.weight),effective:r.effective,created:r.created||new Date().toISOString()}));s.dmReadings=Array.isArray(s.dmReadings)?s.dmReadings:[];s.dmReadings=s.dmReadings.filter(r=>r&&Number(r.value)>0&&r.effective&&Number.isFinite(new Date(r.effective).getTime())).map(r=>({id:r.id||uid(),value:Number(r.value),effective:r.effective,created:r.created||new Date().toISOString()}));s.unit=['t','Tn','kg','lb'].includes(s.unit)?s.unit:'t';if(!s.dmReadings.length){s.dmReadings=[{id:uid(),value:Number(s.dryMatter)||35,effective:'1970-01-01T00:00:00.000Z',created:new Date().toISOString()}]}s.darkMode=!!s.darkMode;s.themeMode=['light','dark','system'].includes(s.themeMode)?s.themeMode:(s.darkMode?'dark':'light');s.dimSeconds=[30,60,120,300,600,0].includes(Number(s.dimSeconds))?Number(s.dimSeconds):60;s.keepAwake=!!s.keepAwake;s.theme=sanitizeTheme(s.theme);s.driverMode=!!s.driverMode;s.cycleTimeBreakMinutes=clampCycleBreakMinutes(s.cycleTimeBreakMinutes);s.rateWindowHours=clampRateWindowHours(s.rateWindowHours);s.textScale=clampTextScale(s.textScale);s.licenseFarmName=typeof s.licenseFarmName==='string'?s.licenseFarmName.trim():'';s.licenseActivatedAt=s.licenseActivatedAt&&Number.isFinite(new Date(s.licenseActivatedAt).getTime())?s.licenseActivatedAt:null;s.licenseGraceDays=clampGraceDays(s.licenseGraceDays);s.weighLoadUnit=s.weighLoadUnit==='lb'?'lb':'kg';s.weighLoadEntryMode=s.weighLoadEntryMode==='gross'?'gross':'net';s.easterEggSound=!!s.easterEggSound;s.easterEggDay=typeof s.easterEggDay==='string'?s.easterEggDay:'';if(s.easterEggSound&&s.easterEggDay!==eggDayKey()){s.easterEggSound=false;s.easterEggDay=''}s.topStats=Object.assign({loads:true,wet:true,dry:false,rate:true},s.topStats&&typeof s.topStats==='object'?s.topStats:{});Object.keys(s.topStats).forEach(k=>{s.topStats[k]=!!s.topStats[k]});s.truckLayout=s.truckLayout==='1'?'1':'2';s.truckLayoutLastWide=!!s.truckLayoutLastWide;s.topStatsLayout=({one:'one',small:'small',large:'large',two:'large'})[s.topStatsLayout]||'one';s.statOrder=sanitizeStatOrder(s.statOrder,STAT_ORDER_DEFAULTS.loads);s.todayStatOrder=sanitizeStatOrder(s.todayStatOrder,STAT_ORDER_DEFAULTS.today);
 // One-time grandfathering: a device that already had real usage before Annual Activation
 // existed shouldn't be retroactively locked out the moment this version reaches it -- only a
 // genuinely fresh install (never logged a load, never touched anything) faces the initial gate.
-// This check runs exactly once per device, guarded by licenseGrandfathered, so a device that
-// legitimately goes on to expire later doesn't get silently re-granted a free pass forever.
-if(!s.licenseActivatedAt&&!s.licenseGrandfathered){
-  const hasHistory=(s.loads&&s.loads.length)||(s.trash&&s.trash.length)||(s.archive&&s.archive.length)||(s.editLogs&&s.editLogs.length);
-  if(hasHistory)s.licenseActivatedAt=new Date().toISOString();
-}
+// A device is only ever activated by entering a farm name and a matching code, so nothing is granted
+// automatically. Earlier builds silently activated any device that already held loads -- with no farm name
+// and no code -- so an activation with no farm on it is cleared here, and the device asks for a real one
+// the next time something needs it.
+s.licenseFarmName=typeof s.licenseFarmName==='string'?s.licenseFarmName.trim():'';
+if(s.licenseActivatedAt&&!s.licenseFarmName)s.licenseActivatedAt=null;
 s.licenseGrandfathered=true;
+// One-time, per device: a device updating from a version that never asked for a code gets one month of normal
+// use, counted from this update. It is NOT an activation -- the device still reads "Not activated". New installs
+// and cleared devices already carry the flag (it is in the defaults), and a restore keeps the device's own, so
+// nothing else can start the clock again.
+if(!s.licenseLegacyChecked){
+  if(!s.licenseActivatedAt)s.licenseLegacyGraceUntil=new Date(Date.now()+30*86400000).toISOString();
+  s.licenseLegacyChecked=true;
+}
+s.licenseLegacyGraceUntil=(typeof s.licenseLegacyGraceUntil==='string'&&!isNaN(Date.parse(s.licenseLegacyGraceUntil)))?s.licenseLegacyGraceUntil:null;
 s.counter=s.counter&&typeof s.counter==='object'?s.counter:{};
 s.counter.enabled=!!s.counter.enabled;s.counter.target=Number(s.counter.target)>0?Number(s.counter.target):250;
 s.counter.warning=Number(s.counter.warning)>=0?Number(s.counter.warning):25;s.counter.startAt=s.counter.startAt||null;s.counter.lastResetAt=s.counter.lastResetAt||null;
@@ -94,7 +103,7 @@ function wasInoculated(l,spans){if(typeof (l&&l.inoculated)==='boolean')return l
 // leave it switched off are not told 'No inoculant' on every row they look at.
 function inoculantTracked(){const c=state.counter||{};return !!c.enabled||(c.events||[]).length>0}
 function inoculantBadge(l,spans){if(!inoculantTracked())return '';const yes=wasInoculated(l,spans);return `<span class="ino-badge ${yes?'yes':'no'}">${yes?'Inoculant ✓':'No inoculant'}</span>`}
-function importedBadge(l){return l.snapshotImported?'<span class="dup-badge">Imported</span>':''}
+function importedBadge(l){return l.snapshotImported?'<span class="dup-badge">'+esc(l.importLabel||'Imported')+'</span>':''}
 function inoculantWord(l,spans){return wasInoculated(l,spans)?'Yes':'No'}
 function commoditySelectOptions(selected,{noneLabel='No commodity'}={}){return [`<option value="" ${selected?'':'selected'}>${esc(noneLabel)}</option>`].concat((state.commodities||[]).map(c=>`<option value="${c.id}" ${selected===c.id?'selected':''}>${esc(c.name)}</option>`)).join('')}
 function unitLabel(u=state.unit){return ({t:'t',Tn:'Tn',kg:'kg',lb:'lb'})[u]||u}
@@ -113,7 +122,7 @@ function sameLocalDay(a,b){const x=new Date(a),y=new Date(b);return x.getFullYea
 function readingForLoad(l){return state.dmReadings.find(r=>r.id===l.dmReadingId)||effectiveDMReading(l.time)}
 function loadHasSameDayReading(l){const r=readingForLoad(l);if(!r||isSeedReading(r))return false;if(dmOrNull(l.dryMatter)===null)return false;return sameLocalDay(r.effective,l.time)}
 function loadsAwaitingReading(reading){const eff=new Date(reading.effective).getTime();const prev=previousRealReading(reading);const from=prev?new Date(prev.effective).getTime():-Infinity;return state.loads.filter(l=>{if(l.manualDryMatter!==null&&l.manualDryMatter!==undefined)return false;if(l.dmReadingId===reading.id)return false;if(loadHasSameDayReading(l))return false;const t=new Date(l.time).getTime();return Number.isFinite(t)&&t<eff&&t>from})}
-function offerBackApply(reading){const pending=loadsAwaitingReading(reading);if(!pending.length)return 0;const times=pending.map(l=>new Date(l.time).getTime());const msg=pending.length+' load(s) were carted before this reading\'s time, between '+fmtDateTime(new Date(Math.min(...times)).toISOString())+' and '+fmtDateTime(new Date(Math.max(...times)).toISOString())+'.\n\nNone of them fall inside a '+dmWordLower()+' reading taken on their own day, so they are still carrying an older reading. Apply '+dmPct(reading.value)+' to them as well?';if(!confirm(msg))return 0;pending.forEach(l=>{l.dmReadingId=reading.id;l.dmValue=Number(reading.value);l.dryMatter=Number(reading.value);l.dryWeight=Number(l.wetWeight)*(Number(reading.value)/100)});return pending.length}
+async function offerBackApply(reading){const pending=loadsAwaitingReading(reading);if(!pending.length)return 0;const times=pending.map(l=>new Date(l.time).getTime());const msg=pending.length+' load(s) were carted before this reading\'s time, between '+fmtDateTime(new Date(Math.min(...times)).toISOString())+' and '+fmtDateTime(new Date(Math.max(...times)).toISOString())+'.\n\nNone of them fall inside a '+dmWordLower()+' reading taken on their own day, so they are still carrying an older reading. Apply '+dmPct(reading.value)+' to them as well?';if(!(await uiConfirm(msg,{confirmText:'Apply',cancelText:'Leave As Is'})))return 0;pending.forEach(l=>{l.dmReadingId=reading.id;l.dmValue=Number(reading.value);l.dryMatter=Number(reading.value);l.dryWeight=Number(l.wetWeight)*(Number(reading.value)/100)});return pending.length}
 // Every truck keeps a weight tab per commodity plus an "any commodity" tab. A weight entered
 // on the commodity's own tab wins; with none entered the truck falls back to the shared tab,
 // and then to the base full load weight from Setup.
@@ -158,6 +167,9 @@ function activationCodeForFarm(farmName,year){
   return code.slice(0,3)+'-'+code.slice(3,7);
 }
 function clampGraceDays(){return 30}
+// Whole calendar days from today to the given date, by the phone's own clock: the count drops by exactly one
+// at midnight each night, and the last day reads 0 ("ends today"). Rounding absorbs daylight-saving hours.
+function calendarDaysUntil(d){const day=x=>{const t=new Date(x);return new Date(t.getFullYear(),t.getMonth(),t.getDate()).getTime()};return Math.round((day(d)-day(Date.now()))/86400000)}
 function licenseExpiry(activatedAt){const d=new Date(activatedAt);d.setFullYear(d.getFullYear()+1);return d}
 // No page is ever locked, before or after activation. Instead, the actions that actually matter
 // -- logging a load, changing Setup, and the higher-stakes Settings actions -- check this gate
@@ -166,12 +178,17 @@ function licenseExpiry(activatedAt){const d=new Date(activatedAt);d.setFullYear(
 // period has run out are the same "locked" state here; there's no separate hard wall anymore.
 function licenseGraceInfo(){
   const activatedAt=state.licenseActivatedAt;
-  if(!activatedAt)return {active:false,inGrace:false,locked:true,daysLeft:0,expiresAt:null};
+  if(!activatedAt){
+    // Not activated: the only thing keeping the app usable is the one-month update grace, if this device has one.
+    const until=state.licenseLegacyGraceUntil?new Date(state.licenseLegacyGraceUntil):null;
+    if(until&&Date.now()<=until.getTime())return {active:false,inGrace:true,legacy:true,locked:false,daysLeft:Math.max(0,calendarDaysUntil(until)),expiresAt:until};
+    return {active:false,inGrace:false,locked:true,daysLeft:0,expiresAt:null};
+  }
   const expiry=licenseExpiry(activatedAt);
   if(Date.now()<=expiry.getTime())return {active:true,inGrace:false,locked:false,daysLeft:null,expiresAt:expiry};
   const daysPast=Math.floor((Date.now()-expiry.getTime())/86400000);
   const grace=clampGraceDays();
-  if(daysPast<=grace)return {active:true,inGrace:true,locked:false,daysLeft:grace-daysPast,expiresAt:expiry};
+  if(daysPast<=grace)return {active:true,inGrace:true,locked:false,daysLeft:Math.max(0,grace+calendarDaysUntil(expiry)),expiresAt:expiry};
   return {active:false,inGrace:false,locked:true,daysLeft:0,expiresAt:expiry};
 }
 // The one gate every mutating action calls. If not locked, proceeds immediately with zero
@@ -307,3 +324,115 @@ function slideEnd(){if(!slideDragging)return;slideDragging=false;slideSetHandle(
 function openSlideUnlockModal(onSuccess){slideSuccessCb=onSuccess;slideDragging=false;document.getElementById('slideUnlockModal')?.classList.add('show');setTimeout(()=>slideSetHandle(0),0)}
 function closeSlideUnlockModal(){document.getElementById('slideUnlockModal')?.classList.remove('show');slideDragging=false;slideSuccessCb=null}
 
+// ---- In-app dialogs ----------------------------------------------------------------------------
+// The browser's own alert/confirm/prompt are drawn by the browser, so on Android every one of them
+// carries the site's web address in its header and looks nothing like the app. These replace them with
+// dialogs drawn by the app itself: identical on every phone, with buttons that name the action. They
+// are asynchronous, so code that used to stop and wait for the browser's confirm() now awaits these.
+const nativeAlert=window.alert.bind(window);
+let appDlgActive=null;const appDlgQueue=[];
+function appDlgCancelValue(spec){return spec.kind==='confirm'?false:spec.kind==='prompt'?null:spec.kind==='choose'?-1:undefined}
+function appDlgNext(){if(appDlgActive)return;const next=appDlgQueue.shift();if(next)appDlgShow(next)}
+function appDlgClose(result){
+  const spec=appDlgActive;if(!spec)return;
+  appDlgActive=null;
+  const m=document.getElementById('appConfirmModal');if(m)m.classList.remove('show');
+  spec.resolve(result);
+  appDlgNext();
+}
+function appDlgShow(spec){
+  const el=id=>document.getElementById(id);
+  const m=el('appConfirmModal'),ok=el('appConfirmOkBtn'),cancel=el('appConfirmCancelBtn'),inp=el('appConfirmInput'),choices=el('appConfirmChoices'),t=el('appConfirmTitle'),msg=el('appConfirmMessage');
+  if(!m||!ok||!cancel||!inp||!choices||!t||!msg){
+    // markup missing -- fall back to the browser's own dialog so nothing is ever silently lost
+    const text=(spec.title?spec.title+'\n\n':'')+(spec.message||'');
+    if(spec.kind==='alert')nativeAlert(text);
+    spec.resolve(spec.kind==='alert'?undefined:spec.kind==='confirm'?window.confirm(text):spec.kind==='prompt'?window.prompt(text,spec.value||''):-1);
+    appDlgNext();return;
+  }
+  appDlgActive=spec;spec.openedAt=Date.now();
+  t.textContent=spec.title||'';t.style.display=spec.title?'':'none';
+  msg.textContent=spec.message||'';msg.style.display=spec.message?'':'none';
+  inp.style.display=spec.kind==='prompt'?'block':'none';
+  if(spec.kind==='prompt'){inp.value=spec.value||'';inp.placeholder=spec.placeholder||''}
+  choices.innerHTML='';choices.style.display=spec.kind==='choose'?'block':'none';
+  if(spec.kind==='choose')(spec.options||[]).forEach((label,i)=>{const b=document.createElement('button');b.type='button';b.className='btn grey wide';b.style.marginTop='8px';b.textContent=label;b.onclick=()=>appDlgClose(i);choices.appendChild(b)});
+  ok.textContent=spec.confirmText||'OK';ok.className='btn '+(spec.danger?'danger':'blue');
+  ok.style.display=spec.kind==='choose'?'none':'';
+  cancel.textContent=spec.cancelText||'Cancel';cancel.style.display=spec.kind==='alert'?'none':'';
+  ok.onclick=()=>appDlgClose(spec.kind==='prompt'?inp.value:spec.kind==='confirm'?true:undefined);
+  cancel.onclick=()=>appDlgClose(appDlgCancelValue(spec));
+  // A tap outside the box cancels a decision (never an alert, which has to be acknowledged), but not in
+  // the instant after it opens, so the second tap of a double-tap can't dismiss it.
+  m.onclick=e=>{if(e.target===m&&spec.kind!=='alert'&&Date.now()-spec.openedAt>350)appDlgClose(appDlgCancelValue(spec))};
+  inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();ok.click()}};
+  m.classList.add('show');
+  if(spec.kind==='prompt')setTimeout(()=>{try{inp.focus();inp.select()}catch(e){}},60);
+}
+function appDlgRequest(spec){
+  return new Promise(resolve=>{
+    spec.resolve=resolve;
+    if(!appDlgActive){appDlgShow(spec);return}
+    // Alerts queue behind whatever is open so none are lost; a newer decision replaces an unanswered
+    // one (answering it as cancelled), as happens after a double-tap.
+    if(spec.kind==='alert'||appDlgActive.kind==='alert'){appDlgQueue.push(spec);return}
+    const old=appDlgActive;appDlgActive=null;old.resolve(appDlgCancelValue(old));
+    appDlgShow(spec);
+  });
+}
+function appConfirm(opts){opts=opts||{};return appDlgRequest({kind:'confirm',title:opts.title||'Are you sure?',message:opts.message||'',confirmText:opts.confirmText||'OK',cancelText:opts.cancelText||'Cancel',danger:!!opts.danger})}
+function appAlert(message,opts){opts=opts||{};return appDlgRequest({kind:'alert',title:opts.title||'',message:String(message==null?'':message),confirmText:opts.confirmText||'OK'})}
+function appPrompt(opts){opts=opts||{};return appDlgRequest({kind:'prompt',title:opts.title||'',message:opts.message||'',value:opts.value==null?'':String(opts.value),placeholder:opts.placeholder||'',confirmText:opts.confirmText||'OK',cancelText:opts.cancelText||'Cancel'})}
+function appChoose(opts){opts=opts||{};return appDlgRequest({kind:'choose',title:opts.title||'',message:opts.message||'',options:opts.options||[],cancelText:opts.cancelText||'Cancel'})}
+// Adapters that take the same message text the browser dialogs did, split it into a heading and body,
+// and pick a button label and colour from what it says ("Delete ..." gets a red Delete button).
+function uiSplitMessage(msg){
+  msg=String(msg==null?'':msg);
+  const para=msg.indexOf('\n\n');
+  if(para>0&&para<=150)return {title:msg.slice(0,para),body:msg.slice(para+2)};
+  const m=msg.match(/^([\s\S]{4,150}?[?!.])\s+([\s\S]+)$/);
+  if(m)return {title:m[1],body:m[2]};
+  if(msg.length<=150)return {title:msg,body:''};
+  return {title:'',body:msg};
+}
+function uiConfirmStyle(text){
+  const t=String(text||'');
+  if(/^(permanently )?delete\b/i.test(t))return {confirmText:'Delete',danger:true};
+  if(/^clear\b/i.test(t))return {confirmText:'Clear',danger:true};
+  if(/^erase\b/i.test(t))return {confirmText:'Erase',danger:true};
+  if(/^reset\b/i.test(t))return {confirmText:'Reset',danger:true};
+  if(/^final warning|permanently (delete|erase)/i.test(t))return {confirmText:'Erase',danger:true};
+  if(/^restore\b/i.test(t))return {confirmText:'Restore'};
+  if(/^undo\b/i.test(t))return {confirmText:'Undo'};
+  if(/^import\b/i.test(t))return {confirmText:'Import'};
+  if(/^summarize\b/i.test(t))return {confirmText:'Continue'};
+  return {confirmText:'OK'};
+}
+function uiConfirm(msg,opts){
+  opts=opts||{};
+  const p=opts.title?{title:opts.title,body:String(msg)}:uiSplitMessage(msg);
+  return appConfirm(Object.assign({title:p.title||'Please confirm',message:p.body},uiConfirmStyle(p.title||p.body),opts));
+}
+function uiPrompt(msg,def,opts){
+  opts=opts||{};
+  const p=opts.title?{title:opts.title,body:opts.message||''}:uiSplitMessage(msg);
+  return appPrompt(Object.assign({title:p.title||String(msg),message:p.body,value:def==null?'':String(def),confirmText:'OK'},opts));
+}
+window.alert=function(m){const p=uiSplitMessage(m);if(p.body)appAlert(p.body,{title:p.title});else appAlert(p.title||String(m))};
+// Codes are compared with case, spaces and dashes ignored, so a keyboard that capitalises, adds a
+// trailing space after a "word", or drops the dash can no longer turn a correct code into a rejected one.
+function normalizeActivationCode(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
+function activationCodeMatches(entered,farmName,year){const e=normalizeActivationCode(entered);return e!==''&&e===normalizeActivationCode(activationCodeForFarm(farmName,year))}
+
+// Order of the stat tiles on the Loads and Today pages, set by touching and holding a tile and dragging it.
+// Anything missing or unrecognised falls back to the default order, so an old backup or a damaged value can
+// never lose a tile.
+const STAT_ORDER_DEFAULTS={loads:['loads','wet','dry','rate','inoculant'],today:['loads','wet','dm','rate','peak']};
+function sanitizeStatOrder(v,def){const out=[];(Array.isArray(v)?v:[]).forEach(k=>{if(def.includes(k)&&!out.includes(k))out.push(k)});def.forEach(k=>{if(!out.includes(k))out.push(k)});return out}
+// The local calendar day, used to put the alternate load sound back to normal at the start of each day.
+function eggDayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+// Activation belongs to the device, not to the data. Backups and snapshots never carry it, and a restore or
+// import never takes it from a file -- the device keeps its own (or none).
+const LICENSE_FIELDS=['licenseActivatedAt','licenseFarmName','licenseGrandfathered','licenseGraceDays','licenseLegacyChecked','licenseLegacyGraceUntil'];
+function stripLicense(st){LICENSE_FIELDS.forEach(k=>{delete st[k]});return st}
+function withDeviceLicense(incoming){const out=Object.assign({},incoming);LICENSE_FIELDS.forEach(k=>{if(state[k]===undefined||state[k]===null||state[k]==='')delete out[k];else out[k]=state[k]});return out}

@@ -1,5 +1,5 @@
-const VERSION='3.1.5';
-const BUILD='2026.09.25.003';
+const VERSION='3.11.0';
+const BUILD='2026.10.05.001';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');
@@ -14,8 +14,11 @@ const NO_NOTE='__nonote__';
 const KEEP_COMMODITY='__keep__';
 // Load edit logs are kept on the Reports page for 60 days, then drop off on their own.
 const EDIT_LOG_DAYS=60;
-const defaults={unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[{id:uid(),name:'North Field',size:0,note:'',commodityId:''},{id:uid(),name:'South Field',size:0,note:'',commodityId:''}],trucks:[{id:uid(),name:'Truck 1',driver:'',active:true,order:0,fullWeight:12,primaryColor:'#1f7a3f',secondaryColor:'#14532d'},{id:uid(),name:'Truck 2',driver:'',active:true,order:1,fullWeight:14,primaryColor:'#1d4ed8',secondaryColor:'#1e3a8a'}],storages:[{id:uid(),name:'Bunker 1'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],editLogs:[],darkMode:false,keepAwake:false,driverMode:false,textScale:1,rateWindowHours:4,licenseFarmName:'',licenseActivatedAt:null,licenseGraceDays:30,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+const defaults={unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:false,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[{id:uid(),name:'North Field',size:0,note:'',commodityId:''},{id:uid(),name:'South Field',size:0,note:'',commodityId:''}],trucks:[{id:uid(),name:'Truck 1',driver:'',active:true,order:0,fullWeight:12,primaryColor:'#1f7a3f',secondaryColor:'#14532d'},{id:uid(),name:'Truck 2',driver:'',active:true,order:1,fullWeight:14,primaryColor:'#1d4ed8',secondaryColor:'#1e3a8a'}],storages:[{id:uid(),name:'Bunker 1'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],editLogs:[],darkMode:false,themeMode:'system',dimSeconds:60,keepAwake:false,driverMode:false,textScale:1,rateWindowHours:4,licenseFarmName:'',licenseActivatedAt:null,licenseGraceDays:30,licenseLegacyChecked:true,licenseLegacyGraceUntil:null,weighLoadUnit:'kg',weighLoadEntryMode:'net',easterEggSound:false,easterEggDay:'',topStats:{loads:true,wet:true,dry:false,rate:true},truckLayout:'2',truckLayoutLastWide:false,topStatsLayout:'one',statOrder:['loads','wet','dry','rate','inoculant'],todayStatOrder:['loads','wet','dm','rate','peak'],counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
 let state=loadState();
+// A device that has just been given its one-month update grace needs that start date written down straight
+// away -- otherwise opening and closing the app with no other change would restart the clock every time.
+try{const _raw=JSON.parse(localStorage.getItem(KEY)||'null');if(_raw&&!_raw.licenseLegacyChecked)localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
 const UNIT_TO_KG={t:1000,Tn:907.18474,kg:1,lb:0.45359237};
 // Dry matter is always entered after the sample has been tested, which takes at least
 // an hour, so loads keep arriving while the result is still unknown. Those loads sit
@@ -31,7 +34,7 @@ const UNIT_TO_KG={t:1000,Tn:907.18474,kg:1,lb:0.45359237};
 // however long that gap actually was, a week or more included.
 const FEEDBACK_KEY='silageTrackerLoadFeedback';
 const LOAD_SOUND_SRC='load-sound.mp3';
-let loadSoundPool=[],loadSoundIndex=0;
+let loadSoundPool=[],loadSoundIndex=0,loadSoundPoolSrc='';
 // ---- Load edit logs ------------------------------------------------------------
 // Every edit made to a load, on its own or as part of a batch, is written here with a
 // copy of the load as it stood before and after. Undo puts the "before" copies back and
@@ -45,8 +48,8 @@ let pendingImportDuplicates=[];
 // Restoring a stamped duplicate: show what it looks like a copy of, and let it either
 // take that load's place or sit beside it.
 let pendingRestore=null,pendingRestoreChoice='';
-const PAGE_TITLES={today:'Today',main:'Loads',setup:'Setup',reports:'Reports',settings:'Settings',trash:'Deleted Loads',archive:'Archive',truckEdit:'Edit Truck'};
-const PAGE_ORDER=['today','main','reports','setup','settings','trash','archive'];
+const PAGE_TITLES={today:'Today',main:'Loads',setup:'Setup',reports:'Reports',settings:'Settings',appearance:'Appearance',trash:'Deleted Loads',archive:'Archive',truckEdit:'Edit Truck'};
+const PAGE_ORDER=['today','main','reports','setup','settings','appearance','trash','archive'];
 const HOME_PAGE='main';
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 document.getElementById('menuBtn')?.addEventListener('click',openMenu);
@@ -54,25 +57,100 @@ document.getElementById('menuBackdrop')?.addEventListener('click',closeMenu);
 // Mobile swipe navigation and browser/device back-button behavior.
 // Loads is always the home page. Swiping left/right moves through the app pages.
 (function setupPageNavigation(){
-  let startX=0,startY=0,startTime=0;
   const app=document.querySelector('.app');
   if(!app)return;
+  // The page follows the finger while swiping, then glides off and the next page glides in from the other side.
+  // Vertical scrolling is untouched: a gesture only becomes a page swipe once it is clearly sideways.
+  const reduceMotion=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const EASE_OUT='cubic-bezier(.22,.8,.3,1)';
+  let mode='',startX=0,startY=0,lastX=0,lastT=0,vx=0,panel=null,busy=false;
+  const statDragging=()=>!!(window.statDragUntil&&Date.now()<window.statDragUntil);
+  // A swipe that starts inside something that scrolls sideways (a wide table, a strip) belongs to that thing.
+  function scrollsSideways(el){
+    for(let n=el;n&&n!==app;n=n.parentElement){
+      if(n.scrollWidth>n.clientWidth+2){const o=getComputedStyle(n).overflowX;if(o==='auto'||o==='scroll')return true}
+    }
+    return false;
+  }
+  function place(p,x,ms,ease){
+    p.style.transition=ms?('transform '+ms+'ms '+ease+',opacity '+ms+'ms '+ease):'none';
+    const w=app.clientWidth||innerWidth;
+    p.style.transform=x?('translate3d('+x+'px,0,0)'):'translate3d(0,0,0)';
+    p.style.opacity=String(1-Math.min(1,Math.abs(x)/w)*0.35);
+  }
+  function clear(p){if(!p)return;p.style.transition='';p.style.transform='';p.style.opacity='';p.classList.remove('page-moving')}
+  function after(p,ms,fn){
+    let done=false;const finish=()=>{if(done)return;done=true;p.removeEventListener('transitionend',onEnd);fn()};
+    const onEnd=e=>{if(e.target===p&&e.propertyName==='transform')finish()};
+    p.addEventListener('transitionend',onEnd);setTimeout(finish,ms+80);
+  }
+  function snapBack(){
+    const p=panel;panel=null;if(!p)return;
+    busy=true;place(p,0,220,EASE_OUT);
+    after(p,220,()=>{clear(p);document.documentElement.classList.remove('page-swiping');busy=false});
+  }
+  function slideIn(fromX){
+    const p=document.querySelector('.panel.active');
+    if(!p||reduceMotion){document.documentElement.classList.remove('page-swiping');busy=false;return}
+    p.classList.add('page-moving');place(p,fromX,0);
+    void p.offsetWidth; // lock in the start position before animating
+    place(p,0,260,EASE_OUT);
+    after(p,260,()=>{clear(p);document.documentElement.classList.remove('page-swiping');busy=false});
+  }
+  function goTo(dir,dx){
+    const p=panel;panel=null;
+    const current=p?.id||HOME_PAGE,index=PAGE_ORDER.indexOf(current);
+    if(index<0){clear(p);busy=false;return}
+    const next=PAGE_ORDER[dir>0?(index+1)%PAGE_ORDER.length:(index-1+PAGE_ORDER.length)%PAGE_ORDER.length];
+    const w=app.clientWidth||innerWidth;
+    busy=true;
+    const swap=()=>{
+      clear(p);switchTab(next);
+      const now=document.querySelector('.panel.active');
+      // If the switch didn't happen (Driver Mode asked for the unlock slide), bring this page back from where it left.
+      slideIn(now===p?-dir*w:dir*w);
+    };
+    if(reduceMotion||!p){swap();return}
+    // Out-speed follows the flick, so a quick flick leaves quickly and a slow drag eases off.
+    const rest=w-Math.abs(dx),speed=Math.max(1.2,Math.abs(vx));
+    place(p,-dir*w,Math.round(Math.min(220,Math.max(110,rest/speed))),'cubic-bezier(.4,0,.9,.6)');
+    after(p,220,swap);
+  }
   app.addEventListener('touchstart',e=>{
-    if(e.touches.length!==1)return;
+    mode='';
+    if(busy||e.touches.length!==1)return;
     if(e.target.closest('input,select,button,textarea,.modal,.side-menu,.report-tab-strip'))return;
-    startX=e.touches[0].clientX; startY=e.touches[0].clientY; startTime=Date.now();
+    if(scrollsSideways(e.target))return;
+    startX=lastX=e.touches[0].clientX;startY=e.touches[0].clientY;lastT=performance.now();vx=0;mode='pending';
   },{passive:true});
-  app.addEventListener('touchend',e=>{
-    if(!startTime||e.changedTouches.length!==1)return;
-    const dx=e.changedTouches[0].clientX-startX;
-    const dy=e.changedTouches[0].clientY-startY;
-    const elapsed=Date.now()-startTime; startTime=0;
-    if(elapsed>700||Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.2)return;
-    const current=document.querySelector('.panel.active')?.id||HOME_PAGE;
-    const index=PAGE_ORDER.indexOf(current); if(index<0)return;
-    const nextIndex=dx<0?(index+1)%PAGE_ORDER.length:(index-1+PAGE_ORDER.length)%PAGE_ORDER.length;
-    switchTab(PAGE_ORDER[nextIndex]);
+  app.addEventListener('touchmove',e=>{
+    if(!mode||mode==='none'||e.touches.length!==1)return;
+    const x=e.touches[0].clientX,dx=x-startX,dy=e.touches[0].clientY-startY;
+    if(mode==='pending'){
+      if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+      const p=document.querySelector('.panel.active');
+      if(statDragging()||Math.abs(dx)<Math.abs(dy)*1.2||!p||PAGE_ORDER.indexOf(p.id)<0){mode='none';return}
+      mode='drag';panel=p;startX=x-(dx>0?1:-1)*2; // start from here so the page doesn't jump by the dead zone
+      document.documentElement.classList.add('page-swiping');p.classList.add('page-moving');
+    }
+    if(mode!=='drag')return;
+    if(statDragging()){mode='';snapBack();return}
+    if(e.cancelable)e.preventDefault(); // keep the page from scrolling up and down mid-swipe
+    const t=performance.now(),dt=t-lastT;
+    if(dt>0)vx=vx*0.4+((x-lastX)/dt)*0.6;
+    lastX=x;lastT=t;
+    if(!reduceMotion)place(panel,x-startX,0);
+  },{passive:false});
+  app.addEventListener('touchend',()=>{
+    if(mode!=='drag'){mode='';return}
+    mode='';
+    const dx=lastX-startX,w=app.clientWidth||innerWidth;
+    if(performance.now()-lastT>120)vx=0; // finger rested before lifting, so it wasn't a flick
+    const flick=Math.abs(vx)>0.45&&Math.abs(dx)>30&&Math.sign(vx)===Math.sign(dx);
+    if(Math.abs(dx)>w*0.28||flick)goTo(dx<0?1:-1,dx);
+    else snapBack();
   },{passive:true});
+  app.addEventListener('touchcancel',()=>{if(mode==='drag')snapBack();mode=''},{passive:true});
 
   // Keep an entry inside the app so Back always returns/stays on Loads.
   history.replaceState({silageTrackerPage:HOME_PAGE},'',location.href);
@@ -92,11 +170,14 @@ function handleAddStorage(){if(licenseGraceInfo().locked)return requireActivatio
 document.getElementById('addStorageBtn').onclick=handleAddStorage;
 function handleAddCommodity(){if(licenseGraceInfo().locked)return requireActivation(handleAddCommodity);const input=document.getElementById('newCommodityName');const c=createCommodity(input.value);if(!c)return;input.value='';save();render();showToast('Commodity added')}
 document.getElementById('addCommodityBtn')?.addEventListener('click',handleAddCommodity);
-document.getElementById('saveDmBtn').onclick=()=>{const raw=String(document.getElementById('dmInput').value||'').trim(),shown=Number(raw),v=dmFromShown(shown),eff=document.getElementById('dmEffective').value;if(raw===''||!Number.isFinite(shown)||shown<0||shown>100||!(v>0)||v>100)return alert('Enter a '+dmWordLower()+' between 0 and 100.');if(!eff)return alert('Choose the time this reading started.');const reading={id:uid(),value:v,effective:isoFromLocal(eff),created:new Date().toISOString()};state.dmReadings.push(reading);state.dryMatter=v;state.loads.forEach(l=>{if(l.manualDryMatter===null||l.manualDryMatter===undefined){const r=effectiveDMReading(l.time);if(r){l.dmReadingId=r.id;l.dmValue=Number(r.value);l.dryMatter=Number(r.value);l.dryWeight=Number(l.wetWeight)*(l.dryMatter/100)}}});const backfilled=offerBackApply(reading);save();render();showToast(backfilled?dmWord()+' applied to '+backfilled+' earlier load(s)':dmWord()+' saved and matched to loads')};
+document.getElementById('saveDmBtn').onclick=async()=>{const raw=String(document.getElementById('dmInput').value||'').trim(),shown=Number(raw),v=dmFromShown(shown),eff=document.getElementById('dmEffective').value;if(raw===''||!Number.isFinite(shown)||shown<0||shown>100||!(v>0)||v>100)return alert('Enter a '+dmWordLower()+' between 0 and 100.');if(!eff)return alert('Choose the time this reading started.');const reading={id:uid(),value:v,effective:isoFromLocal(eff),created:new Date().toISOString()};state.dmReadings.push(reading);state.dryMatter=v;state.loads.forEach(l=>{if(l.manualDryMatter===null||l.manualDryMatter===undefined){const r=effectiveDMReading(l.time);if(r){l.dmReadingId=r.id;l.dmValue=Number(r.value);l.dryMatter=Number(r.value);l.dryWeight=Number(l.wetWeight)*(l.dryMatter/100)}}});const backfilled=await offerBackApply(reading);save();render();showToast(backfilled?dmWord()+' applied to '+backfilled+' earlier load(s)':dmWord()+' saved and matched to loads')};
 document.getElementById('dmNowBtn').onclick=()=>document.getElementById('dmEffective').value=localInputValue();
 // Testing takes an hour at minimum, so the sample time is almost never "now".
 document.getElementById('dmHourAgoBtn').onclick=()=>document.getElementById('dmEffective').value=localInputValue(new Date(Date.now()-60*60000));
-document.getElementById('darkToggle').onchange=e=>{state.darkMode=e.target.checked;applySettings();save()};
+// Theme: Light, Dark, or follow the phone. Dim timer: how long before the app dims itself (0 = never).
+function setThemeMode(m){state.themeMode=m;applySettings();save();renderDisplayChoices()}
+function setDimSeconds(n){state.dimSeconds=n;applySettings();save();renderDisplayChoices()}
+(function(){const mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');if(!mq)return;const f=()=>{if(state.themeMode==='system')applySettings()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)})();
 document.getElementById('wakeToggle').onchange=async e=>{state.keepAwake=e.target.checked;applySettings();save();if(state.keepAwake)await requestWakeLock();else releaseWakeLock()};
 document.getElementById('downloadBackupBtn').onclick=downloadFullBackup;
 document.getElementById('restoreBackupBtn').onclick=()=>document.getElementById('backupFileInput').click();
@@ -137,7 +218,7 @@ let editingFieldId=null;
 document.getElementById('saveEditFieldBtn')?.addEventListener('click',saveEditedField);
 document.getElementById('editLoadField')?.addEventListener('change',e=>{const n=document.getElementById('editLoadNote');if(n)n.value=fieldNoteFor(e.target.value);const c=document.getElementById('editLoadCommodity');if(c){const f=state.fields.find(x=>x.id===e.target.value);c.innerHTML=commoditySelectOptions(f&&commodityById(f.commodityId)?f.commodityId:'')}});
 document.getElementById('cancelEditFieldBtn')?.addEventListener('click',()=>{editingFieldId=null;closeModal('editFieldModal')});
-function handleAddCommodityFromEditField(){if(licenseGraceInfo().locked)return requireActivation(handleAddCommodityFromEditField);const n=prompt('New commodity name');if(n===null)return;const c=createCommodity(n);if(!c)return;localStorage.setItem(KEY,JSON.stringify(state));fillEditFieldCommodity(c.id);renderCommoditySetup();showToast('Commodity added')}
+async function handleAddCommodityFromEditField(){if(licenseGraceInfo().locked)return requireActivation(handleAddCommodityFromEditField);const n=(await uiPrompt('New commodity name',undefined,{confirmText:'Add'}));if(n===null)return;const c=createCommodity(n);if(!c)return;localStorage.setItem(KEY,JSON.stringify(state));fillEditFieldCommodity(c.id);renderCommoditySetup();showToast('Commodity added')}
 document.getElementById('editFieldNewCommodityBtn')?.addEventListener('click',handleAddCommodityFromEditField);
 // Each filter holds a set rather than one value, so a report can be pulled for two drivers
 // across three fields at once. An empty set means the filter is not narrowing anything.
@@ -188,7 +269,7 @@ document.getElementById('reportCsvBtn')?.addEventListener('click',exportFiltered
 document.getElementById('importLoadsBtn')?.addEventListener('click',()=>document.getElementById('importLoadsFileInput')?.click());
 document.getElementById('importLoadsFileInput')?.addEventListener('change',e=>importLoadsCsvFile(e.target.files?.[0]));
 document.getElementById('counterStat')?.addEventListener('click',openCounter);
-document.getElementById('rateStat')?.addEventListener('click',openRateWindowSetting);
+document.getElementById('statTileRate')?.addEventListener('click',openRateWindowSetting);
 document.querySelector('.topgrid')?.addEventListener('click',e=>{const b=e.target.closest('#counterStat');if(b&&state.counter?.enabled)openCounter();});
 document.getElementById('updateWeightFromLoadBtn')?.addEventListener('click',()=>{const id=optionTruckId;const f=currentField();const cid=f?fieldCommodityId(f.id):'';closeModal('loadModal');openWeightHistory(id,{commodityId:cid,fixed:true,fixedReason:f?('Taken from the current field, '+f.name+', so the weight is filed under this tab.'):'Taken from the current field.'})});
 document.getElementById('closeCounterBtn')?.addEventListener('click',()=>closeModal('counterModal'));

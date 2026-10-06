@@ -1,387 +1,268 @@
 # Silage Tracker Pro Changelog
 
+## V3.11.0 — Build 2026.10.05.001
+- Choose Light, Dark or Same as System for the theme on Appearance
+- Choose how long the screen stays bright before the app dims it, or never dim
+- Inoculant Reports now show the most recent event at the top
+- Opening a truck from Setup now starts at the top of its page, and going back returns you to the same spot in the list
+- A truck’s weight history shows the two most recent weights, with the rest under Show All
+- Text boxes now move up above the keyboard instead of hiding behind it
+
+## V3.10.0 — Build 2026.10.04.003
+- Swiping between pages is smoother — the page follows your finger and glides into the next one
+- The free-use countdown now counts calendar days, so it goes down by exactly one each day
+
+## V3.9.0 — Build 2026.10.04.001
+- Erase All Data now asks whether to also remove the device's activation, or keep it
+- A free month that's already running is no longer lost when you erase data
+- Bug fixes
+
+## V3.8.0 — Build 2026.10.03.005
+- Backups and snapshots no longer carry the activation, and restoring or importing one never changes a device's activation
+- Devices updating from a version that didn't need a code get a one-month grace period from the update, shown in Settings and on the Loads page, then need a farm name and code
+
+## V3.7.0 — Build 2026.10.03.004
+- The Current Field and Storage boxes now slide out of the way once you scroll past the trucks on the Loads page
+- Simplified the Annual Activation section — it now shows when the device was activated, how long it's good for, and which farm
+- Activation now always needs a farm name and a matching code — existing devices are no longer activated automatically
+- Simplified the version log
+
+## V3.6.0 — Build 2026.10.03.003
+- Touch and hold any stat on the Loads or Today page, then drag it to a new spot — the order is remembered
+- Added a Reset Stat Order button on Appearance
+
+## V3.5.0 — Build 2026.10.03.002
+- Every pop-up that used to show the web address on Android (CSV export, deleting a truck, field or storage, clearing and restoring data, imports and more) is now a clean in-app dialog
+- Top stat arrangement now offers every sensible split for the number of stats showing — with five: One Row, 2 Above 3 Below or 3 Above 2 Below
+- Picking a field or commodity from a list is now tap-to-choose, and deleting a truck from its own page asks once
+- Snapshot imports now ask for an optional label
+
+## V3.4.0 — Build 2026.10.03.001
+- Top stats can be arranged as One Row or Two Rows, with visual previews on Appearance
+- Deleting a load now asks with a clean “Move to Trash” sheet
+- Haptic feedback buzzes longer so it can be felt on Android, and the switch tells you if vibration is blocked or unsupported
+- Added a Remove Activation button in Settings, and code boxes no longer autocorrect what you type
+
+## V3.3.2 — Build 2026.10.01.001
+- Bug fixes
+
+## V3.3.1 — Build 2026.09.30.002
+- Truck layout and top stat templates are now visual previews you tap directly
+
+## V3.3.0 — Build 2026.09.30.001
+- Added an Appearance page, between Settings and Deleted Loads, with Load Entry Feedback and Display moved onto it and the Inoculant Counter switch kept in sync with Settings
+- Choose which Loads-page stats show, with Minimal, Standard and Full templates
+- Truck buttons can be shown 1 or 2 per row
+
+## V3.2.1 — Build 2026.09.29.001
+- Removed the moisture prompt from Weigh Load
+- Bug fixes
+
+## V3.2.0 — Build 2026.09.28.001
+- Weigh Load now has a gear button for gross/net entry — choose kg or lb, and enter net weight directly or gross and tare (tare is remembered per truck)
+- Snapshot imports now ask for a label (like “Imported from user”), shown on each imported load
+- Added home screen install instructions (iPhone and Android) under About
+
 ## V3.1.5 — Build 2026.09.25.003
-- Removed the Jump to Today button on the Today page; leaving and returning already resets it to today.
-- Added 5 min ago and 10 min ago quick buttons to Load Options (hold a truck to open it), for recording a missed load without hand-picking the time.
-- The activation prompt now says "All inputs are blocked without it" instead of implying the rest of the app still works.
+- Removed the Jump to Today button
+- Added 5 min ago and 10 min ago buttons to Load Options for recording a missed load
+- Clarified the wording of the activation prompt
 
 ## V3.1.4 — Build 2026.09.25.002
-- Added a usage disclaimer to the About section, covering data accuracy, liability, and "as is" use.
+- Added a usage disclaimer to About
 
 ## V3.1.3 — Build 2026.09.25.001
-- The activation prompt now shows where to get a code: support.silagetracker@gmail.com.
+- The activation prompt now shows where to get a code
 
 ## V3.1.2 — Build 2026.09.24.003
-- Removed Last Cycle and Average Cycle from the truck edit page in Setup. The same figures are already shown on each active truck's card on the Loads page.
+- Removed cycle times from the truck edit page (still shown on each truck's card)
 
 ## V3.1.1 — Build 2026.09.24.002
-- Imported loads now carry the Imported badge regardless of which import choice was made. Previously it only applied when data was kept as entered; a load that got its dry matter or weight merged from the snapshot wasn't marked at all.
+- Bug fixes
 
 ## V3.1.0 — Build 2026.09.24.001
-- Added a Today page, above Loads in the menu: loads, wet tonnes, average moisture, average rate, peak hourly rate, and a per-truck breakdown for a single harvest day. A harvest day runs dawn to dawn (5am cutoff) so work past midnight stays with the day it started instead of splitting across two calendar days. A date picker lets you look at a different day; leaving the page resets it back to today.
-- The changelog moved out of the normal About view into its own full-screen sheet, opened by press-and-hold on About and closed by swiping down from the top of the sheet or navigating away.
-- Setup's truck name and weight fields now show their description above the box once something's been typed, instead of relying on a placeholder that disappears the moment there's a value.
-- Grace period is now fixed at 30 days; the adjustable stepper is gone.
-- Fixed inoculant status not surviving a snapshot transfer between devices — it's now frozen onto the load at creation and travels with it correctly.
-- Replaced the old per-reading import confirmation with a single Merge / Keep-as-Entered decision covering both dry matter and truck weight changes, scoped to the same field and commodity. Kept-as-entered loads now carry an Imported badge.
-- Fixed the dry matter "cover earlier loads" prompt being capped at 24 hours; it now correctly reaches back to the last real reading, however long that gap was.
+- Added a Today page — loads, wet tonnes, average moisture, average rate, peak hourly rate and a per-truck breakdown for one harvest day
+- The version log moved out of About — press and hold About to open it
+- Snapshot imports now ask once whether to merge new readings into matching loads or keep everything as entered
+- The grace period is now a fixed 30 days, plus bug fixes
 
 ## V3.0.2 — Build 2026.09.22.003
-- The activation status in Settings (same spot the code is entered) now shows the actual activation date alongside the expiry date, across all four states: never activated, active, in grace, and locked.
+- The activation status in Settings now shows the activation date
 
 ## V3.0.1 — Build 2026.09.21.002
-- Settings descriptions are shorter, with a tap-for-more (i) icon where there's more to say.
-- Removed the "Any Commodity" tab from truck weight history. The Add Weight button now names the real commodity and asks for confirmation before saving, to catch a weight being filed under the wrong one.
-- Added a Move action to reassign an existing weight to the correct commodity.
-- Removed the redundant Weight History button on the truck edit page; the same data is already shown inline there.
+- Settings descriptions are shorter, with tap-for-more (i) icons
+- Truck weight history is clearer: Add Weight names the commodity and confirms, and a new Move button re-files a weight under the right commodity
 
 ## V3.0.0 — Build 2026.09.21.001
-- Activation no longer locks any page. Everything is always viewable; a code is asked for right when a gated action is actually attempted (logging a load, Setup changes, higher-stakes Settings actions), and the action completes automatically the moment a valid code is entered.
-- Driver Mode now locks Reports too, matching the Loads-only restriction.
-- Truck detail changes now carry over through Current Field Snapshot.
-- Added a support contact note under About & What's New.
-- General decluttering.
+- Activation no longer locks any page — a code is asked for only when it's needed: logging a load, changing Setup, or higher-stakes Settings actions
+- Driver Mode now locks Reports too
+- Added a support contact note under About
+- Bug fixes
 
 ## V2.25.0 — Build 2026.09.05.042
-- **Codes are now strictly calendar-year only.** Previously a code validated against a window of years (last year through 5 years ahead), meant to be forgiving around renewal timing. That window has been removed entirely: `activationCodeForFarm(farmName, now)` is now the only check, with no loop. A code works from January 1 through 11:59pm December 31 of the year it was generated for — on as many devices as that farm needs, entered on any date within that window — and stops validating the instant the calendar rolls to the next year. Entering next year's code early no longer works, and entering last year's code after the new year starts no longer works either.
-- **The lock scope is tighter: only Reports stays available once a device is fully locked.** `LICENSE_LOCKED` now includes `main` (the Loads page) alongside Setup, Archive, Deleted Loads and a truck's edit page — previously Loads was deliberately exempted to avoid stranding someone mid-harvest; that exemption is removed. Reports remains the one page that's never locked, specifically so data already recorded can still be reviewed and exported.
-- Since the Loads page is shown by default via static HTML rather than through `switchTab()`, simply adding it to the locked list wasn't sufficient on its own — two additional pieces were needed: a startup check (if a device is already overdue the moment it's opened, it's sent straight to Reports instead of showing the now-locked Loads page as the default view) and continuous enforcement inside `render()` itself (if a device becomes overdue while someone is already sitting on a locked page — the grace period running out mid-session — it's moved to Reports on the very next render rather than waiting for the next manual navigation attempt).
-- The Loads-page banner and the alert shown when a locked page is blocked were both updated to stop claiming Loads still works, since it no longer does. A new locked-state notice was added to the top of the Reports page itself, since that's the one page anyone will actually be looking at once fully locked.
-- The rolling 12-months-from-activation-date and configurable grace-period mechanics are completely unchanged — only the code validation window and the lock scope changed.
-- Verified with a scripted test entering the same code on four simulated dates across a full year (Jan 1, mid-June, Nov 1, and the last minute of Dec 31) — all four accepted — followed by a check one minute into the new year, correctly rejected. Also verified last year's and next year's codes are both now rejected in the current year (previously both would have been accepted), that attempting to reach Loads while locked triggers the correct alert and stays on Reports, that Reports remains fully functional (reachable, populated, CSV export available) while locked, and that the existing rolling-window and grandfathering behavior are both unaffected — plus the full regression suite.
+- Codes now work only during the calendar year they were made for
+- When a device locks, only Reports stays available
 
 ## V2.24.1 — Build 2026.09.05.041
-- **Made activation codes fully opaque.** The previous format (`YYYY-NNNN`, e.g. `2026-5716`) put the year in plain sight as a literal prefix, which gave away the code's structure for free — anyone looking at a handful of codes could immediately tell they were year-plus-checksum, making the underlying formula easier to guess at. `activationCodeForFarm()` now runs the farm-name hash and the year through a small avalanche mix (a MurmurHash3-style finalizer using `Math.imul` for correct 32-bit arithmetic) before encoding the result, so nothing about a code's shape reveals what went into it.
-- Consecutive years for the same farm now produce codes that look nothing alike (`D5G-W5BU`, `B75-7PSK`, `DS5-4D22`, ...) rather than counting up in an obviously related way.
-- The output alphabet excludes 0/O/1/I/L, the same handwriting-safe set already used for the Driver Mode recovery code from earlier in this build, so codes typed from a handwritten note on a phone are less likely to trip over ambiguous characters. Codes are 7 characters, shown as `XXX-XXXX`.
-- Caught and fixed a bug in the first draft of this change before it shipped: the alphabet only has 31 characters (not a round 32, since five characters were deliberately excluded), but the encoder used a hardcoded `%32`, producing an out-of-range index and a stray lowercase `undefined` fragment inside some codes. Fixed by using `CODE_ALPHABET.length` instead of a hardcoded constant, and verified clean across 21 consecutive years with a regex check confirming every code matches `[A-Z0-9]{3}-[A-Z0-9]{4}` with none of the excluded characters present.
-- The standalone `code-generator.html` tool was updated with the identical formula and cross-checked against the live app's own output for the same inputs, confirming byte-identical results.
-- This only changes what *new* codes look like going forward — it doesn't affect any device already activated under the old format, since activation itself just stores a timestamp and farm name, not the code that was used to get there.
-- Reran the full farm-specific code test suite (different farms produce different codes, wrong farm name correctly rejected, case/whitespace-insensitive matching still works), the fresh-install activation gate test, the grandfathering test, and the full regression suite — all against the new formula, all clean.
+- Activation codes are now a compact 7-character format (like D5G-W5BU)
 
 ## V2.24.0 — Build 2026.09.05.040
-- **Fixed a real gap in Annual Activation: it was an opt-in switch, off by default.** A fresh copy of the app just worked forever unless someone specifically chose to turn the lock on themselves — the exact opposite of what the feature was built for. Removed the on/off switch entirely; activation is no longer optional.
-- **A genuinely fresh install now shows a full-screen activation screen immediately on first open**, before anything else in the app is usable — a farm name and a matching code are required to get past it. This is a hard, non-dismissable wall (`#activationGate`, `z-index:500`, opaque background, no cancel button), distinct from the softer renewal lock: a brand-new install has no existing data to protect, so blocking everything until activated costs nothing real, unlike the renewal case where Loads and Reports deliberately stay open to avoid stranding an existing user mid-harvest.
-- **A device that already had real usage before this version reached it is never retroactively locked out.** `loadState()` now checks, exactly once per device, whether it already has loads, trash, archive entries, or edit logs from before Annual Activation existed; if so, it's silently marked as activated on the spot rather than being shown the gate. This check is guarded by a `licenseGrandfathered` flag so it only ever fires once — a device that goes on to legitimately expire later won't keep re-granting itself a free pass just because it has old data sitting in it.
-- **The activated farm name now displays in the header** ("Activated: [farm name]"), so it's always visible at a glance which farm a given device belongs to, via a new `renderHeaderFarmName()` hooked into the main render cycle.
-- Settings → Annual Activation was simplified to match: the toggle is gone, replaced with an always-visible status line, the farm name field, the code entry field, and the existing grace-period stepper for the renewal side.
-- Verified with three targeted scenarios: a genuinely fresh install (empty localStorage) correctly shows the gate, occupies the full viewport, rejects an incorrect code with a clear inline error, and accepts the correct farm-name-and-code pair, un-hiding the app and showing the farm name in the header; a simulated pre-existing device (seeded with a season's worth of loads/fields/trucks under the old schema, no license fields at all) correctly skips the gate entirely on first load of this version, with all of its existing data intact; and the existing renewal-lock behavior (Setup/Archive/Trash locking after 12 months plus grace, Loads/Reports always staying open) continues to work unchanged for an already-activated device. Also reran the farm-specific code checks and the full regression suite.
+- Activation is now always on instead of an optional switch
+- Once activated, the farm name shows in the header
 
 ## V2.23.0 — Build 2026.09.05.039
-- **Annual Activation codes are now tied to a specific farm name, not a single formula shared by everyone.** Activating now asks for both a farm name and a code, and the code only validates against that exact farm name (case and spacing insensitive, but the actual words have to match). A code generated for one farm won't activate under a different farm name, so a code can't simply be copied to an unrelated operation — while every device and every user at the same farm can still share the one code that farm was issued, since nothing here is tied to a specific device or user, only to the farm name entered.
-- Implemented with `hashFarmName()`, a small deterministic string hash (case/whitespace/punctuation-normalized, so "Smith Family Farm" and "  smith family farm  " hash identically) folded into the existing per-year checksum formula, replacing the old `activationCodeForYear()` with `activationCodeForFarm(farmName, year)`.
-- Removed the free first-year activation that happened automatically when the toggle was switched on. A real farm name and a matching code are now required from the very first activation, the same as every renewal after it — consistent with codes now meaning something specific (a farm), rather than being a universal pass anyone could type in.
-- **Created a private, offline code generator** (`code-generator.html`), a small standalone page using the exact same formula as the app, so codes for any farm name can be produced without needing to come back and ask for one each time. It is explicitly a separate file from the app itself, delivered outside the main app package, with a clear on-page warning never to deploy it publicly — doing so would let anyone generate a valid code for any farm.
-- Verified that different farm names produce different codes for the same year; that a correct code is rejected when paired with the wrong farm name; that it's accepted when paired with the correct one, including with different case and surrounding whitespace; that the farm name is stored correctly on successful activation; and that the standalone generator's output is byte-identical to the app's own function for the same inputs — plus the full regression suite and a re-confirmation that Reports and its data export stay available in every locked state.
+- Activation codes are now specific to a farm — the farm name and code must match
+- A free first year is no longer given — a real farm name and code are needed from the start
 
 ## V2.22.0 — Build 2026.09.05.038
-- **Added Annual Activation** (Settings, off by default), an entirely offline yearly checkpoint with no account, no payment, and no server involved — a code, checked against a fixed formula built into the app itself, keeps a device active. Deliberately not real security (the formula could be worked out by anyone reading the code): it's a personal renewal ritual for a single-operator tool, not a lock meant to withstand a determined bypass.
-- **Activation is a rolling 12 months from the moment a code is entered, not a calendar year.** Activate in July, it's good until July the following year, regardless of which year's code was used to activate. Renewing early or late both restart the 12 months from whenever the code is actually entered.
-- **A configurable grace period** (Settings → Annual Activation → "Grace period," default 60 days) keeps everything fully working for a while after the 12 months run out before anything actually locks. A reminder banner appears on the Loads page during the grace period, counting down the days remaining.
-- **When it does lock, the scope is deliberately narrow: only Setup, Archive and Deleted Loads.** Settings is never part of the locked set, since that's where the activation code is entered — locking it would create a permanent, unrecoverable dead end. Loads (logging a new load) and Reports (viewing and exporting existing data) are never locked under any circumstance, so a device that's gone unrenewed for months can still be used for its core job and its data can always be gotten out.
-- Implemented as `licenseGraceInfo()` (core-state.js), computing expiry via `Date.setFullYear(+1)` from a stored activation timestamp rather than a fixed 365-day approximation, so it correctly handles the mechanics of adding a calendar year regardless of leap years.
-- Verified against the exact scenario this was designed around: activated July 15, expiry correctly lands exactly one year later; the device stays fully active for the 11+ months before that; grace period (45 days in the test, chosen to land near end of August from a mid-July expiry) keeps it working through the grace window; and it correctly locks once the grace period is exceeded. Also explicitly verified Reports stays reachable, its data stays populated, and CSV export stays available even in the fully-locked state — plus wrong-code rejection, correct-code activation and persistence across reload, Setup being freely reachable both before enabling and after re-activating, and the full regression suite.
+- Added Annual Activation in Settings — a code keeps a device active for 12 months, with a grace period afterwards, entirely offline with no account or payment
 
 ## V2.21.1 — Build 2026.09.05.037
-- Added a haptic buzz (`navigator.vibrate(40)`) to the Driver Mode slide-to-unlock, firing the moment the slide crosses the completion threshold — matching the existing vibration pattern already used for a long-press truck button.
-- Added a note to the Haptic Feedback setting (Settings → Load Entry Feedback) that it may not work on iPhone, since iOS Safari has never implemented `navigator.vibrate` — an explicit, on-the-record WebKit position against the Vibration API, not an oversight. This applies to the existing load-entry haptic toggle and, by the same underlying cause, to the new slide-to-unlock buzz above.
-- An unofficial iOS-only workaround (borrowing a real Taptic click from a hidden native toggle switch) was built and tested in between this version and the last, but didn't produce feedback on the device it was meant for, so it's been fully reverted rather than kept as inert, untested-in-practice code. All three vibration call sites are back to calling `navigator.vibrate` directly, exactly as they did before that attempt.
-- Verified with a stubbed `navigator.vibrate` that the slide-to-unlock buzz fires exactly once, with the expected value, at the moment of a successful unlock drag, and confirmed the full regression suite is unaffected.
+- Added a haptic buzz when Driver Mode's slide-to-unlock completes (not supported on iPhone)
 
 ## V2.21.0 — Build 2026.09.05.034
-- **Restored the Loads page instruction box to its normal size.** It had been shrunk to 50% in an earlier version to reduce its footprint since it was always on screen; now that V2.19.1 hides it entirely once the header collapses on scroll, the shrink no longer serves a purpose and just made it harder to read while it's visible. Removed the `font-size:50% !important` override.
-- **Smoothed the header-collapse scroll animation.** The sticky header's position and the compact field/storage selector's position were both being set via CSS custom properties recalculated in JS with no transition, so any correction snapped instantly rather than easing — this is what showed up as jitter on the first scroll. Added `transition:top .18s ease` to both. Also added a follow-up measurement 300ms after initial load, since safe-area insets and layout can still be settling right after first paint (especially when a PWA is launched from the home screen rather than a fresh browser tab) — catching that before the user's first scroll means fewer corrections happen visibly mid-scroll in the first place.
-- **The dashboard Rate stat is now tappable**, jumping straight to Settings → Cycle Time & Rate → "Rate window" and briefly highlighting that row (a new `.setting-flash` animation), the same pattern already used for the Inoculant counter stat opening its own modal.
-- **Made theme changes actually visible**, after finding the real cause: `applyTheme()` has always set two CSS variables per theme (`--green`, the main accent, and `--green2`, a darker shade) but a check of the stylesheet showed `--green2` was referenced zero times anywhere — only `--green` was ever consumed, so every theme's second-defined shade was completely inert. The header banner's dark overlay was also hardcoded to a fixed near-black green regardless of theme, meaning the single most prominent element in the app never changed at all. Fixed by making the header's overlay gradient use `color-mix(in srgb, var(--green2) 72%/85%, transparent)` in place of the hardcoded colors, and giving primary buttons (`.btn`), the active Reports tab, and modal choice buttons a `linear-gradient(135deg, var(--green), var(--green2))` instead of a flat single color. The theme picker's own swatch previews were also flat single-color and now show the same gradient, so the picker itself previews what's actually about to change.
-- One CSS addition turned out to be dead code and was reverted: truck "head" bars (the colored strip on each truck button) have their own per-truck customizable color set independently in Setup (`t.primaryColor`, inline-styled per truck), which always overrides any CSS-level theme color by design — truck colors are meant to stay independent of the app theme so trucks stay visually distinguishable from each other regardless of which theme is active. Confirmed this via computed style inspection before shipping rather than leaving an ineffective rule in the stylesheet.
-- Verified all four changes with scripted checks: the instruction banner's computed font-size is back to a normal 16px; clicking the Rate stat navigates to Settings and applies the flash class to the correct row; and switching from the default theme to Harvest Gold produces different computed `background-image` values for both the header and buttons (confirmed via `getComputedStyle`), with the swatch preview confirmed to render as a gradient — plus the full regression suite.
+- Tapping the Rate stat now jumps to its setting
+- Theme colours are more noticeable, and the Loads page header collapses more smoothly
 
 ## V2.20.0 — Build 2026.09.04.033
-- **Made the Loads page dashboard Rate figure a rolling window instead of the field's whole history.** New setting: Settings → Cycle Time & Rate → "Rate window" (default 4 hours, adjustable 0–24). Only loads from that many hours back count toward the Rate stat, so it reflects the current pace rather than getting diluted by an early, slower stretch earlier the same day. Switching the field selector still refreshes the figure immediately using that field's own recent loads. Set to 0 to disable the window and fall back to the field's entire history, the previous behavior. The existing break-time exclusion (Settings → Cycle Time & Rate → "Ignore breaks longer than") still applies on top of the window — a break inside the rolling window still doesn't count toward elapsed time.
-- The "Loads" and "Wet Total" stats next to Rate on the dashboard are unaffected and continue to show the field's true running totals; only the Rate calculation itself uses the windowed subset of loads.
-- Reports' Rate figure is deliberately left untouched by this setting and continues to use the full range of whatever date filters are applied there — a report is a chosen historical period, and it already has its own filtering for that; a rolling window tied to "now" doesn't fit that use case the way it does a live dashboard glance.
-- **Fixed a real bug found while testing this feature more thoroughly than the original had been**: both minute/hour steppers (the existing "Ignore breaks longer than" from V2.16.0, and the new "Rate window") incorrectly reset to their *default* value rather than stopping at 0 when the − button was tapped enough times to go negative — `clampCycleBreakMinutes(-10)` and `clampRateWindowHours(-1)` both fell through their `n >= 0` guard into the "invalid input" branch, which was meant for non-numeric input, not simply "went below zero." Both clamp functions now correctly floor at 0 via `Math.max(0, ...)` and only fall back to their default for genuinely non-numeric input (`NaN`).
-- Verified with a scripted test: loads spaced 6 hours and 5.5 hours ago are correctly excluded from the windowed rate (default 4-hour window) while loads 2 and 1 hours ago are correctly included and produce the expected 40.00 t/hr; the same data with the window disabled (set to 0) correctly falls back to the full-history rate of 93.33 t/hr (matching the break-exclusion math from V2.19.0); a field with only one recent load correctly shows no rate after switching to it; and Reports independently confirmed still showing the un-windowed 93.33 t/hr regardless of the dashboard's window setting. Also confirmed both steppers now correctly hold at 0 rather than jumping back to their defaults, and reran the full regression suite.
+- The Loads dashboard Rate is now a rolling window — set it under Settings → Cycle Time & Rate (default 4 hours)
+- Bug fixes
 
 ## V2.19.1 — Build 2026.09.04.032
-- The "Tap = Full Load / Press & Hold = Partial Load..." instruction box on the Loads page now hides itself once the header collapses to its compact scrolled state (`html.ctx-compact`), the same mechanism `scroll-collapse.js` already uses to shrink the field/storage selectors and hide the commodity note when scrolled. One CSS rule, `html.ctx-compact .load-instructions{display:none}`, added alongside the existing compact-mode rules — no JS changes needed, since the scroll listener and the class it toggles were already there.
-- Verified with a direct class-toggle test (confirming the CSS rule itself hides and un-hides the banner correctly) and, more importantly, with a real scripted scroll on a page padded out with enough loads to actually be scrollable: scrolling down triggers `ctx-compact` and correctly hides the banner, scrolling back to the top removes the class and the banner reappears — plus the full regression suite.
+- The tap/hold instruction box on the Loads page now hides when you scroll
 
 ## V2.19.0 — Build 2026.09.04.031
-- **Fixed the harvest Rate figure (V2.17.0) to exclude the same breaks the cycle time figures already exclude.** Rate was computed as total wet weight divided by the raw span from the first load to the most recent one, so a long gap — an overnight stop, a lunch break — counted fully as elapsed time and diluted the reported rate well below what was actually being harvested during active work. `harvestRatePerHour()` now sums only the gaps between consecutive loads that fall at or under the existing Settings → Cycle Time → "Ignore breaks longer than" threshold, skipping any gap over it entirely rather than counting it toward elapsed time. When no gap in the data exceeds the threshold, this is mathematically identical to the old first-to-last span (consecutive gaps always sum to the total span when none are excluded), so a normal continuous work session sees no change in its reported rate at all.
-- Reuses the same threshold setting as cycle time rather than introducing a second one — the Settings description and its live summary text were both updated to mention Rate alongside cycle time, since the setting's scope grew.
-- Verified with a scripted test: four 20-tonne loads, two spaced 60 minutes apart, then a 500-minute gap, then two more spaced 60 minutes apart (80 tonnes total). With the default 120-minute threshold, both the dashboard tile and the Reports figure correctly report 40.00 t/hr (80 tonnes over the 2 real active hours) — with exclusion turned off, both correctly fall back to the old diluted 7.74 t/hr (80 tonnes over the full 10⅓-hour span), confirming the break really was the cause of the understatement. Also re-confirmed the no-gap case from V2.17.0 still reports its original 15.00 t/hr unchanged, plus the full regression suite.
+- Bug fixes
 
 ## V2.18.0 — Build 2026.09.03.030
-- **Added a Text Size control**, Settings → Display, stepping through fixed presets from 80% to 160% with −/+ buttons. Directly answers a real gap: this app's viewport is set to `user-scalable=no` (pinch-zoom deliberately disabled, so a stray touch mid-tap on a truck button can't zoom the whole page out), and every font-size in the stylesheet was a fixed pixel value — meaning neither pinch-zoom nor an OS-level "larger text" accessibility setting (iOS Dynamic Type, Android font scale) had any way to affect this app at all. This control is what takes their place.
-- Implemented by converting every `font-size:Npx` declaration across the stylesheet and the one JS-generated inline style (64 + 1 declarations) to `font-size:calc(Npx * var(--text-scale))`, done with a scripted find-and-replace rather than by hand to guarantee complete, consistent coverage rather than missing a few buried in the middle of the minified CSS. `--text-scale` defaults to `1` on `:root` and is set on `document.body` by `applyTextScale()`, following the same pattern already used for the accent theme colour.
-- Deliberately scales font-size only, not padding or element dimensions — buttons and cards stay their normal size, just with bigger or smaller text inside them, which is a more conservative and predictable choice than scaling the whole layout.
-- Verified computed font sizes actually change (18px title becomes exactly 25.2px at 140%, 14.4px at 80% — matching 18 × the scale precisely), that the stepper clamps correctly at both the 80% floor and 160% ceiling, and that the chosen size persists across a reload. Also specifically re-tested the date-filter fix from V2.17.0 and the rest of the app (Loads, Reports, Setup) for horizontal overflow at the maximum 160% size across both 375px and 390px viewports — none found — plus the full regression suite.
-- Noted for the record: a sticky-header quirk was observed during testing (the header not staying perfectly pinned to the top on programmatic scroll in the headless test browser) but was reproduced identically at the default, unmodified 100% text scale, confirming it predates this change and isn't something this release introduced or affects either way.
+- Added a Text Size control in Settings → Display (80% to 160%)
 
 ## V2.17.0 — Build 2026.09.03.029
-- **Fixed a layout bug on the Reports date filter on iPhone.** The From and To date boxes, and the Sort Loads By dropdown, shared a CSS class with the report filter-chip grid above them, both locked to a fixed 2-column grid. Native `<input type="date">` controls on iOS Safari don't reliably shrink to fit a grid column the way other inputs do, which pushed From off the right edge of the screen and wrapped To underneath rather than beside it. The date row now has its own class, separate from the filter-chip grid, and stacks each of From, To, and Sort onto its own full-width row on narrow screens — sidestepping the iOS sizing quirk entirely rather than trying to out-guess it. Verified with no horizontal page overflow at 375, 390, 414, and 428px viewport widths (covering the current iPhone SE through Pro Max range), and confirmed From and To now render on genuinely separate rows rather than attempting to share one.
-- **Added a harvest rate figure**: wet weight harvested per hour, computed from the span between the first and most recent load in view. Added in two places: a new **Rate** stat tile on the Loads page dashboard (for the field currently selected there), and alongside Time Between Loads and Average Cycle Time in each field's Reports summary. Needs at least two loads spread across measurable time; shows nothing rather than a zero or wildly inflated figure otherwise.
-- Added `harvestRatePerHour()`, a small shared helper (wet total ÷ hours between the first and last load) used by both the dashboard tile and the Reports figure, following the same pattern as the existing shared cycle-time helpers.
-- The Loads page dashboard grid grew from 2 stats (Loads, Wet Total) to 3 (adding Rate), or 4 with the Inoculant counter enabled. Kept the grid at a fixed 2 columns on narrow phones regardless of item count, letting extra tiles wrap onto additional rows rather than cramming 3–4 stat tiles into one row — a deliberate conservative choice made right after finding and fixing the date-filter overflow bug above, rather than risk a second width-related issue in the same release.
-- Verified with a scripted test (three 10-tonne loads spaced exactly one hour apart, 30 tonnes over 2 hours) confirming both the dashboard tile and the Reports figure independently compute the expected 15.00 t/hr — plus checks that neither the dashboard nor the date filter overflow at any of the four tested iPhone widths, with or without the Inoculant counter enabled, and the full regression suite.
+- Added a Rate stat (wet tonnes per hour) to the Loads dashboard and to each field's summary in Reports
+- Bug fixes
 
 ## V2.16.0 — Build 2026.09.03.028
-- **Split field cycle time in Reports into two distinct, clearly labeled figures**, after it turned out V2.15.0's single number was being read as something it wasn't. "Time between loads" (kept, renamed for clarity) is the gap between one dump at the pile and the next, whoever hauled it — with several trucks staggered, this is always shorter than any single truck's real trip, since the pile sees a delivery far more often than one truck actually makes it back. The new **Average Cycle Time** is the one that answers "how long is a truck actually gone": each truck's own average time between its own consecutive loads for that field, then averaged across every truck that worked it, so the result is the figure worth comparing against a field's known travel distance.
-- Implemented by bucketing each field's loads by truck (in addition to the existing merged timeline used for Time Between Loads), computing `avgCycleMinutesFromTimes()` once per truck, then taking the mean of those per-truck averages — trucks with fewer than two loads for that field (no computable cycle) are excluded from the average rather than counted as zero.
-- Both figures respect the same break-time exclusion setting as before (Settings → Cycle Time → Ignore breaks longer than); it's the same underlying function applied twice, once to the merged timeline and once per truck.
-- Moved the cycle time figures onto their own line below each field's main summary row, rather than crowding them into the same line as the load count — verified this doesn't affect the two other places the same `.field-total` style is reused (the Archive breakdown list and its "Yield per acre" line), which don't gain the new line and keep their normal row divider.
-- Verified with a scripted test simulating two trucks staggered ten minutes apart, each with its own genuine 20-minute round trip: confirmed Time Between Loads correctly comes out to 10 minutes (the pile's delivery rate) while Average Cycle Time correctly comes out to 20 minutes (each truck's real trip) — the two numbers a farmer would expect to see, clearly different and each mathematically correct for what it claims to measure. Also reran the full regression suite.
+- Field cycle time in Reports is now two figures: Time between loads and Average Cycle Time
 
 ## V2.15.0 — Build 2026.09.02.027
-- **Added average cycle time to each field's summary in Reports.** Alongside the existing load count, wet/dry totals and per-acre yield, a field with two or more loads in the current filter shows the average time between one load and the next for that field — combining every truck that worked it, on purpose, so the figure can be compared against how far that field actually is rather than against any one truck's pace. A field with a single load in view shows no cycle time figure rather than a misleading or zero value.
-- **Added a configurable break threshold**, so a long gap — a lunch stop, an overnight break — doesn't drag a cycle time average upward. New setting: Settings → Cycle Time → "Ignore breaks longer than" (default 120 minutes, adjustable in 10-minute steps, 0 disables exclusion and includes every gap). Applies everywhere cycle time is averaged: the Loads page truck cards, a truck's edit page, and this new Reports figure.
-- The exclusion only ever affects *averages*. The single "last cycle" figure shown on the Loads page and a truck's edit page always shows the real, unfiltered gap since the previous load, including if that gap was the overnight stop — that number answers "how long has it actually been," and filtering it would make it less useful, not more.
-- Added `avgCycleMinutesFromTimes()`, a general-purpose version of the truck-specific cycle time calculation that works on any list of load timestamps and respects the same break threshold, so the same logic isn't duplicated between the truck cards and the field summaries.
-- Verified with a scripted test using a field worked by two trucks with three normal cycles (12, 15, 14 minute gaps) and one 400-minute overnight-style gap: with the default 120-minute threshold, the average correctly excludes the break and reports ~14 minutes; with exclusion turned off, the same data correctly reports 1h 50m, confirming the break really was the cause of the skew — plus the full regression suite.
+- Reports now show an average cycle time for each field
+- Added Ignore breaks longer than in Settings (default 2 hours) so lunch or overnight stops don't skew cycle times
 
 ## V2.14.0 — Build 2026.09.01.026
-- **Added an alert phone number to the Inoculant Counter.** Set it in the counter's own settings (Loads page → tap the counter → Alert Phone Number). When the warning level is reached, a **Send Alert** banner appears on the Loads page with the message already composed, offering **Text** or **WhatsApp**.
-- No website, including this one, can make either app send a message without the person tapping Send themselves — that's a deliberate security restriction on every phone, not a limitation specific to this app. So tapping Text or WhatsApp opens that app with the number and message pre-filled and ready; sending is still one manual tap away, same as writing the whole thing by hand would have been, just without the typing.
-- True Facebook Messenger integration was considered and ruled out: sending to an arbitrary phone number from a plain website isn't possible with Messenger at all, only through Meta's Business Messenger Platform API, which needs a verified Facebook Business app, a backend server, and the recipient having first messaged the business — well outside the scope of a static offline-first tracking app.
-- The banner is keyed to `state.counter.startAt`, the same value the existing in-app notification system already uses, so dismissing it (or sending the alert) only silences that one warning period; it reappears the next time the counter is reset or restarted and crosses the warning threshold again.
-- Verified with a full scripted walkthrough: banner staying hidden below the warning threshold and with no number configured, appearing with the correct message the moment the threshold is crossed, correct SMS and WhatsApp URL construction (phone number cleaned to digits, message URL-encoded), dismissal scoped to the current warning period only, and re-arming correctly on a new counter period — plus the full regression suite.
+- Added an alert phone number for the Inoculant Counter — at the warning level a Send Alert banner appears with the message ready for you to send
 
 ## V2.13.1 — Build 2026.08.31.025
-- Reworked how Driver Mode unlocks, replacing the PIN entirely. The PIN approach from V2.13.0 had an unresolved problem: a forgotten PIN meant no way back into Setup or Settings at all. A recovery-code-plus-factory-reset scheme was drafted to patch that, but was dropped before release in favor of a simpler fix: remove the secret credential altogether.
-- **Driver Mode now needs no PIN, code, or setup step of any kind.** Turning it on is instant. Opening a locked page, or turning Driver Mode off, shows a **slide to unlock** control instead — a full-width drag from left to right. There is nothing to set, remember, or forget, ever again.
-- The slide is not meant as a secret; it exists purely to stop a phone bouncing in a pocket screen-on from opening a locked page with a stray tap. A single continuous end-to-end drag isn't something fabric or pocket contents reproduce by accident, the same reasoning that makes phone lock-screen sliders and patterns effective for this even though they're fully visible.
-- The `DRIVER_MODE_LOCKED` page list, the in-memory (never persisted) unlock state, and the re-lock-on-return-to-Loads behavior from V2.13.0 are all unchanged — only the unlock mechanism itself was replaced.
-- Verified with a full scripted drag simulation: a partial drag correctly snaps back without unlocking, a full drag unlocks and completes the navigation that triggered it, and the same slide is required to disable Driver Mode from Settings — plus the full regression suite, confirming everything else is unaffected.
+- Driver Mode now unlocks with a simple slide-to-unlock instead of a PIN
 
 ## V2.13.0 — Build 2026.08.31.024
-- **Added Driver Mode**, in Settings. When switched on, Setup, Settings, Archive and Deleted Loads are locked behind a PIN; the Loads page and Reports remain open without it. Turning Driver Mode on for the first time prompts for a PIN (4 or more digits); the same PIN is required to turn it back off, to change it, or to open any locked page.
-- A small 🔒 Driver Mode badge appears in the header whenever it's active, on every page, so the lock is never surprising or unexplained.
-- Unlocking is per-session and in-memory only: entering the PIN once grants access to move between any of the locked pages, but the unlock is cleared the moment navigation returns to the Loads page, and always resets on a fresh page load. Nothing about the unlock state is saved to storage.
-- The gate lives centrally in the app's single navigation function (`switchTab()`), so it applies uniformly regardless of how a page is reached — the menu, the browser's back/forward buttons, or any other internal navigation call — rather than needing to be checked in multiple places.
-- `state.driverMode` cannot be `true` without a valid stored PIN; this is enforced on every load, so a corrupted or cleared PIN safely turns Driver Mode off rather than locking anyone out with no way back in.
-- Verified with a full scripted walkthrough: enabling with a PIN, an incorrect PIN being rejected, a correct PIN unlocking, no repeated prompt while already unlocked, automatic re-locking on return to the Loads page, and disabling — plus the full existing regression suite, confirming no change in behavior with Driver Mode off (the default).
+- Added Driver Mode in Settings — it locks Setup, Settings, Archive and Deleted Loads so only Loads and Reports stay open, and shows a 🔒 badge in the header
+- Unlocking lasts until you return to the Loads page or reload the app
 
 ## V2.12.0 — Build 2026.08.30.023
-- **Added Save Current Field Snapshot**, alongside the existing Save Device Snapshot in Setup → Device Snapshot. It exports the field currently selected on the Loads page — its acres, note and commodity, every one of its loads with full detail, and only the trucks and storage locations those loads actually reference — rather than the entire farm.
-- Reuses the existing snapshot file format and import pipeline rather than introducing a parallel one: a field snapshot is a normal Device Snapshot envelope with its `state` filtered down to one field, so it validates and merges through the existing `Import Device Snapshot` button and `mergeDeviceSnapshot()` unchanged. No new import code was written for this feature.
-- If the selected field has no loads yet, saving a snapshot for it prompts for confirmation rather than silently producing an empty file.
-- Verified with a full export → wipe device → import round trip (confirming the receiving device ends up with exactly the exported field's loads and nothing else pulled in), the empty-field confirmation prompt, and the full existing regression suite.
+- Added Save Current Field Snapshot in Setup — it saves just the selected field and its loads, and imports with the existing Import Device Snapshot
 
 ## V2.11.2 — Build 2026.08.29.022
-- Fixed the browser/PWA tab title always reading **Silage Tracker Pro V2.3**, regardless of the version actually installed. This was unrelated to the V2.11.1 offline-cache fix: the tab title comes from a static `<title>` tag in `index.html`, which had simply never been connected to the app's real version — evidently since before V2.8.0, since the app was already several versions past V2.3 when this was found. The V2.5.0 release synced every other on-screen version label to the app's own `VERSION`/`BUILD` constants, but missed this one.
-- `applyVersionLabels()` — the function already responsible for the other on-screen version labels — now also sets `document.title` on load, so the tab title is generated the same way as everything else and cannot drift out of sync again.
+- Bug fixes
 
 ## V2.11.1 — Build 2026.08.29.021
-- Fixed the accent colours added in V2.11.0 not reaching every phone. Deploying that change updated the app's page but left its offline cache pointed at the previous JavaScript, since the cache's version name was not changed as part of that release — the browser had no signal that anything had changed, so it kept serving the old files it already had stored. The cache version name is now bumped, and doing so on every future release is now a standard step, so a shipped change should never again sit uninstalled on a phone that already has the app.
-- No functional changes beyond the fix itself. Confirmed with a scripted reproduction of the exact upgrade path (old install → un-bumped release → bumped release) before and after the fix, alongside the full regression suite covering every prior feature.
+- Bug fixes
 
 ## V2.11.0 — Build 2026.08.28.020
-- **Added a Theme colour picker**, in Settings under Display. Six presets are offered — Farm Green (the original colour and still the default), Harvest Gold, Sky Blue, Autumn Rust, Slate and Grape — shown as tappable colour swatches, plus a **Custom** swatch that reveals two colour pickers for an exact accent and a matching darker shade.
-- Only the accent colour is affected — the colour used for buttons, highlights, active states and borders throughout the app. Dark mode remains its own independent switch controlling background, card and text colour, and any theme colour works correctly with dark mode on or off.
-- The selected theme is written to the same saved settings as everything else and takes effect immediately on selection, with no reload needed.
-- Theme data lives entirely within the existing settings; no new top-level state category was introduced and it travels with backups and device snapshots the same as any other setting.
+- Added a Theme colour picker in Settings → Display, with six accents and a custom option — dark mode works with any of them
 
 ## V2.10.0 — Build 2026.08.26.019
-- **Added truck cycle time.** Each active truck's card on the Loads page now shows the time since that truck's last load (**Cycle**) and the average time between its last five loads (**Avg**), directly beneath the existing Last/Previous load stamps.
-- The same two figures are shown more prominently at the top of each truck's own edit page in Setup, along with the number of loads the average is based on.
-- Cycle time is deliberately literal: it is the plain time gap between one recorded load and the next for that truck, with nothing filtered out or capped. A truck that stopped for lunch or overnight will show a long cycle rather than having that gap silently excluded from the average, so the figure always means exactly what it says. A future update could add an option to exclude gaps over a chosen length if that turns out to be wanted.
-- Needs at least two loads recorded for a truck before either figure appears; a truck with zero or one load shows neither, rather than a misleading dash or zero.
-- Deleted (Trashed) loads are excluded from the calculation, consistent with how the rest of the app treats Trash.
+- Truck cards on the Loads page now show cycle time and the average over the truck's last five loads
 
 ## V2.9.0 — Build 2026.08.25.018
-- **Internal code reorganisation only — no user-facing changes.** The entire app's JavaScript, previously a single large inline block inside `index.html`, was split into several separate files grouped by what they do (state and formatting helpers, load entry, navigation, the truck and batch editors, rendering and reports, CSV import/export, backup and startup wiring).
-- The split preserves the exact original execution order and behaviour: every function was moved, none were rewritten, and the app's startup sequence was restructured only enough to guarantee every function is defined before anything tries to call it.
-- Verified with a byte-for-byte reconstruction check, independent syntax validation of every resulting file, and a side-by-side scripted comparison of the old and new versions across load entry, duplicate detection, batch edit, CSV export, the edit-log undo, and the backup/snapshot functions, confirming identical behaviour and zero console errors in both.
-- Done to make future changes faster and safer to build, test, and review, since a change to (for example) reporting no longer risks an accidental typo breaking load entry sitting two thousand lines away in the same file.
+- Behind-the-scenes improvements
 
 ## V2.8.0 — Build 2026.08.24.017
-- **Two adjustable duplicate load timers now sit on the Settings page**, under a Duplicate Loads heading. Both move a minute at a time, by the minus and plus buttons or by typing the figure in, and both are switched off at 0, so the app behaves exactly as it did before until a window is set.
-- **The Loads page timer watches the truck buttons.** A second load for the same truck entered inside the window is held back rather than saved on the spot, and a prompt names the truck, says how many loads are already recorded for it inside that window, lists them with the time between each one and this one, and shows the load about to be saved. **Confirm Load** saves it as a load of its own and **Cancel** drops it, so a truck button caught twice never reaches the list.
-- The guard covers every way a load is entered on that page — a tap on the truck, the Load Options form held open, the weighbridge prompt and the Missed / Manual form — since all of them can land a load on top of one already recorded.
-- Only the truck and the time are compared. Weight is deliberately left out of the test, because a double tap repeats the weight but so does every honest full load, and a load coming back through an import after being edited may not match on weight at all.
-- **The imported loads timer watches loads arriving from a CSV file or a device snapshot.** Loads landing that close to a load already on this device for the same truck are set aside as they come in and offered together in one prompt, which says how many are in that category and lists each one against the load it may be a copy of. **Import Them** puts them on the Loads page and **Move to Trash** files them away instead.
-- Only the loads that were already on the device count as something to duplicate, so a snapshot carrying a legitimate run of quick loads for the same truck is never flagged against its own rows. Exact matches are still recognised and skipped as before, and both import summaries now report how many loads were held to be checked.
-- **Loads sent to the Trash from that prompt carry an Imported duplicate stamp**, so they are never quietly dropped and can be looked at again during the 30 days the Trash keeps them.
-- **Restoring a stamped duplicate asks what should happen to it.** The loads it may be a copy of are listed with the time between them, one of them is picked, and the load can either replace the picked load — which moves that load to the Trash in its place, stamped Replaced by import — or be kept alongside it with nothing else touched.
-- Both timers are held with the rest of the device's data, so they travel in full backups and device snapshots.
+- Added two duplicate-load timers in Settings — one for truck button taps and one for imported loads
+- Possible duplicates are held for you to confirm, or sent to Trash marked “Imported duplicate” so nothing is lost
 
 ## V2.7.0 — Build 2026.08.23.016
-- **A load's commodity can now be corrected on the load itself.** The Edit Load form, reached from both the Loads page and the Reports page, carries a Commodity box, and Batch Edit has one beside the field, storage, truck, weight, reading and note it already had. A run of loads carted under the wrong commodity can be put right in one pass without the field they came off having to be changed and changed back.
-- Changing the field on a load still moves it onto that field's commodity, exactly as before, and it can then be set by hand from there. A load carrying a commodity that has since been deleted shows that commodity by name and keeps it unless it is deliberately changed, so nothing is quietly wiped off the older loads.
-- Batch Edit's Commodity box has its own **No commodity** option, so a commodity can be taken off a run of loads as well as put on one. Leaving the box on **No change** leaves every selected load exactly as it is.
-- With commodity tracking switched off in Settings the box is hidden, and editing a load no longer rewrites the commodity it was carted under. Switching tracking back on shows it unchanged.
-- **New Edit Logs tab on the Reports page**, sitting to the right of Load Reports and Inoculant Reports. The tabs are a swipe strip: Reports always opens on the two report tabs, and Edit Logs is swiped in from the right when it is wanted.
-- Every edit made to the loads writes one entry, whether it was a single load or a whole batch. Each entry names what was changed, from what to what, how many loads it covered and the timeframe those loads were carted in, so an edit can be picked out of the list by when the loads it touched were recorded rather than by when the edit was made.
-- **Undo** puts the loads on an entry back exactly as they stood immediately before that edit and removes the entry from the list. A batch delete is logged the same way, and undoing it brings those loads back out of the Trash in one step instead of one at a time.
-- **Delete** clears an entry off the list and leaves the changes on the loads, for edits that were correct and no longer need to be undoable.
-- Entries are kept for 60 days and then drop off the list on their own. They are held with the rest of the device's data, so they are carried in full backups and device snapshots.
+- A load's commodity can now be corrected on the load itself and in Batch Edit
+- Added an Edit Logs tab in Reports — every edit is logged and can be undone or cleared, and entries are kept for 60 days
 
 ## V2.6.0 — Build 2026.08.21.015
-- **Importing a snapshot that carries a newer dry matter reading now asks whether it should apply to the loads already logged here.** A reading taken on the other operator's device while carting was already under way on this one lands as a reading this device has never seen, and the loads recorded here in the meantime are still stamped with the reading they were carted under. Those loads are counted up and offered to the new reading by name and time, and nothing is rewritten unless the prompt is accepted.
-- The prompt covers both sides of the reading: loads recorded inside the new reading's window that are carrying an older one, and loads recorded shortly before it went in that have no reading from their own day at all. Loads given a dry matter by hand are never touched, and loads that already sit inside a reading taken on their own day keep it, which is the same rule the app already uses when a reading is saved from Setup.
-- Only loads that were already on this device are offered. Loads arriving in the snapshot keep the reading they were carted under on the device they came from.
-- **A load the snapshot still holds but this device has moved to the Trash is brought back out of the Trash.** Previously the load was recognised as already present and skipped, so a load deleted here by mistake stayed deleted even though the snapshot it came back on still had it. It is now restored in place, with the same record it already had, and no second copy lands beside it.
-- Loads matched to a copy that is still live here are skipped exactly as before, so a snapshot can still travel out and come back without anything being counted twice. The import summary now reports how many loads were restored and how many were moved onto an imported reading.
-- Added a **Show moisture instead of dry matter** switch in Settings. With it on, every reading, load row, report, archived summary and total on screen reads as moisture % rather than dry matter %, and the boxes for entering a reading, editing a load's dry matter and batch-editing a run of loads all take moisture instead.
-- Moisture and dry matter are the same reading counted the other way round, so 35% dry matter shows as 65% moisture. The app carries on storing dry matter, so no reading, load, dry tonnage or total is recalculated by the switch and everything reads back exactly as it was on switching it off again.
-- Exported CSVs keep their **Dry Matter %** column either way, so a file exported with moisture on the screen still re-imports and still lines up with files exported before.
-- Added a **Prompt for a weight on every load** switch in Settings, for yards where every load crosses a weighbridge. With it on, tapping a truck on the Loads page opens a prompt for that load's weight instead of saving the truck's assigned weight straight away.
-- The prompt opens on the truck's assigned weight with the figure selected, so it can be accepted with one tap or typed over. It names the field, storage and commodity the load is going against and carries its own date and time.
-- The same prompt shows the dry matter, or moisture, in use and lets a new one be entered beside the weight, since the weighbridge ticket and the sample tend to arrive together. A changed reading is saved as a proper reading effective from that load's time rather than being stamped onto the one load, so the loads after it inherit it too, and the usual offer to apply it to earlier loads still appears. Leaving the reading alone saves no new reading.
-- Holding a truck down still opens the full Load Options form, and switching the prompt off goes straight back to one tap per load.
-- Two guards came with the moisture switch, because an empty box and a zero read very differently once the number is counted the other way round. Saving a reading with the box left empty is now refused outright rather than being taken as 0% moisture and stored as a 100% dry matter reading, and a load that has no reading against it opens the Edit Load form with an empty box instead of a zero, which both readings already treat as "leave it on the reading in force".
-- The date and time picker opened from the reading form is titled to match whichever of the two is switched on.
+- Added a Show moisture instead of dry matter switch in Settings
+- Added Prompt for a weight on every load, for yards where every load is weighed
+- Snapshot imports now offer to apply new dry matter readings and bring back loads from Trash instead of duplicating them
+- Bug fixes
 
 ## V2.5.1 — Build 2026.08.21.013
-- **The Loads page header no longer stays frozen on screen.** The app name, version and the saved indicator now scroll away with the page as soon as you start scrolling down through the loads. What stays pinned is a slim bar carrying the menu button and the page name, so navigation is still one tap away wherever you are in the list.
-- **The Current Field and Storage boxes shrink once you scroll past them.** They stay pinned so the field being carted to is always in view and can still be changed without scrolling back up, but they drop to about half their height, their labels shrink and the commodity note underneath is tucked away, so they take far less of the loads list with them.
-- **Scrolling now stops at a set point.** A single flick down comes to rest at the point where the header has finished sliding away and the two selection boxes have finished shrinking, so the page settles into its compact layout before you carry on scrolling rather than the two happening mid-scroll. Scrolling back up stops at the same point on the way to the top.
-- All of this applies to the Loads page only. Reports, Setup, Settings, Deleted Loads and Archive keep the header they have always had.
+- The Loads page header now scrolls away, and the Current Field and Storage boxes shrink and stay pinned
+- Scrolling settles at the point where the header has finished sliding away
 
 ## V2.5.0 — Build 2026.08.20.012
-- **Save Device Snapshot** and **Restore Device Snapshot** have moved off the Settings page and now sit at the bottom of Setup, directly under Import Loads CSV, where the rest of the moving-data-in-and-out tools live. Restore Device Snapshot is now called **Import Device Snapshot**.
-- Both buttons do a different job. They used to keep a single copy of the device's data tucked away in the browser, which never left the phone and so could not be handed to anybody.
-- **Save Device Snapshot** now writes the whole working profile to a snapshot file: the trucks with their weights and drivers, every field with its acres, note and commodity, all the loads with the weights and dry matter they were recorded with, storage locations, the dry-matter history, the truck weight history and the archived summaries. The file is saved to the device and the share sheet opens straight after, so it can be sent on by message, email or any sharing app. If the browser cannot share, the file is still saved and the name it was saved under is shown.
-- **Import Device Snapshot** merges a snapshot that somebody has shared onto this device. Nothing already on the device is erased. Trucks, fields, storage locations and commodities are matched by name so they are not doubled up, and the device lands on the field the snapshot was taken from, ready to carry on carting.
-- **Loads that are already on the device are never entered twice.** Loads are matched both on their identity and on what they actually record — time, truck, field, weight and load type — so a snapshot can travel out to a replacement operator and come back again without anything being counted twice.
-- Together this covers the handover: one operator shares the current profile, the replacement imports it and carries on recording, and the snapshot comes back the same way with only the new loads landing.
-- A snapshot arriving from a device set to different units has its weights converted to the units in use here.
-- **Editing a field no longer rewrites loads that were already recorded.** A field taken through a second crop can be given its new commodity and note without the earlier cut's loads being switched over to them. Every load keeps the commodity and note it was carted under; only loads recorded from that point on pick up the new details.
-- Renaming a commodity still flows through to the loads carrying it, as before — it is the same commodity under a corrected name.
-- **The version and build in the banner are up to date again.** The banner, the side menu and the About page previously carried the version as fixed text and had fallen a release behind. All three now read it from the app itself, so they cannot drift again.
+- Device snapshots now carry the whole profile, and importing one merges into the receiving device instead of replacing it — loads already there are never duplicated
+- Snapshot buttons moved to the bottom of Setup
+- Bug fixes
 
 ## V2.4.0 — Build 2026.08.19.011
-- Added a **Clear All Loads** button beside Clear All Data in Settings. It summarises every field that has loads against it onto the Archive page and clears those loads in one step, which is the end-of-season reset that previously had to be done one field at a time from the Reports page.
-- Each field gets its own archived summary, identical in detail to the existing per-field summary: load count, wet and dry totals, average dry matter, acres, yield per acre, the breakdown by truck, storage and note, and every individual load. Loads carted from a field that has since been deleted are archived under the name recorded on the load rather than being dropped.
-- A summary of every field, plus a combined total, is shown for review before anything is cleared, and the action is confirmed before it runs.
-- Nothing else is touched. Fields keep their acres and notes, trucks keep their weights and weight history, storage locations, commodities, dry matter readings, the inoculant counter and all settings stay exactly as they are, so the next season starts on the same setup.
-- The cleared loads are also kept in Deleted Loads for 30 days, matching what clearing a single field has always done, so anything cleared by mistake can be restored.
-- Added a **Commodity tracking** switch in Settings that turns the commodity feature added in V2.2 on and off.
-- Switching it off hides commodities everywhere: the Add Commodity and Commodities sections in Setup, the commodity on the Add Field and Edit Field forms and in the field list, the commodity tabs on a truck's weights, the commodity line on the Loads page, the Commodity report filter, and the commodity shown on load rows, field totals and archived summaries.
-- Switching it off changes nothing about the data. Commodities, the commodity set on each field, and every per-commodity truck weight are all kept, no load is recalculated and no weight changes, and everything reappears exactly as it was on switching it back on.
-- Exported CSVs keep their Commodity column either way, so a file exported with the feature switched off still re-imports with its commodities intact.
+- Added Clear All Loads in Settings — it summarizes every field to the Archive and clears the loads while keeping fields, trucks, storage and commodities (cleared loads stay in Deleted Loads for 30 days)
+- Added a Commodity tracking switch that hides commodities everywhere without deleting anything
 
 ## V2.3.0 — Build 2026.08.19.010
-- A field's **note is now stamped onto every load** as that load is recorded, and it stays with the load afterwards. The note is where cuts get marked down, so a field carted through a first cut and then a second cut keeps each set of loads under the note it was carted with. Changing the note on the field only affects loads carted from that point on, which is stated on both the field form and the Loads page.
-- Added a **Field Note** filter to the Reports page, sitting with the other tick-lists so notes combine with fields, commodities, trucks and drivers. It offers every note in use — on the fields as they read now and on loads already recorded — plus a **No note** option for loads carted before a note was set.
-- **Field totals on the Reports page are now split by note as well as by field**, so one field carted over two cuts shows as two rows with their own load counts, wet and dry totals and per-acre yields. That is what answers how much came off each cut.
-- Load rows show the note beside the commodity, on the Loads page, in the filtered report list, in Deleted Loads, and in archived summaries.
-- Notes can be corrected after the fact. The Edit Load form has a **Field Note** box, changing the field in that form offers the new field's note, and **Batch Edit** can set the note on a whole run of selected loads at once. This is how loads recorded before this release get sorted into their cuts, since they all start out carrying whatever their field's note reads on upgrade.
-- **Every load log now shows whether the inoculant counter was running when the load was recorded**, as an *Inoculant ✓* or *No inoculant* badge. The answer is worked out from the counter's own start, pause, resume and reset history, so it stays right for loads carted weeks ago, and a reset counts as the run carrying on rather than starting over. The badge is hidden entirely for anyone who has never used the counter.
-- Exported CSVs gained a **Field Note** column and an **Inoculant** column reading **Yes** or **No**. Both the full export and the filtered report export carry them, and importing a CSV reads the note column back. The archive CSV gained the same two columns plus the field note in its header block.
-- Archived field summaries gained a **By Note** breakdown when the archived loads span more than one note, and each archived load keeps the inoculant answer it had when it was archived, so clearing the counter log later does not rewrite history.
-- Fixed a fault in the CSV importer that dropped quote marks inside a value. A note or name containing a `"` now survives a full export and re-import.
-- Existing data is unchanged by the upgrade. Loads already recorded take their field's current note as a starting point and keep every weight, reading and total they already had.
+- Field notes (like “1st cut”) now stay with each load, with a Field Note filter and per-note totals in Reports
+- Load logs and CSV exports now show whether the inoculant counter was running
+- Notes can be corrected on a single load or a batch
 
 ## V2.2.0 — Build 2026.08.19.009
-- Added **commodities**. They are managed in a new Setup section alongside fields and storage locations, can be renamed and reordered, and each one reports how many fields and truck weights are using it.
-- Fields now carry a commodity. Editing a field has moved from a chain of pop-up prompts to a proper form covering name, acres, note and commodity, with a **New Commodity** button for adding one without leaving the field. The Add Field form has a commodity selector too, and the Setup list shows each field's commodity.
-- Every truck now keeps a **separate load weight per commodity**. The truck's page shows a tab for each commodity plus an **Any commodity** tab, with the weight in use today at the top of the selected tab and a count of entries on each. A load takes the weight from its commodity's tab, falls back to the **Any commodity** tab if that tab is empty, and falls back to the truck's full load weight from Setup if both are.
-- The two ways of adding a weight now behave differently on purpose. From the Loads page the commodity is already known — it is whatever the current field is carting — so the tab is shown as settled and named in the dialog. From Setup there is no field in play, so the commodity tab has to be chosen before the weight can be saved.
-- Report filters accept **more than one option each**. Field, Commodity, Storage, Truck and Driver are now tick-lists with **Select all** and **Clear**, so a report can be pulled for two drivers across three fields, or three fields with four trucks and two commodities, in one go. A filter left untouched still includes everything, and a summary line under the filters spells out exactly what is being applied.
-- Added a **Commodity** filter to the Reports page, including a **No commodity** option for loads whose field has not been given one.
-- Commodities appear on the Loads page under the field selector, in the load options dialog, on recent and filtered load rows, in field totals, and in archived field summaries.
-- Exported CSVs gained a **Commodity** column, and importing a CSV with that column creates any missing commodities and assigns them to the fields it creates.
-- Existing data is unchanged by the upgrade. No commodities are invented, fields start with none, and weights already recorded land on the **Any commodity** tab, so every load keeps the weight it already had.
+- Added commodities — managed in Setup, set on each field, with a separate load weight per truck for each commodity
+- Report filters now accept several options at once, and there's a new Commodity filter
+- Commodities appear throughout the app and in CSV exports; existing data is unchanged
 
 ## V2.1.3 — Build 2026.08.19.008
-- The Filtered Loads list on the Reports page can now be sorted. A **Sort Loads By** control sits with the report filters and offers newest first, oldest first, wet weight, dry weight and dry matter percentage in both directions, and grouping by field, truck or driver. Ties fall back to newest first so the order is never arbitrary.
-- The chosen sort is saved with the rest of the app data, so it survives switching pages, closing the app and reopening it. It is a view preference rather than a filter, so **Clear Filters** leaves it alone.
-- Sorting also applies to the printed report, since the print view uses what is on screen. The Export Filtered CSV file stays in date order regardless of the sort, so exported spreadsheets do not change shape.
-- Weight History for a truck now lists the most recent weight change at the top instead of the oldest, matching the summary already shown on the truck's own page.
-- Saving a dry matter reading no longer offers to overwrite earlier loads that already have a reading taken on their own day. A second or third sample taken later in the day describes the loads carted after it, not the ones already measured, so those loads keep the value they have.
-- The offer now appears only for loads with no reading window from their own day — the ones still carrying the previous day's reading, or no reading at all, which is the case the offer was added for. Loads with a hand-typed percentage are still never touched, and the 24 hour limit still applies.
+- Filtered Loads in Reports can now be sorted, and the choice is remembered
+- Truck weight history now lists the newest change first
+- Bug fixes
 
 ## V2.1.2 — Build 2026.08.17.007
-- Dry matter readings now allow for the time the test takes. A reading only ever applied forward from its effective time, so every load carted between the sample being taken and the result being entered kept the previous reading, or no reading at all on the first day. Saving a reading now lists the loads that came in before its time and offers to apply the new percentage to them as well.
-- The offer is bounded so a reading cannot silently restamp old work. It reaches back only as far as the previous real reading, or 24 hours, whichever is nearer, and it never touches a load with a hand-typed percentage.
-- Added a **1 hr ago** button beside the reading time, and the field now opens an hour back instead of at the current time, since the sample time is never the time the result is entered. The note on the card explains that the time wanted is when the sample was taken.
-- Loads carted before the very first reading now take that reading instead of falling through to no reading, which previously left them at 0% dry matter and zero dry weight.
-- Fixed a second instance of the `Number(null) === 0` fault behind the V2.1.1 dry matter loss. The recalculation step read a cleared cached reading as a deliberate 0%, so the repair added in V2.1.1 could not take effect and an affected load stayed at zero. Affected loads now recover their reading and dry weight the next time the app opens.
+- Dry matter readings now allow for the time a test takes, offering to cover loads carted shortly before the reading
+- Added a 1 hr ago button beside the reading time
+- Bug fixes
 
 ## V2.1.1 — Build 2026.08.17.006
-- Fixed dry matter disappearing from loads whenever the app was closed or evicted from memory while asleep. Loads are stored with `manualDryMatter: null` when they take their percentage from the Dry Matter section, but the startup check used `Number.isFinite(Number(value))`, and `Number(null)` is `0`. Every such load was read back as a manual 0% override, so its dry matter and dry weight both became zero, and the zeroed values were then written back to storage. Loads where a percentage had been typed in by hand were unaffected, which is why only some loads lost their reading.
-- Loads already damaged on a device are repaired the next time the app opens. A stored 0% is now treated as "no reading", so those loads fall back to the dry matter reading that covers their time and their dry weight is recalculated.
-- A dry matter of 0% can no longer be saved against a load from the Edit Load or Batch Edit screens. Clearing the field returns the load to the reading for its time, which is what the blank value was always meant to do.
-- Fixed the Current Field on the Loads page resetting to the first field in the list every time the app was reopened. The selected field was only held in the dropdown, never in saved data, unlike the Storage selector. It is now stored with the rest of the app data and restored on open, and is cleared correctly if that field is deleted.
-- The Missed / Manual Load form now opens on the current field instead of the first field, matching how it already behaved for Storage.
-- Hardened two related checks that could silently zero a load: a stored load fraction of `0` or `null` no longer produces a zero-weight load, and dry matter readings with a missing value or an unreadable date are discarded at startup instead of being treated as 0%.
+- Bug fixes
 
 ## V2.1.0 — Build 2026.08.17.005
-- Added an Archive page to the side menu, listed directly beneath Deleted Loads.
-- "Summarize Field & Clear Loads" on the Reports page now saves the field summary to the Archive instead of showing it once in a pop-up and losing it when the loads are cleared.
-- Each archived field records its load count, total wet and dry weight, weight-averaged dry matter, field size, wet and dry yield per acre, the date range of its loads, and a breakdown by truck and by storage location.
-- Every load that made up the summary is stored with the archive entry and can be opened from the entry, so the detail survives the 30-day Trash purge.
-- Archive entries can be exported to CSV individually, or deleted permanently.
-- Archived summaries are included in full backups and device snapshots.
-- Fixed the average dry matter in the field summary, which always reported N/A because it read a field name that loads do not use.
+- Added an Archive page — summarizing and clearing a field now saves its totals (loads, wet and dry weights, average dry matter, yield per acre, truck and storage breakdown) there, where they can be exported to CSV
+- Bug fixes
 
 ## V2.0.0 — Build 2026.08.17.004
-- Fixed the missing home screen app icon. The icon files in the project were named `icon_192 (2).png` and `icon_512 (2).png`, but the manifest, the service worker, and the Apple touch icon link all requested `icon-192.png` and `icon-512.png`, so every icon request returned a 404 and phones fell back to a screenshot or a blank tile.
-- Regenerated the icons at their declared sizes. Both files were previously the same 300x300 image despite being declared as 192x192 and 512x512.
-- Added a dedicated maskable icon for Android, with the photo inset into the safe zone on the theme colour so the harvester is no longer cropped by the launcher's icon shape.
-- Added a 180x180 Apple touch icon for iPhone and iPad home screens.
-- The offline cache no longer fails as a whole when one file is unavailable. The missing icons had been rejecting the entire service worker install, which left the app with no worker and no offline support.
-- Bumped the app to version 2.0.
+- Bug fixes (home screen icons, offline caching)
 
 ## V1.8.3 — Build 2026.08.17.003
-- Added an Import Loads CSV button at the bottom of Setup.
-- Imports load rows exported by Silage Tracker without replacing existing loads.
-- Automatically creates missing fields, storage locations, or trucks referenced by the CSV.
-- Preserves imported wet weight and dry matter values for historical loads.
-- Skips duplicate load rows and reports invalid rows during import.
+- Added Import Loads CSV at the bottom of Setup — it adds historical loads without replacing existing ones, creates any missing fields, storage locations or trucks, and skips duplicates
 
 ## V1.8.2 — Build 2026.08.17.002
-- The inoculant tile on the Loads page now turns slate grey with a "Paused" label whenever the counter is paused or stopped, so the state is obvious at a glance and distinct from the green counting, yellow warning, and red over-limit states.
-- Removed the separate Start / Restart Counter button. A single button now handles Start, Pause, and Resume, with Reset Counter unchanged.
-- Last Load by Active Truck now shows "Yesterday" or the load date when the load was not entered today. Loads from a previous year include the year.
-- Replaced the synthesised confirmation beep with a supplied audio file for the load entry sound, cached for offline use.
-- Optimised the app icons. They were previously non-square (300x200 and 500x333) despite being declared as 192x192 and 512x512, which left the installed icon stretched. They are now correctly square, share the same framing, are marked as maskable for Android, and are around 70% smaller.
+- The inoculant tile shows “Paused” when the counter is paused or stopped, and one button now handles Start, Pause and Resume
+- Last Load by Active Truck shows “Yesterday” or the date for older loads
+- New load entry sound and improved app icons
 
 ## V1.8.1 — Build 2026.08.17.001
-- Added a pause/resume button to the inoculant counter. Loads entered while the counter is paused no longer count toward the batch, and counting picks up again from where it left off on resume.
-- The inoculant tile on the Loads page now shows a paused state, and pause and resume are recorded in the counter log.
-- Replaced the typed date-and-time prompts for the counter start time and counter log timestamps with a date and time picker, including Now, 15 min, 30 min, 1 hr, 2 hr, and Yesterday shortcuts.
-- Added the same picker as an option when choosing the effective time for a dry matter reading.
-- Moved the Dry Matter section to the top of the Setup page and made it collapsible, with the current reading and its effective time always visible on the collapsed header.
-- No changes to load entry, reporting, Trash, backup, or offline behaviour.
+- Added pause and resume to the inoculant counter — loads entered while paused don't count
+- Counter start and log times, and dry matter reading times, now use a date and time picker
+- The Dry Matter section moved to the top of Setup and can be collapsed
 
 ## V1.5.0 — Build 2026.08.05.001
-- Added the approved silage truck and harvester branding image to the existing header without changing its dimensions or layout.
-- Replaced the PWA app icons with matching branded icons.
-- Added the branding image to the offline cache.
-- No navigation, workflow, calculation, data-model, or page-layout changes.
+- Added the truck and harvester banner image and matching app icons
 
 ## V1.4.0 — Build 2026.08.04.004
-- Added complete JSON backup and restore.
-- Added an on-device safety snapshot with one-tap recovery.
-- Added a data-health summary for active loads, Trash, trucks, fields, and snapshot status.
-- Automatically saves the current state as a safety snapshot before restoring another backup.
-- Preserved all V1.3 load entry, reporting, Trash, navigation, and offline features.
-
+- Added full backup and restore
+- Added a one-tap safety snapshot, saved automatically before any restore, and a data-health summary
 
 ## V1.3.0 — Build 2026.08.04.003
-- Replaced the crowded top tabs with a slide-out hamburger menu.
-- Made the current field and storage selector stay visible while scrolling the Loads page.
-- Added compact last-load status cards for every active truck.
-- Improved visual press feedback on truck buttons.
-- Added a live two-tone preview while creating a truck.
-- Preserved all V1.2 reporting, Trash, data-integrity, and offline features.
+- Replaced the top tabs with a slide-out menu
+- The current field and storage selector now stays visible while scrolling the Loads page
+- Added last-load status cards for every active truck and a live preview when creating a truck
 
 ## V1.2.0 — Build 2026.08.04.002
-- Deleted loads now move to a 30-day Trash page.
-- Added restore and permanent-delete controls.
-- Added report filters for field, storage, truck, driver, and date range.
-- Added filtered report summary for load count, wet weight, dry weight, and average dry matter.
-- Added filtered CSV export with a filename prompt.
-- Added short vibration feedback after a successful load entry on supported phones.
-- Corrected the iPhone layout to keep two truck buttons per row.
-- Preserved the existing local-storage key for upgrade compatibility.
+- Deleted loads now go to a 30-day Trash, with restore and permanent delete
+- Added report filters (field, storage, truck, driver, date range) with a filtered summary and CSV export
+- Added vibration feedback when a load is entered on supported phones
+- Bug fixes
 
 ## V1.1.0 — Build 2026.08.04.001
-- Added standard version numbering and build identification.
-- Added in-app release notes and this changelog.
-
-## V1.0.0
-- First Silage Tracker Pro baseline.
+- Added version numbering and in-app release notes

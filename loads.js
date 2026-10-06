@@ -1,11 +1,18 @@
 function getLoadFeedback(){try{return Object.assign({audio:false,haptic:false},JSON.parse(localStorage.getItem(FEEDBACK_KEY)||'{}'))}catch(e){return {audio:false,haptic:false}}}
 function saveLoadFeedback(s){localStorage.setItem(FEEDBACK_KEY,JSON.stringify(s))}
-function initLoadSound(){if(loadSoundPool.length)return;for(let i=0;i<3;i++){const a=new Audio(LOAD_SOUND_SRC);a.preload='auto';a.volume=1;try{a.load()}catch(e){}loadSoundPool.push(a)}}
-function playLoadTone(){try{initLoadSound();const a=loadSoundPool[loadSoundIndex++%loadSoundPool.length];try{a.currentTime=0}catch(e){}const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
-function doLoadHaptic(){try{if(navigator.vibrate)navigator.vibrate(35)}catch(e){}}
+function easterEggOn(){if(state.easterEggSound&&state.easterEggDay!==eggDayKey()){state.easterEggSound=false;state.easterEggDay='';try{save()}catch(e){}}return !!state.easterEggSound}
+function activeLoadSoundSrc(){return easterEggOn()?'chime-alt.mp3':LOAD_SOUND_SRC}
+function initLoadSound(){if(loadSoundPool.length)return;const src=activeLoadSoundSrc();loadSoundPoolSrc=src;for(let i=0;i<3;i++){const a=new Audio(src);a.preload='auto';a.volume=1;try{a.load()}catch(e){}loadSoundPool.push(a)}}
+function rebuildLoadSoundPool(){loadSoundPool=[];initLoadSound()}
+function playLoadTone(){try{if(loadSoundPool.length&&loadSoundPoolSrc!==activeLoadSoundSrc())rebuildLoadSoundPool();initLoadSound();const a=loadSoundPool[loadSoundIndex++%loadSoundPool.length];try{a.currentTime=0}catch(e){}const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+// 35ms was too short for many Android phones to produce anything you can actually feel, so the
+// pulse is longer now -- and the result is returned so the settings switch can say so when the
+// phone or browser refuses to vibrate, instead of failing silently.
+const HAPTIC_MS=80;
+function doLoadHaptic(){try{if(navigator.vibrate)return !!navigator.vibrate(HAPTIC_MS)}catch(e){}return false}
 function loadEntryFeedback(btn){const s=getLoadFeedback();if(btn){btn.classList.remove('load-entry-feedback');void btn.offsetWidth;btn.classList.add('load-entry-feedback');clearTimeout(btn._fb);btn._fb=setTimeout(()=>btn.classList.remove('load-entry-feedback'),1000)}if(s.audio)playLoadTone();if(s.haptic)doLoadHaptic()}
 function addLoadRecord(args){if(licenseGraceInfo().locked)return requireActivation(()=>addLoadRecord(args));const {truckId,fieldId,storageId=null,fraction=1,customWeight=null,time=null}=args;const truck=state.trucks.find(t=>t.id===truckId),field=state.fields.find(f=>f.id===fieldId),storage=state.storages.find(x=>x.id===(storageId||state.lastStorageId))||state.storages[0];if(!truck||!field)return alert('Choose a truck and field.');const iso=time||new Date().toISOString();const isCustom=customWeight!==null&&customWeight!=='';const commodityId=commodityById(field.commodityId)?field.commodityId:'';const wet=isCustom?Number(customWeight):effectiveLoadWeight(truck.id,iso,commodityId)*Number(fraction);if(!wet||wet<=0)return alert('Enter a valid load weight.');const dmReading=effectiveDMReading(iso),dm=dmReading?Number(dmReading.value):0;state.lastStorageId=storage?storage.id:'';const record={id:uid(),time:iso,fieldId:field.id,fieldName:field.name,fieldNote:String(field.note||'').trim(),commodityId,commodityName:commodityLabel(commodityId),storageId:storage?storage.id:'',storageName:storage?storage.name:'',truckId:truck.id,truckName:truck.name,driverName:truck.driver||'',dmReadingId:dmReading?dmReading.id:null,dmValue:dmReading?Number(dmReading.value):dm,manualDryMatter:null,type:isCustom?'Custom':fraction===1?'Full':fraction===.75?'3/4':fraction===.5?'1/2':'Load',fraction:Number(fraction),loadWeightMode:isCustom?'custom':'history',wetWeight:wet,dryMatter:dm,dryWeight:wet*(dm/100),unit:state.unit,detailsStamped:true};const near=possibleDuplicateLoads(record);if(near.length){openDuplicateLoadPrompt(record,near);return}commitLoadRecord(record)}
-function deleteLoad(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteLoad(id));const l=state.loads.find(x=>x.id===id);if(!l)return;const msg=`Move this load to Trash?\n\n${truckDisplay(l)}${l.driverName?' · '+l.driverName:''}\n${fmtDateTime(l.time)} · ${l.type}`;if(confirm(msg)){state.loads=state.loads.filter(x=>x.id!==id);l.deletedAt=new Date().toISOString();state.trash.unshift(l);save();render();showToast('Moved to Trash')}}
+function deleteLoad(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteLoad(id));const l=state.loads.find(x=>x.id===id);if(!l)return;return appConfirm({title:'Move to Trash?',message:`${truckDisplay(l)}${l.driverName?' · '+l.driverName:''}\n${fmtDateTime(l.time)} · ${l.type}`,confirmText:'Move to Trash',danger:true}).then(ok=>{if(!ok)return;const cur=state.loads.find(x=>x.id===id);if(!cur)return;state.loads=state.loads.filter(x=>x.id!==id);cur.deletedAt=new Date().toISOString();state.trash.unshift(cur);save();render();showToast('Moved to Trash')})}
 function purgeExpiredTrash(){const cutoff=Date.now()-30*24*60*60*1000;state.trash=(state.trash||[]).filter(l=>!l.deletedAt||new Date(l.deletedAt).getTime()>cutoff)}
 function loadEditSnapshot(l){const o={};EDIT_LOG_KEYS.forEach(k=>{o[k]=l[k]});return o}
 // The date picker only carries minutes, so re-saving a load with nothing touched drops its
@@ -56,9 +63,9 @@ function editLogTimeframeText(log){
   if(!a)return 'Timeframe not recorded';
   return new Date(a).getTime()===new Date(b).getTime()?'Load from '+fmtDateTime(a):'Loads from '+fmtDateTime(a)+' to '+fmtDateTime(b)
 }
-function undoEditLog(id){
+async function undoEditLog(id){
   const log=editLogById(id);if(!log)return;
-  if(!confirm('Undo this edit?\n\n'+editLogTitle(log)+'\n'+editLogTimeframeText(log)+'\n\nThose loads go back exactly as they were before the edit, and this entry is removed from the list.'))return;
+  if(!(await uiConfirm('Undo this edit?\n\n'+editLogTitle(log)+'\n'+editLogTimeframeText(log)+'\n\nThose loads go back exactly as they were before the edit, and this entry is removed from the list.')))return;
   let restored=0,missing=0;
   (log.entries||[]).forEach(e=>{
     if(e.deleted){
@@ -76,9 +83,9 @@ function undoEditLog(id){
   save();render();
   showToast(restored+' load'+(restored===1?'':'s')+' restored'+(missing?' · '+missing+' no longer on this device':''))
 }
-function deleteEditLog(id){
+async function deleteEditLog(id){
   const log=editLogById(id);if(!log)return;
-  if(!confirm('Delete this log entry?\n\n'+editLogTitle(log)+'\n'+editLogTimeframeText(log)+'\n\nThe changes stay on the loads. Only the entry is removed, and it can no longer be undone from here.'))return;
+  if(!(await uiConfirm('Delete this log entry?\n\n'+editLogTitle(log)+'\n'+editLogTimeframeText(log)+'\n\nThe changes stay on the loads. Only the entry is removed, and it can no longer be undone from here.')))return;
   state.editLogs=(state.editLogs||[]).filter(x=>x.id!==id);
   save();render();showToast('Log entry deleted')
 }
@@ -95,7 +102,7 @@ function renderEditLogs(){
   }).join(''):'<div class="empty">No load edits logged in the last '+EDIT_LOG_DAYS+' days.</div>'
 }
 function restoreLoad(id){const l=(state.trash||[]).find(x=>x.id===id);if(!l)return;if(l.importedDuplicate){const cands=duplicateCandidatesFor(l);if(cands.length)return openRestoreDuplicatePrompt(l,cands)}commitRestoreLoad(l)}
-function deleteForever(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteForever(id));const l=(state.trash||[]).find(x=>x.id===id);if(!l)return;if(confirm('Delete this load forever? This cannot be undone.')){state.trash=state.trash.filter(x=>x.id!==id);save();render();showToast('Permanently deleted')}}
+function deleteForever(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteForever(id));const l=(state.trash||[]).find(x=>x.id===id);if(!l)return;return appConfirm({title:'Delete Forever?',message:'This load will be permanently deleted. This cannot be undone.',confirmText:'Delete Forever',danger:true}).then(ok=>{if(!ok)return;state.trash=state.trash.filter(x=>x.id!==id);save();render();showToast('Permanently deleted')})}
 // ---------------------------------------------------------------------------
 // Duplicate load guard
 //

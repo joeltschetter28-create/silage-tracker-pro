@@ -1,14 +1,11 @@
 function selectTruckWeightTab(id){truckWeightTabCommodityId=commodityById(id)?id:'';renderPageTruckWeightHistory()}
-function moveWeightHistoryCommodity(id){
+async function moveWeightHistoryCommodity(id){
   if(licenseGraceInfo().locked)return requireActivation(()=>moveWeightHistoryCommodity(id));
   const r=state.loadWeightHistory.find(x=>x.id===id);if(!r)return;
   const opts=(state.commodities||[]).filter(c=>c.id!==(r.commodityId||''));
   if(!opts.length)return alert('There\u2019s no other commodity to move this weight to.');
-  const names=opts.map((c,i)=>(i+1)+'. '+c.name).join('\n');
-  const answer=prompt('Move this weight to which commodity?\n\n'+names);
-  if(answer===null)return;
-  const idx=parseInt(answer,10)-1;
-  if(!Number.isInteger(idx)||!opts[idx])return alert('Invalid selection.');
+  const idx=await appChoose({title:'Move this weight to which commodity?',options:opts.map(c=>c.name)});
+  if(idx<0)return;
   r.commodityId=opts[idx].id;
   save();render();showToast('Weight moved to '+opts[idx].name);
 }
@@ -23,14 +20,23 @@ const effective=t?effectiveLoadWeight(t.id,new Date().toISOString(),cid):0;
 if(t)h+='<div class="history-row"><div><div class="history-weight">Now: '+money(effective)+' '+state.unit+'</div><div class="recent-sub">Full load weight in use today'+(commoditiesOn()&&cid?' for '+esc(commodityTabLabel(cid)):'')+' · Setup weight '+money(t.fullWeight)+' '+state.unit+'</div></div></div>';
 const orphanedHere=commoditiesOn()?all.filter(r=>!r.commodityId||!commodityById(r.commodityId)):[];
 const shown=commoditiesOn()?rows.concat(orphanedHere.filter(r=>!rows.includes(r))):rows;
-h+=shown.length?shown.map(r=>{const isOrphan=commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId));return '<div class="history-row"><div><div class="history-weight">'+money(r.weight)+' '+state.unit+(isOrphan?' <span class="dup-badge">No commodity</span>':'')+'</div><div class="recent-sub">Effective '+new Date(r.effective).toLocaleString()+'</div></div><div class="history-actions">'+(commoditiesOn()&&(state.commodities||[]).length>1?'<button type="button" class="btn small grey" onclick="moveWeightHistoryCommodity(\''+r.id+'\')">Move</button>':'')+'</div></div>'}).join(''):'<div class="empty">No weights '+(commoditiesOn()?'on this tab ':'')+'yet.</div>';
+const COLLAPSED_COUNT=2;const canCollapse=shown.length>COLLAPSED_COUNT;const visible=canCollapse&&!truckWeightsExpanded?shown.filter((r,i)=>i<COLLAPSED_COUNT||(commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId)))):shown;h+=shown.length?visible.map(r=>{const isOrphan=commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId));return '<div class="history-row"><div><div class="history-weight">'+money(r.weight)+' '+state.unit+(isOrphan?' <span class="dup-badge">No commodity</span>':'')+'</div><div class="recent-sub">Effective '+new Date(r.effective).toLocaleString()+'</div></div><div class="history-actions">'+(commoditiesOn()&&(state.commodities||[]).length>1?'<button type="button" class="btn small grey" onclick="moveWeightHistoryCommodity(\''+r.id+'\')">Move</button>':'')+'</div></div>'}).join('')+(canCollapse?'<button type="button" class="btn small grey history-more" onclick="toggleTruckWeights()">'+(truckWeightsExpanded?'Show Fewer \u25B4':'Show All '+shown.length+' Weights \u25BE')+'</button>':''):'<div class="empty">No weights '+(commoditiesOn()?'on this tab ':'')+'yet.</div>';
 const tabName=commoditiesOn()&&cid?commodityTabLabel(cid):'';
 h+='<div class="actions"><button type="button" class="btn small blue" onclick="openWeightHistory(pageEditingTruckId,{commodityId:commoditiesOn()?truckWeightTabCommodityId:\'\',chosen:true})">'+(tabName?'Add Weight to '+esc(tabName):'Add Weight')+'</button></div>';
 el.innerHTML=h}
-function openTruckEditPage(id){const t=state.trucks.find(x=>x.id===id);if(!t)return;pageEditingTruckId=id;document.getElementById('truckEditTitle').textContent='Edit '+t.name;document.getElementById('pageTruckName').value=t.name;document.getElementById('pageTruckWeight').value=t.fullWeight;document.getElementById('pageTruckDriver').value=t.driver||'';document.getElementById('pageTruckPrimary').value=t.primaryColor||'#1f7a3f';document.getElementById('pageTruckSecondary').value=t.secondaryColor||'#14532d';updatePageTruckPreview();renderPageTruckWeightHistory();switchTab('truckEdit')}
+function renderDisplayChoices(){
+  document.querySelectorAll('[data-theme-mode]').forEach(b=>b.classList.toggle('grey',b.dataset.themeMode!==state.themeMode));
+  document.querySelectorAll('[data-dim-seconds]').forEach(b=>b.classList.toggle('grey',Number(b.dataset.dimSeconds)!==Number(state.dimSeconds)));
+  const n=document.getElementById('dimNote');if(n){const s=Number(state.dimSeconds);n.textContent=s>0?'The app dims itself after '+(s<60?s+' seconds':(s/60)+' minute'+(s===60?'':'s'))+' without a touch. Tap anywhere to brighten it.':'The app never dims itself.'}
+}
+// Where the Setup list was scrolled to when a truck was opened, so Back returns to the same spot.
+let truckEditReturnY=0,truckWeightsExpanded=false;
+function backToTrucks(){switchTab('setup');const y=truckEditReturnY;requestAnimationFrame(()=>window.scrollTo(0,y))}
+function toggleTruckWeights(){truckWeightsExpanded=!truckWeightsExpanded;renderPageTruckWeightHistory()}
+function openTruckEditPage(id){const t=state.trucks.find(x=>x.id===id);if(!t)return;if(document.querySelector('.panel.active')?.id==='setup')truckEditReturnY=window.scrollY||0;truckWeightsExpanded=false;pageEditingTruckId=id;document.getElementById('truckEditTitle').textContent='Edit '+t.name;document.getElementById('pageTruckName').value=t.name;document.getElementById('pageTruckWeight').value=t.fullWeight;document.getElementById('pageTruckDriver').value=t.driver||'';document.getElementById('pageTruckPrimary').value=t.primaryColor||'#1f7a3f';document.getElementById('pageTruckSecondary').value=t.secondaryColor||'#14532d';updatePageTruckPreview();renderPageTruckWeightHistory();switchTab('truckEdit');window.scrollTo(0,0)}
 function updatePageTruckPreview(){const p=document.getElementById('pageTruckPreview');if(!p)return;const n=document.getElementById('pageTruckName').value.trim()||'Truck Preview',d=document.getElementById('pageTruckDriver').value.trim()||'Assigned Driver',a=document.getElementById('pageTruckPrimary').value,b=document.getElementById('pageTruckSecondary').value;p.style.borderColor=a;p.querySelector('.truck-preview-head').textContent=n;p.querySelector('.truck-preview-head').style.background=a;p.querySelector('.truck-preview-head').style.color=contrastText(a);p.querySelector('.truck-preview-body').textContent=d;p.querySelector('.truck-preview-body').style.background=b;p.querySelector('.truck-preview-body').style.color=contrastText(b)}
-function savePageTruck(){if(licenseGraceInfo().locked)return requireActivation(savePageTruck);const t=state.trucks.find(x=>x.id===pageEditingTruckId);if(!t)return;const n=document.getElementById('pageTruckName').value.trim(),w=Number(document.getElementById('pageTruckWeight').value);if(!n||!w||w<=0)return alert('Check truck name and full load weight.');t.name=n;t.fullWeight=w;t.driver=document.getElementById('pageTruckDriver').value.trim();t.primaryColor=document.getElementById('pageTruckPrimary').value;t.secondaryColor=document.getElementById('pageTruckSecondary').value;save();render();switchTab('setup');showToast('Truck saved')}
-function deletePageTruck(){if(licenseGraceInfo().locked)return requireActivation(deletePageTruck);if(!pageEditingTruckId)return;if(confirm('Delete this truck? Its existing loads will be kept.')){deleteTruck(pageEditingTruckId);pageEditingTruckId=null;switchTab('setup')}}
+function savePageTruck(){if(licenseGraceInfo().locked)return requireActivation(savePageTruck);const t=state.trucks.find(x=>x.id===pageEditingTruckId);if(!t)return;const n=document.getElementById('pageTruckName').value.trim(),w=Number(document.getElementById('pageTruckWeight').value);if(!n||!w||w<=0)return alert('Check truck name and full load weight.');t.name=n;t.fullWeight=w;t.driver=document.getElementById('pageTruckDriver').value.trim();t.primaryColor=document.getElementById('pageTruckPrimary').value;t.secondaryColor=document.getElementById('pageTruckSecondary').value;save();render();backToTrucks();showToast('Truck saved')}
+async function deletePageTruck(){if(licenseGraceInfo().locked)return requireActivation(deletePageTruck);if(!pageEditingTruckId)return;const done=await deleteTruck(pageEditingTruckId);if(done){pageEditingTruckId=null;backToTrucks()}}
 function updateBatchSelection(){
   batchSelectedLoadIds=new Set([...document.querySelectorAll('[data-load-select]:checked')].map(x=>x.dataset.loadSelect));
   const text=batchSelectedLoadIds.size?batchSelectedLoadIds.size+' load(s) selected.':'No loads selected.';
@@ -79,6 +85,7 @@ function applyBatchEdit(){if(licenseGraceInfo().locked)return requireActivation(
 // tap the small circled "i" next to a setting to read the full version, rather than every
 // setting carrying its whole explanation inline all the time.
 const INFO_TEXTS={
+  installApp:{title:'Add to Home Screen',text:'iPhone or iPad (Safari): Tap the Share button (the square with an arrow pointing up), scroll down, and tap "Add to Home Screen," then tap Add.\n\nAndroid (Chrome): Tap the three-dot menu in the top right, then tap "Add to Home screen" or "Install app," and confirm.\n\nEither way, an icon is added to your home screen that opens the app full-screen, like any other installed app \u2014 no browser address bar, and it keeps working offline.'},
   driverMode:{title:'Driver Mode',text:'Locks Setup, Settings, Archive, Deleted Loads and Reports, so only Loads stays open day-to-day. Nothing to set up first \u2014 turn it on any time. Turning it off, or opening a locked page, shows a slider \u2014 slide it all the way to the right to continue.'},
   loadsWindow:{title:'Loads page window',text:'Entering a second load for the same truck inside this window asks to confirm it first, so an accidental double-tap doesn\u2019t log the same load twice.'},
   importWindow:{title:'Imported loads window',text:'Imported loads landing this close to a load already recorded for the same truck are counted and offered as possible duplicates, rather than silently added twice.'},
@@ -208,7 +215,208 @@ function bindTodayPage(){
   const picker=document.getElementById('todayDatePicker');
   if(picker&&!picker.dataset.bound){picker.dataset.bound='1';picker.addEventListener('change',()=>{if(picker.value){todaySelectedDate=picker.value;renderTodayPage()}})}
 }
+let versionTapCount=0,versionTapTimer=null;
+function bindVersionEasterEgg(){
+  const el=document.getElementById('menuVersionText');
+  if(!el||el.dataset.bound)return;
+  el.dataset.bound='1';
+  el.addEventListener('click',()=>{
+    versionTapCount++;
+    clearTimeout(versionTapTimer);
+    versionTapTimer=setTimeout(()=>{versionTapCount=0},2000);
+    if(versionTapCount>=5){
+      versionTapCount=0;
+      clearTimeout(versionTapTimer);
+      if(getLoadFeedback().audio){
+        state.easterEggSound=!easterEggOn();state.easterEggDay=state.easterEggSound?eggDayKey():'';
+        save();
+        rebuildLoadSoundPool();
+        playLoadTone();
+      }
+    }
+  });
+}
+function applyTopStats(){
+  const map={loads:'statTileLoads',wet:'statTileWet',dry:'statTileDry',rate:'statTileRate'};
+  Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el)el.style.display=state.topStats[k]?'':'none'});
+}
+function applyTruckLayout(){
+  const grid=document.getElementById('truckGrid');if(!grid)return;
+  grid.style.gridTemplateColumns=state.truckLayout==='1'?'1fr':'repeat(2,minmax(0,1fr))';
+  const buttons=[...grid.querySelectorAll('.truck-button')];
+  buttons.forEach(b=>{b.style.gridColumn=''});
+  if(state.truckLayout==='2'&&state.truckLayoutLastWide&&buttons.length%2===1){
+    buttons[buttons.length-1].style.gridColumn='1 / -1';
+  }
+}
+// Top stats arrangement. With n stats showing, "one row" gives each an equal share of the width.
+// The two-row layouts split them across two rows -- "small" puts the smaller row on top (five stats
+// become two over three), "large" puts the larger row on top (three over two) -- and stretch each
+// row's tiles to fill the full width, using a grid whose column count is the lowest common multiple
+// of the two row sizes so both rows land flush with no gaps.
+function statsRowSplit(n,layout){
+  if(n<2||layout==='one')return [n,0];
+  const top=layout==='small'?Math.floor(n/2):Math.ceil(n/2);
+  return [top,n-top];
+}
+function statsGridPlan(n,layout){
+  const sp=statsRowSplit(n,layout),top=sp[0],bottom=sp[1],gcd=(a,b)=>b?gcd(b,a%b):a;
+  return {top,bottom,cols:bottom?top*bottom/gcd(top,bottom):top};
+}
+function visibleStatCount(){const ts=state.topStats||{};return ['loads','wet','dry','rate'].filter(k=>ts[k]).length+(state.counter&&state.counter.enabled?1:0)}
+function applyTopStatsLayout(){
+  const grid=document.getElementById('topStatsGrid');if(!grid)return;
+  const tiles=[...grid.children].filter(el=>el.classList.contains('stat')&&!el.hidden&&el.style.display!=='none');
+  tiles.forEach(el=>{el.style.gridColumn=''});
+  const n=tiles.length;if(!n)return;
+  const p=statsGridPlan(n,state.topStatsLayout);
+  grid.style.gridTemplateColumns='repeat('+p.cols+',minmax(0,1fr))';
+  tiles.forEach((el,i)=>{el.style.gridColumn='span '+(p.bottom?(i<p.top?p.cols/p.top:p.cols/p.bottom):1)});
+}
+// The preview cards are drawn for however many stats are showing right now, so each one is a picture
+// of exactly what you'll get -- five stats offer one row, two over three, or three over two.
+function renderStatsArrangementCards(){
+  const row=document.getElementById('statsArrangementRow');if(!row)return;
+  const n=visibleStatCount();
+  if(n<1){row.innerHTML='<p class="note">Switch on at least one stat to choose how they&rsquo;re arranged.</p>';return}
+  const opts=[['one','One Row']];
+  if(n>=2){
+    const s=statsRowSplit(n,'small'),l=statsRowSplit(n,'large');
+    if(s[0]!==l[0]){opts.push(['small',s[0]+' Above, '+s[1]+' Below']);opts.push(['large',l[0]+' Above, '+l[1]+' Below'])}
+    else opts.push([state.topStatsLayout==='small'?'small':'large',l[0]+' Above, '+l[1]+' Below']);
+  }
+  const cur=statsRowSplit(n,state.topStatsLayout);
+  row.innerHTML=opts.map(o=>{
+    const key=o[0],p=statsGridPlan(n,key),sp=statsRowSplit(n,key),boxes=[];
+    for(let i=0;i<n;i++)boxes.push('<div class="layout-template-box" style="grid-column:span '+(p.bottom?(i<p.top?p.cols/p.top:p.cols/p.bottom):1)+'"></div>');
+    const sel=sp[0]===cur[0]&&sp[1]===cur[1];
+    return '<div class="layout-template'+(sel?' selected':'')+'" data-stats-layout="'+key+'"><div class="layout-template-preview" style="grid-template-columns:repeat('+p.cols+',1fr);grid-template-rows:'+(p.bottom?'16px 16px':'16px')+';align-content:center">'+boxes.join('')+'</div><div class="layout-template-label">'+o[1]+'</div></div>';
+  }).join('');
+  if(!row.dataset.bound){
+    row.dataset.bound='1';
+    row.addEventListener('click',e=>{const c=e.target.closest('.layout-template[data-stats-layout]');if(!c)return;state.topStatsLayout=c.dataset.statsLayout;save();renderStatsArrangementCards();applyTopStatsLayout()});
+  }
+}
+// ---- Touch and hold a stat tile, then drag it, to rearrange the stats ----------------------------
+// Used on both the Loads page and the Today page. Holding a tile for a moment lifts it (a copy follows the
+// finger while the real tile becomes a dashed slot) and the other tiles shuffle around it live; letting go
+// saves the order. A touch that moves before the hold completes is left alone, so scrolling and taps work as
+// normal. Only the tiles currently showing are shuffled -- a switched-off stat keeps its place in the saved
+// order, so turning it back on puts it where it was.
+const STAT_HOLD_MS=450;
+function applyStatOrder(grid,order){
+  if(!grid||window.statDragActive)return;
+  const kids=[...grid.children],rank=el=>{const i=order.indexOf(el.dataset.statKey);return i<0?999:i};
+  const sorted=kids.map((el,i)=>({el,i})).sort((a,b)=>rank(a.el)-rank(b.el)||a.i-b.i).map(x=>x.el);
+  if(sorted.some((el,i)=>el!==kids[i]))sorted.forEach(el=>grid.appendChild(el));
+}
+function applyTopStatsOrder(){applyStatOrder(document.getElementById('topStatsGrid'),state.statOrder)}
+function applyTodayStatOrder(){applyStatOrder(document.querySelector('.today-stats-grid'),state.todayStatOrder)}
+function enableStatReorder(grid,getOrder,setOrder,afterChange){
+  if(!grid||grid.dataset.reorderBound)return;
+  grid.dataset.reorderBound='1';
+  let pending=null,drag=null,suppressUntil=0;
+  const visible=()=>[...grid.children].filter(el=>el.classList.contains('stat')&&!el.hidden&&el.style.display!=='none');
+  // Once a tile is lifted, stop the page scrolling (or pulling to refresh) under the finger.
+  const stopScroll=e=>{if(drag&&e.cancelable)e.preventDefault()};
+  const detach=()=>{window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);window.removeEventListener('pointercancel',onUp);window.removeEventListener('touchmove',stopScroll)};
+  const cancelPending=()=>{if(pending){clearTimeout(pending.timer);pending=null}detach()};
+  function begin(){
+    const p=pending;if(!p)return;
+    const tile=p.tile,r=tile.getBoundingClientRect(),ghost=tile.cloneNode(true);
+    ghost.removeAttribute('id');ghost.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+    ghost.classList.add('stat-ghost');ghost.style.cssText='width:'+r.width+'px;height:'+r.height+'px;left:'+r.left+'px;top:'+r.top+'px';
+    document.body.appendChild(ghost);tile.classList.add('stat-placeholder');
+    drag={tile,ghost,id:p.id,offX:p.x-r.left,offY:p.y-r.top,lastSwap:0};
+    pending=null;window.statDragActive=true;
+    window.statDragUntil=Date.now()+60000;   // the page-swipe handler ignores gestures while this is in the future
+    if(getLoadFeedback().haptic)doLoadHaptic();
+    try{tile.setPointerCapture(p.id)}catch(e){}
+  }
+  function onMove(e){
+    const cur=drag||pending;if(!cur||e.pointerId!==cur.id)return;
+    if(pending){if(Math.hypot(e.clientX-pending.x,e.clientY-pending.y)>10)cancelPending();return}
+    drag.ghost.style.left=(e.clientX-drag.offX)+'px';drag.ghost.style.top=(e.clientY-drag.offY)+'px';
+    const now=Date.now();if(now-drag.lastSwap<140)return;
+    const list=visible(),over=list.find(el=>{if(el===drag.tile)return false;const b=el.getBoundingClientRect();return e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom});
+    if(!over)return;
+    if(list.indexOf(drag.tile)<list.indexOf(over))grid.insertBefore(drag.tile,over.nextSibling);else grid.insertBefore(drag.tile,over);
+    drag.lastSwap=now;if(afterChange)afterChange();
+  }
+  function onUp(e){
+    const cur=drag||pending;if(!cur||e.pointerId!==cur.id)return;
+    if(pending){cancelPending();return}
+    const d=drag;drag=null;
+    d.ghost.remove();d.tile.classList.remove('stat-placeholder');
+    try{d.tile.releasePointerCapture(d.id)}catch(_){}
+    detach();
+    suppressUntil=Date.now()+700;window.statDragUntil=Date.now()+700;
+    const keys=visible().map(el=>el.dataset.statKey),full=getOrder().slice(),slots=[];
+    full.forEach((k,i)=>{if(keys.includes(k))slots.push(i)});
+    keys.forEach((k,j)=>{if(slots[j]!==undefined)full[slots[j]]=k});
+    const changed=full.join()!==getOrder().join();
+    setOrder(full);window.statDragActive=false;applyStatOrder(grid,full);
+    if(afterChange)afterChange();
+    if(changed){save();showToast('Order saved')}
+  }
+  grid.addEventListener('contextmenu',e=>e.preventDefault());
+  // The tap that follows letting go of a drag must not fire the tile's own action (Rate and Inoculant are buttons).
+  grid.addEventListener('click',e=>{if(Date.now()<suppressUntil){e.preventDefault();e.stopPropagation()}},true);
+  grid.addEventListener('pointerdown',e=>{
+    if(drag||pending)return;
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    const tile=e.target.closest('.stat');if(!tile||tile.parentElement!==grid)return;
+    pending={tile,id:e.pointerId,x:e.clientX,y:e.clientY,timer:setTimeout(begin,STAT_HOLD_MS)};
+    window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('pointercancel',onUp);
+    window.addEventListener('touchmove',stopScroll,{passive:false});
+  });
+}
+function bindStatReorder(){
+  enableStatReorder(document.getElementById('topStatsGrid'),()=>state.statOrder,v=>{state.statOrder=v},applyTopStatsLayout);
+  enableStatReorder(document.querySelector('.today-stats-grid'),()=>state.todayStatOrder,v=>{state.todayStatOrder=v},null);
+  const rb=document.getElementById('resetStatOrderBtn');
+  if(rb&&!rb.dataset.bound){rb.dataset.bound='1';rb.addEventListener('click',()=>{state.statOrder=STAT_ORDER_DEFAULTS.loads.slice();state.todayStatOrder=STAT_ORDER_DEFAULTS.today.slice();save();render();showToast('Stat order reset')})}
+}
+function bindAppearancePage(){
+  bindStatReorder();
+  const truckCards=[...document.querySelectorAll('.layout-template[data-layout]')];
+  const paintTruckCards=()=>{
+    truckCards.forEach(card=>{
+      const matches=card.dataset.layout===state.truckLayout&&(card.dataset.wide==='1')===!!state.truckLayoutLastWide;
+      card.classList.toggle('selected',matches);
+    });
+  };
+  truckCards.forEach(card=>{
+    if(card.dataset.bound)return;
+    card.dataset.bound='1';
+    card.addEventListener('click',()=>{
+      state.truckLayout=card.dataset.layout;
+      state.truckLayoutLastWide=card.dataset.wide==='1';
+      save();paintTruckCards();render();
+    });
+  });
+  paintTruckCards();
+  renderStatsArrangementCards();
+  const statMap={statShowLoads:'loads',statShowWet:'wet',statShowDry:'dry',statShowRate:'rate'};
+  Object.keys(statMap).forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(!el.dataset.bound){el.dataset.bound='1';el.addEventListener('change',()=>{state.topStats[statMap[id]]=el.checked;save();applyTopStats();applyTopStatsLayout();renderStatsArrangementCards();paintStatTemplates()});}
+    el.checked=!!state.topStats[statMap[id]];
+  });
+  const tMin=document.getElementById('statsTemplateMinimalBtn'),tStd=document.getElementById('statsTemplateStandardBtn'),tFull=document.getElementById('statsTemplateFullBtn');
+  function paintStatTemplates(){
+    const ts=state.topStats,inoc=!!state.counter?.enabled;
+    if(tMin)tMin.classList.toggle('selected',ts.loads&&ts.wet&&!ts.dry&&!ts.rate);
+    if(tStd)tStd.classList.toggle('selected',ts.loads&&ts.wet&&!ts.dry&&ts.rate);
+    if(tFull)tFull.classList.toggle('selected',ts.loads&&ts.wet&&ts.dry&&ts.rate&&inoc);
+  }
+  if(tMin&&!tMin.dataset.bound){tMin.dataset.bound='1';tMin.addEventListener('click',()=>{state.topStats={loads:true,wet:true,dry:false,rate:false};save();render();showToast('Minimal template applied')});}
+  if(tStd&&!tStd.dataset.bound){tStd.dataset.bound='1';tStd.addEventListener('click',()=>{state.topStats={loads:true,wet:true,dry:false,rate:true};save();render();showToast('Standard template applied')});}
+  if(tFull&&!tFull.dataset.bound){tFull.dataset.bound='1';tFull.addEventListener('click',()=>{state.topStats={loads:true,wet:true,dry:true,rate:true};state.counter=state.counter||{};state.counter.enabled=true;save();render();showToast('Full template applied')});}
+  paintStatTemplates();
+}
 function bindV18SettingsPage(){
+  bindVersionEasterEgg();
   bindChangelogModal();
   bindInfoPopups();
   bindDriverModeSettings();
@@ -216,10 +424,14 @@ function bindV18SettingsPage(){
   bindRateWindowStepper();
   bindLicenseSettings();
   bindTextScaleStepper();
-  const a=document.getElementById('settingsAudioLoad'),h=document.getElementById('settingsHapticLoad'),i=document.getElementById('settingsInoculant'),d=document.getElementById('darkToggle'),w=document.getElementById('wakeToggle');
+  const a=document.getElementById('settingsAudioLoad'),h=document.getElementById('settingsHapticLoad'),d=document.getElementById('darkToggle'),w=document.getElementById('wakeToggle');
   if(a&&!a.dataset.bound){a.dataset.bound='1';a.checked=!!getLoadFeedback().audio;a.addEventListener('change',()=>{const s=getLoadFeedback();s.audio=a.checked;saveLoadFeedback(s);if(s.audio)playLoadTone();});}
-  if(h&&!h.dataset.bound){h.dataset.bound='1';h.checked=!!getLoadFeedback().haptic;h.addEventListener('change',()=>{const s=getLoadFeedback();s.haptic=h.checked;saveLoadFeedback(s);if(s.haptic)doLoadHaptic();});}
-  if(i&&!i.dataset.bound){i.dataset.bound='1';i.checked=!!state.counter?.enabled;i.addEventListener('change',()=>{state.counter=state.counter||{};state.counter.enabled=i.checked;save();render();});}
+  if(h&&!h.dataset.bound){h.dataset.bound='1';h.checked=!!getLoadFeedback().haptic;h.addEventListener('change',()=>{const s=getLoadFeedback();s.haptic=h.checked;saveLoadFeedback(s);if(s.haptic){if(!('vibrate' in navigator))showToast('This browser or device can\u2019t vibrate');else if(!doLoadHaptic())showToast('Vibration was blocked \u2014 check your phone\u2019s vibration settings');}});}
+  [document.getElementById('settingsInoculantMain'),document.getElementById('settingsInoculant')].forEach(el=>{
+    if(!el)return;
+    el.checked=!!state.counter?.enabled;
+    if(!el.dataset.bound){el.dataset.bound='1';el.addEventListener('change',()=>{state.counter=state.counter||{};state.counter.enabled=el.checked;save();render();});}
+  });
   const c=document.getElementById('settingsCommodities');
   if(c&&!c.dataset.bound){c.dataset.bound='1';c.addEventListener('change',()=>{state.commoditiesEnabled=c.checked;save();render();showToast(c.checked?'Commodities switched on':'Commodities switched off');});}
   if(c)c.checked=commoditiesOn();
@@ -235,7 +447,7 @@ function bindV18SettingsPage(){
   bindMinuteStepper('dupImport','importMinutes','dupImportSummary',m=>m>0
     ?'Imported loads landing within '+minuteWord(m)+' of a load already here for the same truck are counted up and offered before they are added.'
     :'Off. Imported loads are added straight away, apart from exact matches, which are skipped as before.');
-  if(d)d.checked=state.darkMode;
+  renderDisplayChoices();
   if(w)w.checked=state.keepAwake;
   renderThemeSwatches();
 }
@@ -315,16 +527,20 @@ function bindRateWindowStepper(){
 function fmtLicenseDate(d){return new Date(d).toLocaleDateString([],{year:'numeric',month:'short',day:'numeric'})}
 function renderLicenseStatus(){
   const status=document.getElementById('licenseStatus');if(!status)return;
-  const info=licenseGraceInfo();
-  const activatedLine=state.licenseActivatedAt?('Activated '+fmtLicenseDate(state.licenseActivatedAt)+' for '+state.licenseFarmName+'.'):'';
-  if(info.locked){
-    status.textContent=state.licenseActivatedAt
-      ?(activatedLine+' Expired '+fmtLicenseDate(info.expiresAt)+'. Locked \u2014 enter a current code below, or when prompted while using the app.')
-      :'Not yet activated. Enter the farm name and a matching code below, or when prompted the first time something needs it.';
-    return;
+  const info=licenseGraceInfo(),activated=!!state.licenseActivatedAt;
+  const rm=document.getElementById('licenseRemoveBtn');if(rm)rm.style.display=activated?'':'none';
+  const line=(k,v)=>'<div><b>'+k+'</b> '+v+'</div>';
+  if(!activated){const d=info.legacy?info.daysLeft:0;status.innerHTML='<div><b>Not activated</b></div>'+(info.legacy?line('Free use until',fmtLicenseDate(info.expiresAt)+' ('+(d===0?'last day':d+' day'+(d===1?'':'s')+' left')+')'):'')}
+  else{
+    let good;
+    if(!info.locked&&!info.inGrace){const d=Math.max(0,calendarDaysUntil(info.expiresAt));good=line('Good through',fmtLicenseDate(info.expiresAt)+' ('+d+' day'+(d===1?'':'s')+' left)')}
+    else if(info.inGrace)good=line('Expired',fmtLicenseDate(info.expiresAt)+' \u2014 '+(info.daysLeft===0?'last day of grace':info.daysLeft+' day'+(info.daysLeft===1?'':'s')+' of grace left'));
+    else good=line('Expired',fmtLicenseDate(info.expiresAt));
+    status.innerHTML=line('Activated',fmtLicenseDate(state.licenseActivatedAt))+good+line('Farm',esc(state.licenseFarmName));
   }
-  if(info.inGrace){status.textContent=activatedLine+' Expired '+fmtLicenseDate(info.expiresAt)+'. Grace period: '+info.daysLeft+' day'+(info.daysLeft===1?'':'s')+' left to enter a new code.';return}
-  status.textContent=activatedLine+' Valid through '+fmtLicenseDate(info.expiresAt)+'.';
+  // The farm name and code boxes are only needed when there is nothing valid to show -- not yet activated,
+  // in the grace period, or expired. While an activation is good they stay out of the way.
+  const entry=document.getElementById('licenseEntry');if(entry)entry.style.display=(!activated||info.locked||info.inGrace)?'':'none';
 }
 // The on-demand activation prompt: opened by requireActivation() (core-state.js) whenever a
 // gated action is attempted while locked. Unlike the old hard gate, this can be cancelled --
@@ -350,9 +566,7 @@ function bindActivationPromptModal(){
   btn.addEventListener('click',()=>{
     const farmName=(farmInput.value||'').trim();
     if(!farmName){err.textContent='Enter the farm name.';return}
-    const raw=(codeInput.value||'').trim().toUpperCase();
-    const now=new Date().getFullYear();
-    if(raw!==activationCodeForFarm(farmName,now)){err.textContent='That code was not recognized for this farm name.';return}
+    const now=new Date().getFullYear();if(!activationCodeMatches(codeInput.value,farmName,now)){err.textContent='That code was not recognized for this farm name.';return}
     state.licenseFarmName=farmName;
     state.licenseActivatedAt=new Date().toISOString();
     save();
@@ -365,7 +579,7 @@ function bindActivationPromptModal(){
 }
 function renderHeaderFarmName(){
   const el=document.getElementById('headerFarmName');if(!el)return;
-  if(state.licenseFarmName){el.textContent='Activated: '+state.licenseFarmName;el.style.display=''}
+  if(state.licenseFarmName&&!licenseGraceInfo().locked){el.textContent='Activated: '+state.licenseFarmName;el.style.display=''}
   else{el.style.display='none'}
 }
 function bindLicenseSettings(){
@@ -373,14 +587,25 @@ function bindLicenseSettings(){
   if(!farmInput)return;
   if(document.activeElement!==farmInput)farmInput.value=state.licenseFarmName||'';
   renderLicenseStatus();
+  const removeBtn=document.getElementById('licenseRemoveBtn');
+  if(removeBtn&&!removeBtn.dataset.bound){
+    removeBtn.dataset.bound='1';
+    removeBtn.addEventListener('click',()=>{
+      appConfirm({title:'Remove Activation?',message:'This removes the activation for '+(state.licenseFarmName||'this device')+'. Your data stays exactly as it is, but a current code will be needed again to log loads or make changes.',confirmText:'Remove',danger:true}).then(ok=>{
+        if(!ok)return;
+        // licenseGrandfathered is set so the one-time startup check for devices that already hold
+        // history can't quietly re-activate this device on the next launch.
+        state.licenseActivatedAt=null;state.licenseFarmName='';state.licenseGrandfathered=true;state.licenseLegacyGraceUntil=null;
+        save();render();showToast('Activation removed');
+      });
+    });
+  }
   if(activateBtn&&!activateBtn.dataset.bound){
     activateBtn.dataset.bound='1';
     activateBtn.addEventListener('click',()=>{
       const farmName=(farmInput.value||'').trim();
       if(!farmName)return alert('Enter the farm name first.');
-      const raw=(codeInput.value||'').trim().toUpperCase();
-      const now=new Date().getFullYear();
-      const matched=raw===activationCodeForFarm(farmName,now);
+      const now=new Date().getFullYear();const matched=activationCodeMatches(codeInput.value,farmName,now);
       if(!matched)return alert('That code was not recognized for this farm name.');
       state.licenseFarmName=farmName;
       state.licenseActivatedAt=new Date().toISOString();

@@ -36,23 +36,20 @@ function groupLoadsByField(loads){
   });
   return [...groups.values()];
 }
-function summarizeFieldAndClearLoads(){
+async function summarizeFieldAndClearLoads(){
   const fields=[...new Set((state.loads||[]).map(l=>l.fieldId).filter(Boolean))].map(id=>{
     const f=(state.fields||[]).find(x=>x.id===id); const c=f&&commoditiesOn()?commodityLabel(f.commodityId):''; return {id,name:f?.name||'Unknown field',commodity:c};
   });
   if(!fields.length){ alert('There are no loads assigned to a field.'); return; }
-  const names=fields.map((f,i)=>`${i+1}. ${f.name}${f.commodity?' ('+f.commodity+')':''}`).join('\n');
-  const answer=prompt('Enter the number of the field to summarize and clear:\n\n'+names);
-  if(answer===null)return;
-  const idx=parseInt(answer,10)-1;
-  if(!Number.isInteger(idx)||!fields[idx]){alert('Invalid field selection.');return;}
+  const idx=await appChoose({title:'Summarize and clear which field?',options:fields.map(f=>f.name+(f.commodity?' ('+f.commodity+')':''))});
+  if(idx<0)return;
   const field=fields[idx];
   if(licenseGraceInfo().locked)return requireActivation(summarizeFieldAndClearLoads);
   const loads=(state.loads||[]).filter(l=>l.fieldId===field.id);
   if(!loads.length){alert('No loads found for that field.');return;}
   const entry=buildFieldArchiveEntry(field,loads);
   alert(archiveEntrySummaryText(entry)+'\n\nThis summary is saved on the Archive page.');
-  if(!confirm(`Clear all ${loads.length} load(s) from "${field.name}"? The summary is kept on the Archive page and the loads are moved to Trash.`))return;
+  if(!(await uiConfirm(`Clear all ${loads.length} load(s) from "${field.name}"? The summary is kept on the Archive page and the loads are moved to Trash.`)))return;
   commitArchivedLoads([entry],loads);
   render();
   showToast('Field summary archived');
@@ -60,7 +57,7 @@ function summarizeFieldAndClearLoads(){
 // End of season in one step: every field is summarised onto the Archive page and its loads cleared.
 // Fields and their acres, trucks and their weights, storage locations, commodities and settings are
 // all left exactly as they are, so the next season starts on the same setup.
-function clearAllLoadsToArchive(){
+async function clearAllLoadsToArchive(){
   if(licenseGraceInfo().locked)return requireActivation(clearAllLoadsToArchive);
   const loads=(state.loads||[]).slice();
   if(!loads.length){alert('There are no loads to clear.');return;}
@@ -72,7 +69,7 @@ function clearAllLoadsToArchive(){
   alert('Clear All Loads\n\n'+lines.join('\n')+
     '\n\nAll fields: '+loads.length+' load(s), '+totalWet.toFixed(2)+' wet '+state.unit+', '+totalDry.toFixed(2)+' dry '+state.unit+', '+(avgDm===null?'N/A':dmPct(avgDm)+' average '+dmWordLower())+
     '\n\nEach field above is saved as its own summary on the Archive page.');
-  if(!confirm('Summarize '+entries.length+' field(s) to the Archive and clear all '+loads.length+' load(s)?\n\nFields and their acres, trucks and their weights, storage locations and commodities are all kept as they are. The cleared loads are moved to Trash, where they can be restored for 30 days.'))return;
+  if(!(await uiConfirm('Summarize '+entries.length+' field(s) to the Archive and clear all '+loads.length+' load(s)?\n\nFields and their acres, trucks and their weights, storage locations and commodities are all kept as they are. The cleared loads are moved to Trash, where they can be restored for 30 days.')))return;
   commitArchivedLoads(entries,loads);
   render();
   showToast(entries.length+' field'+(entries.length===1?'':'s')+' archived · '+loads.length+' load(s) cleared');
@@ -107,10 +104,10 @@ function renderArchive(){
     </div>`
   }).join('')
 }
-function deleteArchiveEntry(id){
+async function deleteArchiveEntry(id){
   if(licenseGraceInfo().locked)return requireActivation(()=>deleteArchiveEntry(id));
   const a=(state.archive||[]).find(x=>x.id===id);if(!a)return;
-  if(!confirm(`Delete the archived summary for "${a.fieldName}"? This cannot be undone.`))return;
+  if(!(await uiConfirm(`Delete the archived summary for "${a.fieldName}"? This cannot be undone.`)))return;
   state.archive=state.archive.filter(x=>x.id!==id);
   openArchiveDetails.delete(id);
   save();render();showToast('Archived summary deleted');
@@ -140,33 +137,33 @@ function exportArchiveCsv(id){
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   showToast('Archive CSV exported');
 }
-function restoreAllTrash(){
+async function restoreAllTrash(){
   const items=state.trash||[];
   if(!items.length){alert('Trash is already empty.');return;}
-  if(!confirm(`Restore all ${items.length} deleted load(s)?`))return;
+  if(!(await uiConfirm(`Restore all ${items.length} deleted load(s)?`)))return;
   state.loads=state.loads||[];
   items.forEach(l=>{const c={...l};delete c.deletedAt;state.loads.push(c);});
   state.trash=[];
   save();render();
 }
-function deleteAllTrash(){
+async function deleteAllTrash(){
   const n=(state.trash||[]).length;
   if(!n){alert('Trash is already empty.');return;}
-  if(!confirm(`Permanently delete all ${n} load(s) in Trash? This cannot be undone.`))return;
-  if(!confirm('FINAL WARNING: Permanently erase every load in Trash?'))return;
+  if(!(await uiConfirm(`Permanently delete all ${n} load(s) in Trash? This cannot be undone.`)))return;
+  if(!(await uiConfirm('FINAL WARNING: Permanently erase every load in Trash?')))return;
   state.trash=[];
   save();render();
 }
-function clearInoculantEvents(){
+async function clearInoculantEvents(){
   if(licenseGraceInfo().locked)return requireActivation(clearInoculantEvents);
   const n=(state.counter?.events||[]).length;
   if(!n){alert('There are no inoculant events to clear.');return;}
-  if(!confirm(`Clear all ${n} inoculant event(s)? This cannot be undone unless you have a backup.`))return;
+  if(!(await uiConfirm(`Clear all ${n} inoculant event(s)? This cannot be undone unless you have a backup.`)))return;
   if(state.counter)state.counter.events=[];
   save();render();
 }
 function render(){
-  bindV18SettingsPage();applySettings();applyCommodityVisibility();applyDmDisplay();recalculateLoads();syncCounterState();renderFields();renderStorages();renderTrucks();renderLastLoadCards();renderRecent();renderSetup();renderReports();renderTrash();renderManualSelects();renderDataSafety();renderCounter();renderCounterLog();renderEditLogs();renderArchive();renderLicenseBanner();renderHeaderFarmName();updateBatchSelection();bindFloatFields();bindTodayPage();renderTodayPage()
+  bindV18SettingsPage();bindAppearancePage();applySettings();applyCommodityVisibility();applyDmDisplay();applyTopStats();recalculateLoads();syncCounterState();renderFields();renderStorages();renderTrucks();applyTruckLayout();renderLastLoadCards();renderRecent();renderSetup();renderReports();renderTrash();renderManualSelects();renderDataSafety();renderCounter();renderCounterLog();renderEditLogs();renderArchive();renderLicenseBanner();renderHeaderFarmName();updateBatchSelection();bindFloatFields();bindTodayPage();renderTodayPage();applyTopStatsOrder();applyTopStatsLayout();applyTodayStatOrder()
 }
 // A purely informational reminder on the Loads page during the grace period -- nothing is
 // blocked yet, so there's nothing to explain beyond "renew soon." Once actually locked, there's
@@ -175,7 +172,7 @@ function renderLicenseBanner(){
   const info=licenseGraceInfo();
   const loadsEl=document.getElementById('licenseBanner');
   if(!loadsEl)return;
-  if(info.inGrace){loadsEl.style.display='block';const t=document.getElementById('licenseBannerText');if(t)t.textContent='Activation expired '+fmtLicenseDate(info.expiresAt)+' \u2014 '+info.daysLeft+' day'+(info.daysLeft===1?'':'s')+' left before a code is needed to log a load or make changes. Enter a new code in Settings.'}
+  if(info.inGrace){loadsEl.style.display='block';const t=document.getElementById('licenseBannerText');if(t){const left=info.daysLeft===0?'last day':info.daysLeft+' day'+(info.daysLeft===1?'':'s')+' left';t.textContent=info.legacy?(info.daysLeft===0?'Free use ends today. Activate with your farm name and code in Settings.':'Free use ends '+fmtLicenseDate(info.expiresAt)+' \u2014 '+left+'. Activate with your farm name and code in Settings.'):'Activation expired '+fmtLicenseDate(info.expiresAt)+' \u2014 '+(info.daysLeft===0?'today is the last day':left)+' before a code is needed to log a load or make changes. Enter a new code in Settings.'}}
   else{loadsEl.style.display='none'}
 }
 function renderStorages(){const sel=document.getElementById('storageSelect'),old=sel.value||state.lastStorageId;sel.innerHTML=state.storages.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');if(state.storages.some(x=>x.id===old))sel.value=old;else if(state.storages[0])sel.value=state.storages[0].id}
@@ -195,13 +192,13 @@ function updateTruckPreview(prefix){const name=document.getElementById(prefix+'N
  function saveEditedTruck(){const t=state.trucks.find(x=>x.id===editingTruckId);if(!t)return;const n=document.getElementById('editTruckName').value.trim(),w=Number(document.getElementById('editTruckWeight').value);if(!n||!w||w<=0)return alert('Check truck name and full load weight.');t.name=n;t.driver=document.getElementById('editTruckDriver').value.trim();t.fullWeight=w;t.primaryColor=document.getElementById('editTruckPrimary').value;t.secondaryColor=document.getElementById('editTruckSecondary').value;editingTruckId=null;save();closeModal('editTruckModal');render()}
 function toggleTruckActive(id){const t=state.trucks.find(x=>x.id===id);if(!t)return;t.active=t.active===false;save();render();showToast(t.active?'Truck activated':'Truck hidden from Loads')}
 function moveTruck(id,dir){const i=state.trucks.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=state.trucks.length)return;[state.trucks[i],state.trucks[j]]=[state.trucks[j],state.trucks[i]];state.trucks.forEach((t,k)=>t.order=k);save();render()}
-function deleteTruck(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteTruck(id));const t=state.trucks.find(x=>x.id===id);if(confirm('Delete '+(t?t.name:'truck')+'? Old loads stay in history.')){state.trucks=state.trucks.filter(x=>x.id!==id);save();render()}}
+async function deleteTruck(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteTruck(id));const t=state.trucks.find(x=>x.id===id);if((await uiConfirm('Delete '+(t?t.name:'truck')+'? Old loads stay in history.'))){state.trucks=state.trucks.filter(x=>x.id!==id);save();render();return true}return false}
 function renderCommoditySetup(){const el=document.getElementById('commodityList');if(el){const list=state.commodities||[];el.innerHTML=list.length?list.map(c=>{const fields=state.fields.filter(f=>f.commodityId===c.id).length,weights=(state.loadWeightHistory||[]).filter(r=>r.commodityId===c.id).length;return `<div class="rowitem"><div><b>${esc(c.name)}</b><div class="recent-sub">${fields} field${fields===1?'':'s'} · ${weights} truck weight${weights===1?'':'s'}</div></div><div class="truck-setup-actions"><button class="btn small grey" onclick="moveCommodity('${c.id}',-1)">↑</button><button class="btn small grey" onclick="moveCommodity('${c.id}',1)">↓</button><button class="btn small grey" onclick="editCommodity('${c.id}')">Edit</button> <button class="btn small danger" onclick="deleteCommodity('${c.id}')">Delete</button></div></div>`}).join(''):'<div class="empty">No commodities yet. Add one to give fields a commodity and trucks a weight tab.</div>'}const add=document.getElementById('newFieldCommodity');if(add){const old=add.value;add.innerHTML=commoditySelectOptions(old,{noneLabel:'No commodity'});add.value=commodityById(old)?old:''}}
 function editField(id){const f=state.fields.find(x=>x.id===id);if(!f)return;editingFieldId=id;document.getElementById('editFieldTitle').textContent='Edit '+f.name;document.getElementById('editFieldName').value=f.name;document.getElementById('editFieldSize').value=f.size||'';document.getElementById('editFieldNote').value=f.note||'';fillEditFieldCommodity(f.commodityId||'');document.getElementById('editFieldModal').classList.add('show')}
 function fillEditFieldCommodity(selected){const sel=document.getElementById('editFieldCommodity');if(!sel)return;sel.innerHTML=commoditySelectOptions(selected,{noneLabel:'No commodity'});sel.value=commodityById(selected)?selected:''}
 function saveEditedField(){if(licenseGraceInfo().locked)return requireActivation(saveEditedField);const f=state.fields.find(x=>x.id===editingFieldId);if(!f)return;const name=document.getElementById('editFieldName').value.trim();if(!name)return alert('Enter a field name.');const size=Number(document.getElementById('editFieldSize').value||0);if(!Number.isFinite(size)||size<0)return alert('Enter a valid field size in acres.');f.name=name;f.size=size;f.note=document.getElementById('editFieldNote').value.trim();f.commodityId=document.getElementById('editFieldCommodity').value||'';editingFieldId=null;save();closeModal('editFieldModal');render();showToast('Field saved')}
-function deleteField(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteField(id));const f=state.fields.find(x=>x.id===id);if(confirm('Delete '+(f?f.name:'field')+'? Old loads stay in history.')){state.fields=state.fields.filter(x=>x.id!==id);if(state.lastFieldId===id)state.lastFieldId=state.fields[0]?.id||'';save();render()}}
-function deleteDM(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteDM(id));if(confirm('Delete this '+dmWordLower()+' reading? Existing loads will keep their stored result; future loads will use the remaining readings.')){state.dmReadings=state.dmReadings.filter(r=>r.id!==id);save();render()}}
+async function deleteField(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteField(id));const f=state.fields.find(x=>x.id===id);if((await uiConfirm('Delete '+(f?f.name:'field')+'? Old loads stay in history.'))){state.fields=state.fields.filter(x=>x.id!==id);if(state.lastFieldId===id)state.lastFieldId=state.fields[0]?.id||'';save();render()}}
+async function deleteDM(id){if(licenseGraceInfo().locked)return requireActivation(()=>deleteDM(id));if((await uiConfirm('Delete this '+dmWordLower()+' reading? Existing loads will keep their stored result; future loads will use the remaining readings.'))){state.dmReadings=state.dmReadings.filter(r=>r.id!==id);save();render()}}
 function renderManualSelects(){document.getElementById('manualField').innerHTML=state.fields.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');document.getElementById('manualStorage').innerHTML=state.storages.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');document.getElementById('manualStorage').value=state.lastStorageId||'';if(state.fields.some(f=>f.id===state.lastFieldId))document.getElementById('manualField').value=state.lastFieldId;document.getElementById('manualTruck').innerHTML=state.trucks.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}
 // The filtered load list is read for very different questions - what came in last, which
 // load was heaviest, how one field compares - so the order is a saved view preference

@@ -8,7 +8,7 @@
   const bar=document.getElementById('headBar');
   if(!header||!safe||!bar)return;
   const snapOK=!!(window.CSS&&CSS.supports&&CSS.supports('scroll-snap-stop','always')&&CSS.supports('scroll-snap-type','y proximity'));
-  let setPoint=0,collapsedH=0,compact=false;
+  let setPoint=0,collapsedH=0,compact=false,away=false;
 
   function measure(){
     const h=header.getBoundingClientRect(),b=bar.getBoundingClientRect(),s=safe.getBoundingClientRect();
@@ -27,6 +27,17 @@
     if(loads&&setPoint>0)compact=compact?y>setPoint-8:y>=setPoint-1;
     else compact=false;
     root.classList.toggle('ctx-compact',compact);
+    // Once the truck buttons have scrolled up out of view, the Field and Storage boxes have nothing left to
+    // sit above, so they slide away; they come back as soon as the trucks are back in view. They are hidden
+    // with a transform, not removed from the layout, so nothing on the page jumps when they go, and the
+    // 40px of hysteresis stops them flickering at the threshold.
+    let nowAway=false;
+    const tg=document.getElementById('truckGrid'),tcard=loads&&tg?tg.closest('.card'):null,ctx=document.querySelector('.active-context');
+    if(tcard&&ctx){
+      const stuckBottom=(parseFloat(getComputedStyle(ctx).top)||0)+ctx.offsetHeight,b=tcard.getBoundingClientRect().bottom;
+      nowAway=away?b<stuckBottom+40:b<stuckBottom;
+    }
+    if(nowAway!==away){away=nowAway;root.classList.toggle('ctx-away',away)}
   }
 
   function sync(){measure();apply()}

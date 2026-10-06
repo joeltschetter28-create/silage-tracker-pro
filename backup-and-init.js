@@ -1,20 +1,35 @@
 async function requestWakeLock(){if(!state.keepAwake||!('wakeLock' in navigator))return;try{wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>wakeLock=null)}catch(e){}}
 function releaseWakeLock(){if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}}
-function backupEnvelope(){return {app:'Silage Tracker Pro',version:VERSION,build:BUILD,exportedAt:new Date().toISOString(),state:structuredClone(state)}}
+function backupEnvelope(){return {app:'Silage Tracker Pro',version:VERSION,build:BUILD,exportedAt:new Date().toISOString(),state:stripLicense(structuredClone(state))}}
 function downloadJsonFile(name,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function safeFileDate(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+'-'+String(d.getMinutes()).padStart(2,'0')}
 function downloadFullBackup(){downloadJsonFile('Silage_Tracker_Pro_Backup_'+safeFileDate()+'.json',backupEnvelope());showToast('Backup downloaded')}
 // Internal undo point taken before any restore or merge. Not the shareable snapshot.
 function saveSafetySnapshot(silent=false){const snap=backupEnvelope();try{localStorage.setItem(SNAPSHOT_KEY,JSON.stringify(snap))}catch(e){}renderDataSafety();if(!silent)showToast('Safety snapshot saved')}
 function getSafetySnapshot(){try{return JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'null')}catch(e){return null}}
-function clearAllData(){
-  const warning='WARNING: This will erase ALL Silage Tracker data on this device, including loads, Trash, archived field summaries, trucks, fields, storage locations, dry-matter history, weight history, inoculant events, and saved settings. This cannot be undone unless you have a backup.\n\nAre you sure you want to continue?';
-  if(!confirm(warning))return;
-  if(!confirm('FINAL WARNING: All data will now be erased. Press OK to permanently clear this device.'))return;
+async function clearAllData(){
+  if(!(await appConfirm({title:'Erase all data?',message:'This will erase ALL Silage Tracker data on this device, including loads, Trash, archived field summaries, trucks, fields, storage locations, dry-matter history, weight history, inoculant events, and saved settings.\n\nThis cannot be undone unless you have a backup.',confirmText:'Continue',danger:true})))return;
+  // The activation belongs to the device, not to the data, so erasing the data asks what to do with it.
+  // Cancelling here cancels the whole erase.
+  const hasAct=!!(state.licenseActivatedAt&&state.licenseFarmName)&&!licenseGraceInfo().locked;
+  let removeAct=false;
+  if(hasAct){
+    const pick=await appChoose({title:'Also remove the activation?',message:'This device is activated for '+state.licenseFarmName+'. Choose what happens to that when your data is erased, or Cancel to keep everything.',options:['Keep the activation','Remove the activation too']});
+    if(pick<0)return;
+    removeAct=pick===1;
+  }
+  if(!(await appConfirm({title:'Last chance',message:'All data on this device will be erased permanently.',confirmText:'Erase Everything',danger:true})))return;
   if(licenseGraceInfo().locked)return requireActivation(clearAllData);
   try{
+    const keepAct=hasAct&&!removeAct?{a:state.licenseActivatedAt,f:state.licenseFarmName}:null,keepUntil=state.licenseLegacyGraceUntil;
     localStorage.removeItem(SNAPSHOT_KEY);
-    state={unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+    const fresh={licenseLegacyChecked:true,unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,themeMode:'system',dimSeconds:60,keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+    if(keepAct){fresh.licenseActivatedAt=keepAct.a;fresh.licenseFarmName=keepAct.f}
+    if(keepUntil)fresh.licenseLegacyGraceUntil=keepUntil;
+    // Built through loadState(), the same path a restore uses, so every setting the app has (including any added
+    // later) gets its default. A hand-written list here had fallen behind, and the page re-render after an erase
+    // then failed on the missing settings and reported the erase as failed even though it had worked.
+    localStorage.setItem(KEY,JSON.stringify(fresh));state=loadState();
     save();
     render();
     renderDataSafety();
@@ -23,13 +38,13 @@ function clearAllData(){
 }
 function renderDataSafety(){const box=document.getElementById('dataHealth');if(!box)return;box.innerHTML='<b>Current data:</b> '+state.loads.length+' active loads · '+(state.trash||[]).length+' in Trash · '+(state.archive||[]).length+' archived fields · '+state.trucks.length+' trucks · '+state.fields.length+' fields'}
 function validBackupPayload(raw){const candidate=raw&&raw.state?raw.state:raw;return !!(candidate&&typeof candidate==='object'&&Array.isArray(candidate.loads)&&Array.isArray(candidate.trucks)&&Array.isArray(candidate.fields))}
-function restoreStateCandidate(candidate,label){if(!validBackupPayload(candidate))return alert('That file is not a valid Silage Tracker backup.');const incoming=candidate.state||candidate;const loadCount=Array.isArray(incoming.loads)?incoming.loads.length:0,truckCount=Array.isArray(incoming.trucks)?incoming.trucks.length:0,fieldCount=Array.isArray(incoming.fields)?incoming.fields.length:0;if(!confirm('Restore '+label+'?\n\nIncoming data: '+loadCount+' loads, '+truckCount+' trucks, '+fieldCount+' fields.\n\nThis will replace the current data on this device.'))return;if(licenseGraceInfo().locked)return requireActivation(()=>restoreStateCandidate(candidate,label));saveSafetySnapshot(true);try{localStorage.setItem(KEY,JSON.stringify(incoming));state=loadState();save();render();showToast('Backup restored')}catch(e){alert('The backup could not be restored. Your safety snapshot is still available.')}}
+async function restoreStateCandidate(candidate,label){if(!validBackupPayload(candidate))return alert('That file is not a valid Silage Tracker backup.');const incoming=candidate.state||candidate;const loadCount=Array.isArray(incoming.loads)?incoming.loads.length:0,truckCount=Array.isArray(incoming.trucks)?incoming.trucks.length:0,fieldCount=Array.isArray(incoming.fields)?incoming.fields.length:0;if(!(await uiConfirm('Restore '+label+'?\n\nIncoming data: '+loadCount+' loads, '+truckCount+' trucks, '+fieldCount+' fields.\n\nThis will replace the current data on this device.',{confirmText:'Restore',danger:true})))return;if(licenseGraceInfo().locked)return requireActivation(()=>restoreStateCandidate(candidate,label));saveSafetySnapshot(true);try{/* Activation belongs to the device, not the data: anything a backup carries for it is ignored. */localStorage.setItem(KEY,JSON.stringify(withDeviceLicense(incoming)));state=loadState();save();render();showToast('Backup restored')}catch(e){alert('The backup could not be restored. Your safety snapshot is still available.')}}
 // ---- Shareable device snapshot -------------------------------------------------
 // Hands the whole working profile to a replacement operator: trucks and their
 // weights, every field with its acres, note and commodity, the loads with their
 // recorded weights and dry matter, storage, dry-matter history and the archive.
 // Importing merges rather than replaces, so the snapshot can be passed back later.
-function snapshotEnvelope(){recalculateLoads();state.loads.forEach(l=>{if(typeof l.inoculated!=='boolean')l.inoculated=wasInoculated(l,inoculantSpans())});return {app:'Silage Tracker Pro',kind:'device-snapshot',version:VERSION,build:BUILD,unit:state.unit,exportedAt:new Date().toISOString(),state:structuredClone(state)}}
+function snapshotEnvelope(){recalculateLoads();state.loads.forEach(l=>{if(typeof l.inoculated!=='boolean')l.inoculated=wasInoculated(l,inoculantSpans())});return {app:'Silage Tracker Pro',kind:'device-snapshot',version:VERSION,build:BUILD,unit:state.unit,exportedAt:new Date().toISOString(),state:stripLicense(structuredClone(state))}}
 function snapshotFileName(){const f=currentField(),part=f?String(f.name).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,''):'';return 'Silage_Snapshot_'+(part?part+'_':'')+safeFileDate()+'.json'}
 function snapshotSummaryText(snap){const st=snap.state||{},f=(st.fields||[]).find(x=>x.id===st.lastFieldId);return 'Silage Tracker Pro snapshot · '+(st.trucks||[]).length+' trucks · '+(st.fields||[]).length+' fields · '+(st.loads||[]).length+' loads'+(f?' · current field '+f.name:'')+'. Open Setup, then Import Device Snapshot, to carry on from here.'}
 async function shareDeviceSnapshot(){
@@ -74,7 +89,7 @@ async function shareFieldSnapshot(){
   const field=currentField();
   if(!field)return alert('Add a field first.');
   const loads=state.loads.filter(l=>l.fieldId===field.id);
-  if(!loads.length&&!confirm(field.name+' has no loads recorded yet. Save a snapshot with just the field\u2019s own details anyway?'))return;
+  if(!loads.length&&!(await uiConfirm(field.name+' has no loads recorded yet. Save a snapshot with just the field\u2019s own details anyway?',{confirmText:'Save Snapshot'})))return;
   const env=fieldSnapshotEnvelope(field),name=fieldSnapshotFileName(field),text=JSON.stringify(env,null,2),summary=fieldSnapshotSummaryText(env,field);
   downloadJsonFile(name,env);
   showToast('Field snapshot saved: '+field.name);
@@ -149,8 +164,12 @@ function protectAndMergeWeights(newWeights,incomingIds,shouldMerge){
   });
   return touched;
 }
-function mergeDeviceSnapshot(payload){
+async function mergeDeviceSnapshot(payload){
   const incoming=payload.state||payload;
+  // Asked once, up front: every load this snapshot brings gets the same label, so loads from a second
+  // truck's phone stay distinguishable from the ones logged here. It is stamped before the near-duplicate
+  // check below, so a load held for review keeps its label too.
+  const importLabel=((await uiPrompt('Label these imported loads (optional) \u2014 e.g. "Imported from Tony":','Imported',{title:'Label these imported loads',message:'Optional \u2014 for example "Imported from Tony".',confirmText:'Continue'}))||'').trim()||'Imported';
   const from=UNIT_TO_KG[incoming.unit]?incoming.unit:state.unit,to=state.unit;
   const w=v=>from===to?(Number(v)||0):convertWeight(Number(v)||0,from,to);
   const out={loads:0,duplicates:0,held:0,restored:0,restamped:0,trucks:0,fields:0,storages:0,commodities:0,archive:0};
@@ -230,6 +249,7 @@ function mergeDeviceSnapshot(payload){
     }
     const entry={load:l,inTrash:false};byId.set(l.id,entry);byKey.set(key,entry);
     const near=loadsNearInTime(priorLoads,l.truckId,l.time,dupImportMinutes(),l.id);
+    l.importLabel=importLabel;
     if(near.length){noteImportDuplicate(l,near,'snapshot');out.held++;return}
     if(typeof l.inoculated!=='boolean')l.inoculated=wasInoculated(l,inoculantSpans());
     l.snapshotImported=true;
@@ -239,7 +259,7 @@ function mergeDeviceSnapshot(payload){
   // ever about loads that were already logged here - imported loads keep the reading they
   // were carted under on the device they came from.
   if(newReadings.length||newWeights.length){
-    const doMerge=confirm('This snapshot brought new '+(newReadings.length?dmWordLower()+' readings':'')+(newReadings.length&&newWeights.length?' and ':'')+(newWeights.length?'truck weight changes':'')+'.\n\nMerge them into matching loads already on this device \u2014 same field and commodity, during the time each applies?\n\nChoose Cancel to keep every load exactly as entered instead. Either way, newly-imported loads are marked as imported.')
+    const doMerge=(await uiConfirm('This snapshot brought new '+(newReadings.length?dmWordLower()+' readings':'')+(newReadings.length&&newWeights.length?' and ':'')+(newWeights.length?'truck weight changes':'')+'.\n\nMerge them into matching loads already on this device \u2014 same field and commodity, during the time each applies?\n\nChoose Keep As Entered to leave every load exactly as entered instead. Either way, newly-imported loads are marked as imported.',{title:'Merge new readings?',confirmText:'Merge',cancelText:'Keep As Entered'}))
     if(doMerge)out.restamped+=applyMergedReadings(newReadings,newlyImportedLoadIds);
     out.restamped+=protectAndMergeWeights(newWeights,newlyImportedLoadIds,doMerge);
   }
@@ -254,22 +274,22 @@ function mergeDeviceSnapshot(payload){
   save();render();
   return out;
 }
-function importDeviceSnapshotFile(file){
+async function importDeviceSnapshotFile(file){
   if(!file)return;
   if(licenseGraceInfo().locked)return requireActivation(()=>importDeviceSnapshotFile(file));
   const reader=new FileReader();
   const clear=()=>{const el=document.getElementById('snapshotFileInput');if(el)el.value=''};
-  reader.onload=()=>{
+  reader.onload=async()=>{
     try{
       const payload=JSON.parse(String(reader.result||''));
       if(!validBackupPayload(payload))return alert('That file is not a valid Silage Tracker snapshot.');
       const incoming=payload.state||payload;
       const detail=(incoming.loads||[]).length+' loads, '+(incoming.trucks||[]).length+' trucks and '+(incoming.fields||[]).length+' fields';
-      if(!confirm('Import this device snapshot?\n\nIt holds '+detail+'.\n\nEverything already on this device is kept, loads already recorded here will not be entered twice, and anything the snapshot still holds that has been moved to the Trash here is brought back instead of duplicated.'))return;
+      if(!(await uiConfirm('Import this device snapshot?\n\nIt holds '+detail+'.\n\nEverything already on this device is kept, loads already recorded here will not be entered twice, and anything the snapshot still holds that has been moved to the Trash here is brought back instead of duplicated.')))return;
       saveSafetySnapshot(true);
-      const r=mergeDeviceSnapshot(payload);
+      const r=await mergeDeviceSnapshot(payload);
       showToast('Snapshot imported');
-      alert('Snapshot imported.\n\nLoads added: '+r.loads+'\nDuplicate loads skipped: '+r.duplicates+'\nPossible duplicates held to check: '+r.held+'\nLoads restored from Trash: '+r.restored+'\nLoads updated by merged readings or weights: '+r.restamped+'\nTrucks added: '+r.trucks+'\nFields added: '+r.fields+'\nStorage locations added: '+r.storages+'\nArchived summaries added: '+r.archive);
+      await appAlert('Snapshot imported.\n\nLoads added: '+r.loads+'\nDuplicate loads skipped: '+r.duplicates+'\nPossible duplicates held to check: '+r.held+'\nLoads restored from Trash: '+r.restored+'\nLoads updated by merged readings or weights: '+r.restamped+'\nTrucks added: '+r.trucks+'\nFields added: '+r.fields+'\nStorage locations added: '+r.storages+'\nArchived summaries added: '+r.archive);
       offerImportDuplicates();
     }catch(e){alert('That file could not be read as a Silage Tracker snapshot.')}
     finally{clear()}
@@ -278,6 +298,6 @@ function importDeviceSnapshotFile(file){
   reader.readAsText(file);
 }
 function importBackupFile(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{try{restoreStateCandidate(JSON.parse(reader.result),'this backup file')}catch(e){alert('That file could not be read as a Silage Tracker backup.')}finally{document.getElementById('backupFileInput').value=''}};reader.onerror=()=>alert('The backup file could not be read.');reader.readAsText(file)}
-function resetDimTimer(){document.getElementById('dimLayer').classList.remove('on');clearTimeout(dimTimer);dimTimer=setTimeout(()=>document.getElementById('dimLayer').classList.add('on'),60000)}
+function resetDimTimer(){document.getElementById('dimLayer').classList.remove('on');clearTimeout(dimTimer);const secs=Number(state.dimSeconds);if(!(secs>0))return;dimTimer=setTimeout(()=>document.getElementById('dimLayer').classList.add('on'),secs*1000)}
 function updateNewTruckPreview(){const name=document.getElementById('newTruckName')?.value.trim()||'Truck Preview',driver=document.getElementById('newTruckDriver')?.value.trim()||'Assigned Driver',p=document.getElementById('newTruckPrimary')?.value||'#1f7a3f',q=document.getElementById('newTruckSecondary')?.value||'#ffffff',box=document.getElementById('newTruckPreview');if(!box)return;box.style.borderColor=p;const h=box.querySelector('.truck-preview-head'),b=box.querySelector('.truck-preview-body');h.textContent=name;h.style.background=p;h.style.color=q;b.textContent=driver;b.style.background=q;b.style.color=contrastText(q)}
 function contrastText(hex){const h=(hex||'#ffffff').replace('#','');const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return (r*299+g*587+b*114)/1000>145?'#17221b':'#ffffff'}
