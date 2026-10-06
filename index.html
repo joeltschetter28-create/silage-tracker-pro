@@ -11,7 +11,14 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<title>Silage Tracker Pro V2.11</title>
+<title>Silage Tracker Pro</title>
+<meta name="description" content="Offline silage load tracking, reporting, backup, and recovery.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Silage Tracker Pro">
+<meta property="og:title" content="Silage Tracker Pro">
+<meta property="og:description" content="Offline silage load tracking, reporting, backup, and recovery.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Silage Tracker Pro">
 <style>
 :root{--green:#1f7a3f;--green2:#14532d;--dark:#1f3b2d;--bg:#f4f7f5;--card:#fff;--text:#17221b;--muted:#5b695f;--line:#cbd5cf;--red:#b42318;--blue:#1d4ed8;--grey:#64748b;--input:#fff;--shadow:#00000014;--text-scale:1}
 body.dark{--green:#34a853;--green2:#166534;--dark:#08140d;--bg:#101713;--card:#18221c;--text:#edf5ef;--muted:#aab8ae;--line:#3d4b42;--input:#101713;--shadow:#0008}
@@ -345,6 +352,11 @@ html.ctx-compact .load-instructions{display:none}
       </div>
     </div>
     <div class="settings-section">
+      <label>Harvest Day</label>
+      <div class="setting-row" style="display:block"><div><b>Day starts at</b><div class="note" id="dayStartNote"></div></div>
+        <div class="choice-grid"><button type="button" class="btn small grey" data-day-start="0" onclick="setDayStartHour(0)">12 AM</button><button type="button" class="btn small grey" data-day-start="1" onclick="setDayStartHour(1)">1 AM</button><button type="button" class="btn small grey" data-day-start="2" onclick="setDayStartHour(2)">2 AM</button><button type="button" class="btn small grey" data-day-start="3" onclick="setDayStartHour(3)">3 AM</button><button type="button" class="btn small grey" data-day-start="4" onclick="setDayStartHour(4)">4 AM</button><button type="button" class="btn small grey" data-day-start="5" onclick="setDayStartHour(5)">5 AM</button><button type="button" class="btn small grey" data-day-start="6" onclick="setDayStartHour(6)">6 AM</button><button type="button" class="btn small grey" data-day-start="7" onclick="setDayStartHour(7)">7 AM</button><button type="button" class="btn small grey" data-day-start="8" onclick="setDayStartHour(8)">8 AM</button></div></div>
+    </div>
+    <div class="settings-section">
       <label>Cycle Time &amp; Rate</label>
       <div class="setting-row"><div><div class="setting-label-row"><b>Ignore breaks longer than</b><button type="button" class="info-icon" data-info="cycleBreak">i</button></div><div class="note">Keeps a long stop from skewing cycle time and Rate.</div></div>
         <div class="minute-stepper"><button class="btn small grey" id="cycleBreakMinus" type="button" aria-label="Less time">&minus;</button><input id="cycleBreakMinutes" type="number" min="0" max="1440" step="10" inputmode="numeric" aria-label="Cycle time break threshold in minutes"><button class="btn small blue" id="cycleBreakPlus" type="button" aria-label="More time">+</button><span class="stepper-unit">min</span></div></div>
@@ -642,6 +654,9 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.2</b><br>• Pasted links now preview as just “Silage Tracker Pro”, without a version number</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.1</b><br>• Pasted links now preview with the correct app name and version</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.0</b><br>• Weights on a truck’s page can be edited and deleted again, including their date and time<br>• Importing a snapshot now suggests a numbered label like “Imported from User 1”<br>• Field summaries, the Archive and Field Totals now show which days the field was harvested<br>• Added a Day Starts At setting under Harvest Day in Settings — loads after midnight but before that time count toward the previous day</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.11.0</b><br>• Choose Light, Dark or Same as System for the theme on Appearance<br>• Choose how long the screen stays bright before the app dims it, or never dim<br>• Inoculant Reports now show the most recent event at the top<br>• Opening a truck from Setup now starts at the top of its page, and going back returns you to the same spot in the list<br>• A truck’s weight history shows the two most recent weights, with the rest under Show All<br>• Text boxes now move up above the keyboard instead of hiding behind it</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.10.0</b><br>• Swiping between pages is smoother — the page follows your finger and glides into the next one<br>• The free-use countdown now counts calendar days, so it goes down by exactly one each day</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.9.0</b><br>• Erase All Data now asks whether to also remove the device's activation, or keep it<br>• A free month that's already running is no longer lost when you erase data<br>• Bug fixes</div>

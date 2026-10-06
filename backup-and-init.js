@@ -23,7 +23,7 @@ async function clearAllData(){
   try{
     const keepAct=hasAct&&!removeAct?{a:state.licenseActivatedAt,f:state.licenseFarmName}:null,keepUntil=state.licenseLegacyGraceUntil;
     localStorage.removeItem(SNAPSHOT_KEY);
-    const fresh={licenseLegacyChecked:true,unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,themeMode:'system',dimSeconds:60,keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+    const fresh={licenseLegacyChecked:true,unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,themeMode:'system',dimSeconds:60,dayStartHour:5,keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
     if(keepAct){fresh.licenseActivatedAt=keepAct.a;fresh.licenseFarmName=keepAct.f}
     if(keepUntil)fresh.licenseLegacyGraceUntil=keepUntil;
     // Built through loadState(), the same path a restore uses, so every setting the app has (including any added
@@ -169,7 +169,8 @@ async function mergeDeviceSnapshot(payload){
   // Asked once, up front: every load this snapshot brings gets the same label, so loads from a second
   // truck's phone stay distinguishable from the ones logged here. It is stamped before the near-duplicate
   // check below, so a load held for review keeps its label too.
-  const importLabel=((await uiPrompt('Label these imported loads (optional) \u2014 e.g. "Imported from Tony":','Imported',{title:'Label these imported loads',message:'Optional \u2014 for example "Imported from Tony".',confirmText:'Continue'}))||'').trim()||'Imported';
+  const nextUserLabel=(()=>{let n=0;state.loads.concat(state.trash||[]).forEach(l=>{const m=/^Imported from User (\d+)$/i.exec(String(l.importLabel||'').trim());if(m)n=Math.max(n,Number(m[1]))});return 'Imported from User '+(n+1)})();
+  const importLabel=((await uiPrompt('Label these imported loads (optional) \u2014 e.g. "'+nextUserLabel+'":',nextUserLabel,{title:'Label these imported loads',message:'Optional \u2014 each phone you import from can get its own number, like "Imported from User 1" and "Imported from User 2".',confirmText:'Continue'}))||'').trim()||'Imported';
   const from=UNIT_TO_KG[incoming.unit]?incoming.unit:state.unit,to=state.unit;
   const w=v=>from===to?(Number(v)||0):convertWeight(Number(v)||0,from,to);
   const out={loads:0,duplicates:0,held:0,restored:0,restamped:0,trucks:0,fields:0,storages:0,commodities:0,archive:0};

@@ -1,5 +1,17 @@
 # Silage Tracker Pro Changelog
 
+## V3.12.2 — Build 2026.10.06.003
+- Pasted links now preview as just “Silage Tracker Pro”, without a version number
+
+## V3.12.1 — Build 2026.10.06.002
+- Pasted links now preview with the correct app name and version
+
+## V3.12.0 — Build 2026.10.06.001
+- Weights on a truck’s page can be edited and deleted again, including their date and time
+- Importing a snapshot now suggests a numbered label like “Imported from User 1”
+- Field summaries, the Archive and Field Totals now show which days the field was harvested
+- Added a Day Starts At setting under Harvest Day in Settings — loads after midnight but before that time count toward the previous day
+
 ## V3.11.0 — Build 2026.10.05.001
 - Choose Light, Dark or Same as System for the theme on Appearance
 - Choose how long the screen stays bright before the app dims it, or never dim

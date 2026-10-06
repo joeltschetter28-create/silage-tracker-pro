@@ -20,10 +20,20 @@ const effective=t?effectiveLoadWeight(t.id,new Date().toISOString(),cid):0;
 if(t)h+='<div class="history-row"><div><div class="history-weight">Now: '+money(effective)+' '+state.unit+'</div><div class="recent-sub">Full load weight in use today'+(commoditiesOn()&&cid?' for '+esc(commodityTabLabel(cid)):'')+' · Setup weight '+money(t.fullWeight)+' '+state.unit+'</div></div></div>';
 const orphanedHere=commoditiesOn()?all.filter(r=>!r.commodityId||!commodityById(r.commodityId)):[];
 const shown=commoditiesOn()?rows.concat(orphanedHere.filter(r=>!rows.includes(r))):rows;
-const COLLAPSED_COUNT=2;const canCollapse=shown.length>COLLAPSED_COUNT;const visible=canCollapse&&!truckWeightsExpanded?shown.filter((r,i)=>i<COLLAPSED_COUNT||(commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId)))):shown;h+=shown.length?visible.map(r=>{const isOrphan=commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId));return '<div class="history-row"><div><div class="history-weight">'+money(r.weight)+' '+state.unit+(isOrphan?' <span class="dup-badge">No commodity</span>':'')+'</div><div class="recent-sub">Effective '+new Date(r.effective).toLocaleString()+'</div></div><div class="history-actions">'+(commoditiesOn()&&(state.commodities||[]).length>1?'<button type="button" class="btn small grey" onclick="moveWeightHistoryCommodity(\''+r.id+'\')">Move</button>':'')+'</div></div>'}).join('')+(canCollapse?'<button type="button" class="btn small grey history-more" onclick="toggleTruckWeights()">'+(truckWeightsExpanded?'Show Fewer \u25B4':'Show All '+shown.length+' Weights \u25BE')+'</button>':''):'<div class="empty">No weights '+(commoditiesOn()?'on this tab ':'')+'yet.</div>';
+const COLLAPSED_COUNT=2;const canCollapse=shown.length>COLLAPSED_COUNT;const visible=canCollapse&&!truckWeightsExpanded?shown.filter((r,i)=>i<COLLAPSED_COUNT||(commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId)))):shown;h+=shown.length?visible.map(r=>{const isOrphan=commoditiesOn()&&(!r.commodityId||!commodityById(r.commodityId));return '<div class="history-row"><div><div class="history-weight">'+money(r.weight)+' '+state.unit+(isOrphan?' <span class="dup-badge">No commodity</span>':'')+'</div><div class="recent-sub">Effective '+new Date(r.effective).toLocaleString()+'</div></div><div class="history-actions"><button type="button" class="btn small grey" onclick="editTruckPageWeight(\''+r.id+'\')">Edit</button><button type="button" class="btn small danger" onclick="deleteWeightHistory(\''+r.id+'\')">Delete</button>'+(commoditiesOn()&&(state.commodities||[]).length>1?'<button type="button" class="btn small grey" onclick="moveWeightHistoryCommodity(\''+r.id+'\')">Move</button>':'')+'</div></div>'}).join('')+(canCollapse?'<button type="button" class="btn small grey history-more" onclick="toggleTruckWeights()">'+(truckWeightsExpanded?'Show Fewer \u25B4':'Show All '+shown.length+' Weights \u25BE')+'</button>':''):'<div class="empty">No weights '+(commoditiesOn()?'on this tab ':'')+'yet.</div>';
 const tabName=commoditiesOn()&&cid?commodityTabLabel(cid):'';
 h+='<div class="actions"><button type="button" class="btn small blue" onclick="openWeightHistory(pageEditingTruckId,{commodityId:commoditiesOn()?truckWeightTabCommodityId:\'\',chosen:true})">'+(tabName?'Add Weight to '+esc(tabName):'Add Weight')+'</button></div>';
 el.innerHTML=h}
+// Edit a weight straight from the truck's page: opens the weight editor already filled in with it.
+function editTruckPageWeight(id){const r=(state.loadWeightHistory||[]).find(x=>x.id===id);if(!r)return;openWeightHistory(r.truckId,{commodityId:r.commodityId||'',chosen:true});editWeightHistory(id)}
+function renderDayStartChoices(){
+  const h=harvestCutoffHour();
+  document.querySelectorAll('[data-day-start]').forEach(b=>b.classList.toggle('grey',Number(b.dataset.dayStart)!==h));
+  const n=document.getElementById('dayStartNote');if(!n)return;
+  const t=h===0?'12 AM':h+' AM';
+  n.textContent=h===0?'Each day runs midnight to midnight, so every load counts on the date it was entered.'
+    :'Each harvest day runs from '+t+' to '+t+' the next morning. Anything harvested after midnight but before '+t+' is listed on the previous day, so a night\'s work stays together \u2014 e.g. a load at 12:30 AM on Oct 6 counts toward Oct 5. The time on each load is not changed. Used by the Today page, field summaries, report date filters and single-day exports.';
+}
 function renderDisplayChoices(){
   document.querySelectorAll('[data-theme-mode]').forEach(b=>b.classList.toggle('grey',b.dataset.themeMode!==state.themeMode));
   document.querySelectorAll('[data-dim-seconds]').forEach(b=>b.classList.toggle('grey',Number(b.dataset.dimSeconds)!==Number(state.dimSeconds)));
@@ -709,6 +719,7 @@ function buildFieldArchiveEntry(field,loads){
     trucks:groupTotals(l=>truckDisplay(l)),
     storages:groupTotals(l=>storageDisplay(l)),
     notes:groupTotals(l=>noteDisplay(l)||'No note'),
+    days:harvestDayGroups(loads).map(g=>({date:g.key,loads:g.loads,wet:g.wet,dry:g.dry})),
     loads:loads.map(l=>({id:l.id,time:l.time,truckName:truckDisplay(l),driverName:l.driverName||'',fieldNote:noteDisplay(l),inoculated:wasInoculated(l),storageName:storageDisplay(l),type:l.type||'',wetWeight:Number(l.wetWeight)||0,dryWeight:Number(l.dryWeight)||0,dryMatter:Number(l.dryMatter)||0,unit:l.unit||state.unit}))
   };
 }
