@@ -1,5 +1,15 @@
 # Silage Tracker Pro Changelog
 
+## V3.13.4 — Build 2026.10.06.011
+- Print / PDF now offers Full Report or Totals Only — Totals Only prints the summary, field totals and harvest days without the list of loads
+
+## V3.13.3 — Build 2026.10.06.010
+- Print / PDF reliably prints only the filtered report, even on phones where the print screen opens late
+- Printing from any other page prints just that page instead of the whole app
+
+## V3.13.2 — Build 2026.10.06.009
+- Export Filtered CSV on Reports now opens an Export window where you choose the file name and what to include in the report
+
 ## V3.13.1 — Build 2026.10.06.008
 - Export now lets you tick which sections and which load details go in the report, with Everything, Totals Only and Loads Only shortcuts — your choices are remembered
 - Exporting a single field names the file after the field

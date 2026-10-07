@@ -1,5 +1,5 @@
-const VERSION='3.13.1';
-const BUILD='2026.10.06.008';
+const VERSION='3.13.4';
+const BUILD='2026.10.06.011';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');
@@ -241,7 +241,7 @@ document.getElementById('saveHistoryBtn').onclick=saveWeightHistory;
 document.getElementById('cancelHistoryEditBtn').onclick=cancelWeightHistoryEdit;
 document.getElementById('closeHistoryBtn').onclick=()=>closeModal('weightHistoryModal');
 document.getElementById('exportType').onchange=updateExportOptions;
-document.getElementById('runExportBtn').onclick=exportCSV;
+document.getElementById('runExportBtn').onclick=runReportExport;
 document.getElementById('cancelExportBtn').onclick=()=>closeModal('exportModal');
 document.getElementById('saveEditLoadBtn').onclick=saveEditedLoad;
 document.getElementById('deleteEditLoadBtn')?.addEventListener('click',deleteEditedLoad);
@@ -266,7 +266,7 @@ document.getElementById('saveFieldSnapshotBtn')?.addEventListener('click',shareF
 })();
 document.getElementById('restoreSnapshotBtn')?.addEventListener('click',()=>document.getElementById('snapshotFileInput')?.click());
 document.getElementById('snapshotFileInput')?.addEventListener('change',e=>importDeviceSnapshotFile(e.target.files&&e.target.files[0]));
-document.getElementById('reportCsvBtn')?.addEventListener('click',exportFilteredCSV);
+document.getElementById('reportCsvBtn')?.addEventListener('click',openReportExport);
 document.getElementById('importLoadsBtn')?.addEventListener('click',()=>document.getElementById('importLoadsFileInput')?.click());
 document.getElementById('importLoadsFileInput')?.addEventListener('change',e=>importLoadsCsvFile(e.target.files?.[0]));
 document.getElementById('counterStat')?.addEventListener('click',openCounter);

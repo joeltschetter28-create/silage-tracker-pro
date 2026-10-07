@@ -86,11 +86,12 @@ function buildReportCsv(rows,title,filters,opts){
 function downloadCsvText(csv,fileName){const blob=new Blob(['\ufeff'+csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fileName;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function reportFilterText(){const t=(document.getElementById('reportFilterSummary')?.textContent||'').trim();return t||'All loads'}
 // Print / PDF: a clean page with just the filtered report -- summary, field totals, harvest days and the loads.
-function printFilteredReport(){
+function buildPrintReport(totalsOnly){
+  if(totalsOnly===undefined)totalsOnly=state.printMode==='totals';
   const rows=sortReportRows(reportRows(),currentReportSort()),st=reportStats(rows),u=state.unit,dmW=dmWord();
   const shown=v=>money(dmToShown(v))+'%';
   const stat=(k,v)=>'<div class="pr-stat"><small>'+esc(k)+'</small><b>'+esc(v)+'</b></div>';
-  let h='<h1>Silage Tracker Pro \u2014 Load Report</h1>';
+  let h='<h1>Silage Tracker Pro \u2014 '+(totalsOnly?'Totals Report':'Load Report')+'</h1>';
   const farm=(state.licenseFarmName||state.farmName||'').trim();if(farm)h+='<div class="pr-farm">'+esc(farm)+'</div>';
   h+='<div class="pr-meta">Printed '+esc(new Date().toLocaleString())+'<br>Filters: '+esc(reportFilterText())+'</div>';
   h+='<div class="pr-stats">'+stat('Loads',String(st.count))+stat('Harvest days',String(st.days.length))+stat('Wet weight',money(st.wet)+' '+u)+stat('Dry weight',money(st.dry)+' '+u)+stat('Average '+dmW,shown(st.dm))+(st.wetPerAcre!==null?stat('Yield per acre',money(st.wetPerAcre)+' wet '+u+'/ac'):'')+'</div>';
@@ -99,14 +100,19 @@ function printFilteredReport(){
   else{
     h+='<h2>Field Totals</h2><table><thead><tr><th>Field</th><th>Loads</th><th>Wet</th><th>Dry</th><th>'+esc(dmW)+'</th><th>Per acre</th><th>Harvest days</th></tr></thead><tbody>'+st.fields.map(g=>'<tr><td>'+esc(g.name)+(g.note?' \u2014 '+esc(g.note):'')+(g.acres?' <span class="pr-dim">('+money(g.acres)+' ac)</span>':'')+'</td><td>'+g.count+'</td><td>'+money(g.wet)+'</td><td>'+money(g.dry)+'</td><td>'+shown(g.dm)+'</td><td>'+(g.wetPerAcre!==null?money(g.wetPerAcre)+' wet':'\u2014')+'</td><td>'+esc(g.days.join(', '))+'</td></tr>').join('')+'</tbody></table>';
     h+='<h2>Harvest Days</h2><table><thead><tr><th>Day</th><th>Loads</th><th>Wet</th><th>Dry</th><th>'+esc(dmW)+'</th></tr></thead><tbody>'+st.days.map(d=>'<tr><td>'+esc(d.name)+'</td><td>'+d.loads+'</td><td>'+money(d.wet)+'</td><td>'+money(d.dry)+'</td><td>'+shown(d.wet?d.dry/d.wet*100:0)+'</td></tr>').join('')+'</tbody></table>';
-    h+='<h2>Loads ('+rows.length+')</h2><table class="pr-loads"><thead><tr><th>Date / Time</th><th>Field</th><th>Truck</th><th>Driver</th><th>Storage</th><th>Wet</th><th>'+esc(dmW)+'</th><th>Dry</th></tr></thead><tbody>'+rows.map(l=>'<tr><td>'+esc(new Date(l.time).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</td><td>'+esc(fieldDisplay(l))+(noteDisplay(l)?' \u2014 '+esc(noteDisplay(l)):'')+'</td><td>'+esc(truckDisplay(l))+'</td><td>'+esc(loadDriverName(l))+'</td><td>'+esc(storageDisplay(l))+'</td><td>'+money(l.wetWeight)+'</td><td>'+shown(l.dryMatter)+'</td><td>'+money(l.dryWeight)+'</td></tr>').join('')+'</tbody></table>';
+    if(!totalsOnly)h+='<h2>Loads ('+rows.length+')</h2><table class="pr-loads"><thead><tr><th>Date / Time</th><th>Field</th><th>Truck</th><th>Driver</th><th>Storage</th><th>Wet</th><th>'+esc(dmW)+'</th><th>Dry</th></tr></thead><tbody>'+rows.map(l=>'<tr><td>'+esc(new Date(l.time).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</td><td>'+esc(fieldDisplay(l))+(noteDisplay(l)?' \u2014 '+esc(noteDisplay(l)):'')+'</td><td>'+esc(truckDisplay(l))+'</td><td>'+esc(loadDriverName(l))+'</td><td>'+esc(storageDisplay(l))+'</td><td>'+money(l.wetWeight)+'</td><td>'+shown(l.dryMatter)+'</td><td>'+money(l.dryWeight)+'</td></tr>').join('')+'</tbody></table>';
     h+='<div class="pr-meta">Weights in '+esc(u)+'.</div>';
   }
   let box=document.getElementById('printReport');if(!box){box=document.createElement('div');box.id='printReport';document.body.appendChild(box)}
   box.innerHTML=h;document.body.classList.add('print-report-only');
-  setTimeout(()=>window.print(),50);
 }
-window.addEventListener('afterprint',()=>document.body.classList.remove('print-report-only'));
+// The report is built right before printing and the page stays in report-print mode while you're on Reports,
+// so it prints only the filtered report even when the phone's print dialog opens late or Print is chosen from
+// the browser's own menu. (These rules only apply to printing; nothing changes on screen.)
+// Print / PDF asks Full Report or Totals Only first; the choice is remembered for printing from the browser menu.
+function printFilteredReport(){const n=reportRows().length,note=document.getElementById('printOptionsNote');if(note)note.textContent=n+' load'+(n===1?'':'s')+' match your filters. '+reportFilterText();document.querySelectorAll('.print-choice').forEach(b=>b.classList.toggle('last',b.dataset.printMode===(state.printMode==='totals'?'totals':'full')));document.getElementById('printOptionsModal').classList.add('show')}
+document.addEventListener('click',e=>{const b=e.target.closest('.print-choice');if(!b)return;state.printMode=b.dataset.printMode;save();closeModal('printOptionsModal');buildPrintReport(state.printMode==='totals');window.print()});
+window.addEventListener('beforeprint',()=>{if(document.querySelector('.panel.active')?.id==='reports')buildPrintReport();else document.body.classList.remove('print-report-only')});
 
 // Driver names already in use (truck drivers and past loads), offered as suggestions when editing a load.
 function fillDriverOptions(){let dl=document.getElementById('driverNameOptions');if(!dl){dl=document.createElement('datalist');dl.id='driverNameOptions';document.body.appendChild(dl)}const names=new Set();state.trucks.forEach(t=>{if(String(t.driver||'').trim())names.add(t.driver.trim())});state.loads.forEach(l=>{if(String(l.driverName||'').trim())names.add(l.driverName.trim())});dl.innerHTML=[...names].sort((a,b)=>a.localeCompare(b)).map(n=>'<option value="'+esc(n)+'"></option>').join('')}
@@ -144,3 +150,23 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-exp-preset
   document.querySelectorAll('[data-exp-sec]').forEach(c=>c.checked=p==='all'?true:p==='totals'?c.dataset.expSec!=='loads':c.dataset.expSec==='loads');
   if(p!=='totals')document.querySelectorAll('[data-exp-col]').forEach(c=>c.checked=true);
   syncExportOptionsUI();saveExportOptions()});
+
+// ---------- Reports > Export Filtered CSV opens the Export window ----------
+// The loads come from the Reports filters; the window picks what goes in the file and its name.
+function openReportExport(){
+  const rows=reportRows(),note=document.getElementById('exportFilterNote');
+  if(note)note.textContent='Exports the '+rows.length+' load'+(rows.length===1?'':'s')+' matching your Reports filters. '+reportFilterText();
+  const fields=[...new Set(rows.map(l=>fieldDisplay(l)))];
+  const fn=document.getElementById('exportFileName');if(fn)fn.value=fields.length===1?'silage-'+fields[0]:'silage-report';
+  renderExportOptions();document.getElementById('exportModal').classList.add('show');
+}
+function runReportExport(){
+  const opts=readExportOptions();
+  if(!Object.values(opts.sections).some(Boolean))return alert('Tick at least one section to include.');
+  if(opts.sections.loads&&!Object.values(opts.cols).some(Boolean))return alert('Tick at least one detail for each load, or untick Every Load.');
+  saveExportOptions();
+  const rows=sortReportRows(reportRows(),'time-asc');
+  const name=(String(document.getElementById('exportFileName')?.value||'').trim()||'silage-report').replace(/[^a-z0-9_-]+/gi,'_');
+  downloadCsvText(buildReportCsv(rows,'Filtered Report',reportFilterText(),opts),name+'.csv');
+  closeModal('exportModal');showToast('CSV exported');
+}
