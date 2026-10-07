@@ -46,6 +46,56 @@ html.kb-open body{padding-bottom:calc(92px + var(--kb,0px))}
 .choice-grid .btn{min-height:42px;padding:8px 6px;font-size:calc(14px * var(--text-scale))}
 .history-more{width:100%;margin-top:8px}
 </style>
+<style id="declutter-css">
+.day-start-wrap{margin-top:10px}
+.day-start-value{font-size:calc(22px * var(--text-scale));font-weight:900;text-align:center;margin-bottom:4px}
+.day-start-range{width:100%;height:40px;margin:0;background:transparent;border:0!important;padding:0!important;box-shadow:none!important;outline-offset:4px;-webkit-appearance:none;appearance:none}.day-start-range::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--line)}.day-start-range::-moz-range-track{height:8px;border-radius:4px;background:var(--line)}.day-start-range::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--green);border:3px solid var(--card);box-shadow:0 1px 5px var(--shadow);margin-top:-11px}.day-start-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--green);border:3px solid var(--card);box-shadow:0 1px 5px var(--shadow)}
+.day-start-ends{display:flex;justify-content:space-between;font-size:calc(12px * var(--text-scale));color:var(--muted)}
+.install-open{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);text-align:left;font:inherit;cursor:pointer}
+.install-open .install-chev{margin-left:auto;font-size:26px;color:var(--muted)}
+.install-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 6px;background:var(--line);padding:4px;border-radius:12px}
+.install-tab{border:0;border-radius:9px;padding:9px 6px;font:inherit;font-weight:800;background:transparent;color:var(--text);cursor:pointer}
+.install-tab.active{background:var(--card);box-shadow:0 1px 4px var(--shadow)}
+.install-panel{display:none}.install-panel.active{display:block}
+.install-step{display:grid;grid-template-columns:24px 44px 1fr;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.install-num{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+.install-icon{width:44px;height:44px;border-radius:11px;background:color-mix(in srgb,var(--green) 12%,var(--card));color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.install-inline{display:inline-flex;vertical-align:middle;color:var(--green)}.install-inline svg{width:18px;height:18px}
+.install-pill{font-weight:900;font-size:13px;color:#0a84ff}
+.install-text{font-size:calc(15px * var(--text-scale));line-height:1.35}
+.install-done{display:flex;align-items:center;gap:12px;margin-top:12px}
+.install-done img{border-radius:10px;flex-shrink:0}
+</style>
+<style id="print-report-css">
+#printReport{display:none}
+@media print{
+  body.print-report-only>*:not(#printReport){display:none!important}
+  body.print-report-only{background:#fff!important;color:#000!important;padding:0!important}
+  body.print-report-only #printReport{display:block!important;font:12px/1.35 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#000}
+  #printReport h1{font-size:20px;margin:0 0 2px}
+  #printReport h2{font-size:15px;margin:16px 0 6px;border-bottom:2px solid #000;padding-bottom:2px}
+  #printReport .pr-farm{font-weight:700;font-size:14px}
+  #printReport .pr-meta{color:#333;margin:6px 0}
+  #printReport .pr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+  #printReport .pr-stat{border:1px solid #999;border-radius:6px;padding:6px 8px}
+  #printReport .pr-stat small{display:block;color:#444;font-size:10px;text-transform:uppercase}
+  #printReport .pr-stat b{font-size:15px}
+  #printReport table{width:100%;border-collapse:collapse;margin-bottom:4px}
+  #printReport th,#printReport td{border:1px solid #bbb;padding:3px 5px;text-align:left;vertical-align:top}
+  #printReport th{background:#eee}
+  #printReport tr{page-break-inside:avoid}
+  #printReport .pr-dim{color:#555}
+  #printReport .pr-loads{font-size:10.5px}
+}
+</style>
+<style id="export-options-css">
+.export-group-title{font-size:calc(12px * var(--text-scale));font-weight:800;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.export-checks{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}
+.export-check{display:flex;align-items:center;gap:2px;min-height:38px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--text);font-size:calc(15px * var(--text-scale));margin:0;cursor:pointer}
+.export-check input{flex-shrink:0}
+.export-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.export-quick .btn{min-height:38px;padding:6px 4px;font-size:calc(13px * var(--text-scale))}
+</style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
 <style id="v18-settings-css">
@@ -312,7 +362,6 @@ html.ctx-compact .load-instructions{display:none}
     <div class="settings-section">
       <label>Driver Mode</label>
       <div class="setting-row"><div><div class="setting-label-row"><b>Driver Mode</b><button type="button" class="info-icon" data-info="driverMode">i</button></div><div class="note">Locks everything except Loads.</div></div><label class="switch"><input type="checkbox" id="driverModeToggle"><span class="slider"></span></label></div>
-      <p class="note">Turning Driver Mode off, or opening a locked page, shows a slider &mdash; slide it all the way to the right to continue.</p>
     </div>
     <div class="settings-section">
       <label>Inoculant Counter</label>
@@ -338,7 +387,7 @@ html.ctx-compact .load-instructions{display:none}
       <div class="setting-row"><div><div class="setting-label-row"><b>Imported loads window</b><button type="button" class="info-icon" data-info="importWindow">i</button></div><div class="note">Flags likely duplicates during import.</div></div>
         <div class="minute-stepper"><button class="btn small grey" id="dupImportMinus" type="button" aria-label="Less time">&minus;</button><input id="dupImportMinutes" type="number" min="0" max="120" step="1" inputmode="numeric" aria-label="Imported loads duplicate window in minutes"><button class="btn small blue" id="dupImportPlus" type="button" aria-label="More time">+</button><span class="stepper-unit">min</span></div></div>
       <p class="note" id="dupImportSummary"></p>
-      <p class="note">Both timers move a minute at a time and are switched off at 0. Possible duplicates sent to the Trash are stamped <b>Imported duplicate</b>, and restoring one asks whether it replaces the load it looks like or whether both are kept.</p>
+      <p class="note"><span class="setting-label-row" style="display:inline-flex">How the duplicate timers work<button type="button" class="info-icon" data-info="dupTimers">i</button></span></p>
     </div>
     <div class="settings-section">
       <label>Annual Activation</label>
@@ -350,11 +399,11 @@ html.ctx-compact .load-instructions{display:none}
         </div>
         <button class="btn danger wide" id="licenseRemoveBtn" type="button" style="margin-top:10px;display:none">Remove Activation</button>
       </div>
+      <button type="button" class="install-open" onclick="openInstallGuide()"><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 5h4"/><path d="M12 9.5v5M9.5 12h5"/></svg></span><span><b>Add to Home Screen</b><span class="note" style="display:block">Step-by-step for iPhone and Android</span></span><span class="install-chev">&rsaquo;</span></button>
     </div>
     <div class="settings-section">
       <label>Harvest Day</label>
-      <div class="setting-row" style="display:block"><div><b>Day starts at</b><div class="note" id="dayStartNote"></div></div>
-        <div class="choice-grid"><button type="button" class="btn small grey" data-day-start="0" onclick="setDayStartHour(0)">12 AM</button><button type="button" class="btn small grey" data-day-start="1" onclick="setDayStartHour(1)">1 AM</button><button type="button" class="btn small grey" data-day-start="2" onclick="setDayStartHour(2)">2 AM</button><button type="button" class="btn small grey" data-day-start="3" onclick="setDayStartHour(3)">3 AM</button><button type="button" class="btn small grey" data-day-start="4" onclick="setDayStartHour(4)">4 AM</button><button type="button" class="btn small grey" data-day-start="5" onclick="setDayStartHour(5)">5 AM</button><button type="button" class="btn small grey" data-day-start="6" onclick="setDayStartHour(6)">6 AM</button><button type="button" class="btn small grey" data-day-start="7" onclick="setDayStartHour(7)">7 AM</button><button type="button" class="btn small grey" data-day-start="8" onclick="setDayStartHour(8)">8 AM</button></div></div>
+      <div class="setting-row" style="display:block"><div><div class="setting-label-row"><b>Day starts at</b><button type="button" class="info-icon" data-info="dayStart">i</button></div><div class="note">Loads after midnight count toward the previous day.</div></div><div class="day-start-wrap"><div class="day-start-value" id="dayStartValue">5 AM</div><input type="range" class="day-start-range" id="dayStartRange" min="0" max="8" step="1" value="5" aria-label="Harvest day starts at"><div class="day-start-ends"><span>12 AM</span><span>4 AM</span><span>8 AM</span></div></div></div>
     </div>
     <div class="settings-section">
       <label>Cycle Time &amp; Rate</label>
@@ -368,17 +417,16 @@ html.ctx-compact .load-instructions{display:none}
     <div class="settings-section">
       <label>Backup &amp; Recovery</label>
       <div id="dataHealth" class="note" style="margin-bottom:10px"></div>
-      <div class="actions"><button class="btn blue" id="downloadBackupBtn">Download Full Backup</button><button class="btn secondary" id="restoreBackupBtn">Restore Backup File</button></div><div class="actions" style="margin-top:10px"><button class="btn secondary" id="clearAllLoadsBtn">Clear All Loads</button><button class="btn danger" id="clearAllDataBtn">Clear All Data</button></div><p class="note" style="margin-top:8px"><b>Clear All Loads</b> summarises every field to the Archive page and clears the loads, ready for the next season. Fields and their acres, trucks and their weights, storage locations, commodities and settings all stay exactly as they are, and the cleared loads are kept in Deleted Loads for 30 days.</p>
+      <div class="actions"><button class="btn blue" id="downloadBackupBtn">Download Full Backup</button><button class="btn secondary" id="restoreBackupBtn">Restore Backup File</button></div><div class="actions" style="margin-top:10px"><button class="btn secondary" id="clearAllLoadsBtn">Clear All Loads</button><button class="btn danger" id="clearAllDataBtn">Clear All Data</button></div><p class="note"><span class="setting-label-row" style="display:inline-flex">What Clear All Loads does<button type="button" class="info-icon" data-info="clearAllLoads">i</button></span></p>
       <input id="backupFileInput" type="file" accept="application/json,.json" style="display:none">
-      <p class="note">A full backup contains trucks, fields, storage locations, loads, Trash, archived field summaries, dry-matter readings, weight history, and settings. Restoring replaces the current device data only after confirmation.</p>
+      <p class="note"><span class="setting-label-row" style="display:inline-flex">What a backup contains<button type="button" class="info-icon" data-info="backup">i</button></span></p>
     </div>
     <div class="settings-section" id="aboutCard">
       <label>About</label>
       <div class="rowitem"><div><div class="recent-main" id="aboutTitleText">Silage Tracker Pro</div><div class="recent-sub" id="aboutVersionText"></div></div></div>
       <p class="note" style="margin-top:10px">Issues or ideas? Share them with us at support.silagetracker@gmail.com</p>
-      <p class="note" style="margin-top:6px"><span class="setting-label-row" style="display:inline-flex">Add this app to your home screen for quick access.<button type="button" class="info-icon" data-info="installApp">i</button></span></p>
       <p class="note" style="margin-top:6px">Press and hold this section for What's New.</p>
-      <p class="note" style="margin-top:10px">By using this app, you agree that the information it provides is only as accurate as the data entered, and that real-world conditions can make results incorrect. Silage Tracker Pro and its developers are not liable for data loss, misuse, abuse, or any other damages arising from use of the app. This app is provided &ldquo;as is,&rdquo; without warranty of any kind.</p>
+      <p class="note"><span class="setting-label-row" style="display:inline-flex">Terms of use<button type="button" class="info-icon" data-info="terms">i</button></span></p>
     </div>
   </div>
 </section>
@@ -388,7 +436,7 @@ html.ctx-compact .load-instructions{display:none}
     <div class="settings-section">
       <label>Load Entry Feedback</label>
       <div class="setting-row"><div><b>Audible feedback</b><div class="note">Play a confirmation sound when entering a load.</div></div><label class="switch"><input type="checkbox" id="settingsAudioLoad"><span class="slider"></span></label></div>
-      <div class="setting-row"><div><b>Haptic feedback</b><div class="note">Vibrate when entering a load. Not supported on iPhone; on Android it also needs your phone's vibration switched on.</div></div><label class="switch"><input type="checkbox" id="settingsHapticLoad"><span class="slider"></span></label></div>
+      <div class="setting-row"><div><div class="setting-label-row"><b>Haptic feedback</b><button type="button" class="info-icon" data-info="haptic">i</button></div><div class="note">Vibrate when entering a load.</div></div><label class="switch"><input type="checkbox" id="settingsHapticLoad"><span class="slider"></span></label></div>
     </div>
     <div class="settings-section">
       <label>Display</label>
@@ -423,7 +471,7 @@ html.ctx-compact .load-instructions{display:none}
           <div class="layout-template-label">2 Per Row, Last Wide</div>
         </div>
       </div>
-      <p class="note" style="margin-top:8px">&ldquo;Last Wide&rdquo; only matters when there's an odd number of active trucks &mdash; it stretches the leftover button to fill the row instead of leaving it at half width.</p>
+      <p class="note"><span class="setting-label-row" style="display:inline-flex">What &ldquo;Last Wide&rdquo; does<button type="button" class="info-icon" data-info="lastWide">i</button></span></p>
     </div>
     <div class="settings-section">
       <label>Top Stats</label>
@@ -541,7 +589,7 @@ html.ctx-compact .load-instructions{display:none}
 <div style="margin-top:10px"><label>Action</label><select id="batchAction"><option value="edit">Edit selected loads</option><option value="delete">Delete selected loads</option></select></div>
 <div class="two" style="margin-top:10px"><div><label>Field</label><select id="batchField"><option value="">No change</option></select></div><div><label>Storage</label><select id="batchStorage"><option value="">No change</option></select></div></div>
 <div class="two" style="margin-top:10px"><div><label>Truck</label><select id="batchTruck"><option value="">No change</option></select></div><div><label id="batchDMLabel">Dry Matter %</label><input id="batchDM" type="number" step="0.1" min="0" max="100" placeholder="No change"></div></div>
-<div style="margin-top:10px"><label>Weight</label><input id="batchWeight" type="number" step="0.01" min="0" placeholder="No change"></div>
+<div class="two" style="margin-top:10px"><div><label>Weight</label><input id="batchWeight" type="number" step="0.01" min="0" placeholder="No change"></div><div><label>Driver</label><input id="batchDriver" list="driverNameOptions" autocomplete="off" placeholder="No change"></div></div>
 <div style="margin-top:10px" id="batchCommodityWrap"><label>Commodity</label><select id="batchCommodity"><option value="">No change</option></select><p class="note">Leave this on No change to keep the commodity each load already carries. Picking a Field above brings that field's commodity across; a commodity chosen here is used instead.</p></div>
 <div style="margin-top:10px"><label>Field Note</label><input id="batchNote" placeholder="No change"></div>
 <p class="note">Use the note to mark a run of loads as a particular cut. Leave it blank to keep the notes the loads already have.</p>
@@ -551,6 +599,7 @@ html.ctx-compact .load-instructions{display:none}
 <div id="editLoadModal" class="modal"><div class="modal-box">
   <div class="modal-title">Edit Load</div>
   <div class="two"><div><label>Truck</label><select id="editLoadTruck"></select></div><div><label>Field</label><select id="editLoadField"></select></div></div>
+  <div style="margin-top:10px"><label>Driver</label><input id="editLoadDriver" list="driverNameOptions" autocomplete="off" placeholder="Driver name (optional)"></div>
   <div style="margin-top:10px"><label>Storage</label><select id="editLoadStorage"></select></div>
   <div class="two" style="margin-top:10px"><div><label>Weight</label><input id="editLoadWeight" type="number" step="0.01"></div><div><label id="editLoadDMLabel">Dry Matter %</label><input id="editLoadDM" type="number" step="0.1" min="0" max="100"></div></div>
   <div style="margin-top:10px"><label>Date and Time</label><input id="editLoadDateTime" type="datetime-local"></div>
@@ -598,6 +647,7 @@ html.ctx-compact .load-instructions{display:none}
   <div id="exportChoiceWrap" style="margin-top:10px;display:none"><label id="exportChoiceLabel">Choose</label><select id="exportChoice"></select></div>
   <div id="exportDayWrap" style="margin-top:10px;display:none"><label>Date</label><input id="exportDay" type="date"></div>
   <div id="exportRangeWrap" class="two" style="margin-top:10px;display:none"><div><label>From</label><input id="exportFrom" type="date"></div><div><label>To</label><input id="exportTo" type="date"></div></div>
+  <div id="exportDetailsWrap" style="margin-top:12px"><div class="setting-label-row"><label style="margin:0">Include in the report</label></div><div class="export-quick"><button type="button" class="btn small grey" data-exp-preset="all">Everything</button><button type="button" class="btn small grey" data-exp-preset="totals">Totals Only</button><button type="button" class="btn small grey" data-exp-preset="loads">Loads Only</button></div><div class="export-group-title">Sections</div><div class="export-checks"><label class="export-check" data-wrap-sec="summary"><input type="checkbox" data-exp-sec="summary" checked><span>Summary</span></label><label class="export-check" data-wrap-sec="fields"><input type="checkbox" data-exp-sec="fields" checked><span>Field Totals</span></label><label class="export-check" data-wrap-sec="days"><input type="checkbox" data-exp-sec="days" checked><span>Harvest Days</span></label><label class="export-check" data-wrap-sec="loads"><input type="checkbox" data-exp-sec="loads" checked><span>Every Load</span></label></div><div id="exportColsWrap"><div class="export-group-title">Details for each load</div><div class="export-checks"><label class="export-check" data-wrap-col="datetime"><input type="checkbox" data-exp-col="datetime" checked><span>Date &amp; Time</span></label><label class="export-check" data-wrap-col="harvestDay"><input type="checkbox" data-exp-col="harvestDay" checked><span>Harvest Day</span></label><label class="export-check" data-wrap-col="field"><input type="checkbox" data-exp-col="field" checked><span>Field &amp; Acres</span></label><label class="export-check" data-wrap-col="note"><input type="checkbox" data-exp-col="note" checked><span>Field Note</span></label><label class="export-check" data-wrap-col="commodity"><input type="checkbox" data-exp-col="commodity" checked><span>Commodity</span></label><label class="export-check" data-wrap-col="storage"><input type="checkbox" data-exp-col="storage" checked><span>Storage</span></label><label class="export-check" data-wrap-col="truck"><input type="checkbox" data-exp-col="truck" checked><span>Truck</span></label><label class="export-check" data-wrap-col="driver"><input type="checkbox" data-exp-col="driver" checked><span>Driver</span></label><label class="export-check" data-wrap-col="type"><input type="checkbox" data-exp-col="type" checked><span>Load Type &amp; Assigned Weight</span></label><label class="export-check" data-wrap-col="wet"><input type="checkbox" data-exp-col="wet" checked><span>Wet Weight</span></label><label class="export-check" data-wrap-col="dm"><input type="checkbox" data-exp-col="dm" checked><span>Dry Matter %</span></label><label class="export-check" data-wrap-col="dry"><input type="checkbox" data-exp-col="dry" checked><span>Dry Weight</span></label><label class="export-check" data-wrap-col="inoculant"><input type="checkbox" data-exp-col="inoculant" checked><span>Inoculant</span></label></div></div></div>
   <div class="actions"><button class="btn blue" id="runExportBtn">Export CSV</button><button class="btn grey" id="cancelExportBtn">Cancel</button></div>
 </div></div>
 <div id="counterModal" class="modal"><div class="modal-box">
@@ -643,7 +693,17 @@ html.ctx-compact .load-instructions{display:none}
   <label style="margin-top:10px">Farm Name</label><input id="promptFarmNameInput" placeholder="e.g. Smith Family Farm" autocomplete="off" autocorrect="off" spellcheck="false">
   <label style="margin-top:10px">Activation Code</label><input id="promptCodeInput" placeholder="e.g. D5G-W5BU" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" inputmode="text" enterkeyhint="done">
   <p class="note" style="margin-top:8px" id="promptError"></p>
+  <button type="button" class="install-open" onclick="openInstallGuide()"><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 5h4"/><path d="M12 9.5v5M9.5 12h5"/></svg></span><span><b>Add to Home Screen</b><span class="note" style="display:block">Step-by-step for iPhone and Android</span></span><span class="install-chev">&rsaquo;</span></button>
   <div class="actions"><button class="btn grey" id="promptCancelBtn" type="button">Cancel</button><button class="btn blue" id="promptActivateBtn" type="button">Activate</button></div>
+</div></div>
+<div id="installGuideModal" class="modal" style="z-index:320"><div class="modal-box">
+  <div class="modal-title">Add to Home Screen</div>
+  <p class="note">Puts the app on your home screen so it opens full-screen like any other app, and keeps working offline.</p>
+  <div class="install-tabs"><button type="button" class="install-tab" data-install-tab="ios">iPhone / iPad</button><button type="button" class="install-tab" data-install-tab="android">Android</button></div>
+  <div class="install-panel" data-install-panel="ios"><div class="install-step"><span class="install-num">1</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span><span class="install-text">Open the app in <b>Safari</b>.</span></div><div class="install-step"><span class="install-num">2</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M7 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-1"/></svg></span><span class="install-text">Tap the <b>Share</b> button. On newer iPhones, tap <span class="install-inline"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></svg></span> first, then <b>Share</b>.</span></div><div class="install-step"><span class="install-num">3</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span><span class="install-text">Scroll down and tap <b>Add to Home Screen</b>.</span></div><div class="install-step"><span class="install-num">4</span><span class="install-icon"><span class="install-pill">Add</span></span><span class="install-text">Tap <b>Add</b> in the top corner.</span></div></div>
+  <div class="install-panel" data-install-panel="android"><div class="install-step"><span class="install-num">1</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M9 13.8L4.9 6.7M15 13.8l-4.1 7.1"/></svg></span><span class="install-text">Open the app in <b>Chrome</b>.</span></div><div class="install-step"><span class="install-num">2</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="19" r="1.3" fill="currentColor"/></svg></span><span class="install-text">Tap the <b>menu</b> in the top right.</span></div><div class="install-step"><span class="install-num">3</span><span class="install-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 7v7"/><path d="M9.5 11.5L12 14l2.5-2.5"/><path d="M11 18.5h2"/></svg></span><span class="install-text">Tap <b>Add to Home screen</b> or <b>Install app</b>.</span></div><div class="install-step"><span class="install-num">4</span><span class="install-icon"><span class="install-pill">Install</span></span><span class="install-text">Tap <b>Install</b> or <b>Add</b> to confirm.</span></div></div>
+  <div class="install-done"><img src="icon-192.png" alt="" width="44" height="44"><span>Then open the app from this icon on your home screen.</span></div>
+  <div class="actions"><button class="btn blue wide" id="installGuideCloseBtn" type="button">Got it</button></div>
 </div></div>
 <div id="infoPopupModal" class="modal"><div class="modal-box">
   <div class="modal-title" id="infoPopupTitle"></div>
@@ -654,6 +714,11 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.13.1</b><br>• Export now lets you tick which sections and which load details go in the report, with Everything, Totals Only and Loads Only shortcuts — your choices are remembered<br>• Exporting a single field names the file after the field</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.13.0</b><br>• Print / PDF now prints just the filtered report: summary, field totals, harvest days and the loads<br>• CSV exports now start with a summary — loads, harvest dates, dry matter, total yield and yield per acre where acres are known — followed by field totals, harvest days and every load<br>• The driver on a recorded load can now be changed in Edit Load, or for many loads at once with Batch Edit</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.5</b><br>• The inoculant counter warning now names the driver who just unloaded, or the truck if no driver is set</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.4</b><br>• The inoculant counter warning message now says which truck just unloaded, and when</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.3</b><br>• Day Starts At is now a slider<br>• Longer setting descriptions are tucked behind the ⓘ icon — tap it to read the full explanation<br>• Add to Home Screen instructions moved to Annual Activation and the activation window, with pictures of each button to tap</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.2</b><br>• Pasted links now preview as just “Silage Tracker Pro”, without a version number</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.1</b><br>• Pasted links now preview with the correct app name and version</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.0</b><br>• Weights on a truck’s page can be edited and deleted again, including their date and time<br>• Importing a snapshot now suggests a numbered label like “Imported from User 1”<br>• Field summaries, the Archive and Field Totals now show which days the field was harvested<br>• Added a Day Starts At setting under Harvest Day in Settings — loads after midnight but before that time count toward the previous day</div>

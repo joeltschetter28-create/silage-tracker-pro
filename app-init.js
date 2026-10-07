@@ -1,5 +1,5 @@
-const VERSION='3.12.2';
-const BUILD='2026.10.06.003';
+const VERSION='3.13.1';
+const BUILD='2026.10.06.008';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');
@@ -305,5 +305,5 @@ bindActivationPromptModal();
 render();
 if(state.keepAwake)requestWakeLock();
 document.getElementById("pdfBtn")?.addEventListener("click",()=>window.print());
-document.getElementById("reportPrintBtn")?.addEventListener("click",()=>{document.body.classList.add("print-reports-only");window.print()});
+document.getElementById("reportPrintBtn")?.addEventListener("click",printFilteredReport);
 window.addEventListener("afterprint",()=>document.body.classList.remove("print-reports-only"));

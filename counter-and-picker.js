@@ -21,7 +21,11 @@ function openCounter(){const c=state.counter;document.getElementById('counterTar
 // own -- both always require the person to tap Send inside that app -- so this opens a pre-filled
 // compose screen and stops there. The banner is keyed to state.counter.startAt (same as the other
 // counter notifications), so dismissing it only silences this one warning period, not future ones.
-function counterAlertMessage(){const c=state.counter||{},rem=Number(c.target||0)-counterTonnes();return 'Inoculant counter warning: '+money(Math.max(rem,0))+' '+state.unit+' remaining until the '+money(Number(c.target)||0)+' '+state.unit+' target. \u2014 Silage Tracker Pro'}
+// The most recent load the counter has counted -- the truck that just unloaded and brought the warning on.
+function counterLastLoad(){const periods=counterPeriods();if(!periods.length)return null;const spans=periods.map(p=>[new Date(p.start).getTime(),p.end===null?Infinity:new Date(p.end).getTime()]);let best=null,bt=-Infinity;state.loads.forEach(l=>{const t=new Date(l.time).getTime();if(t>bt&&spans.some(([a,b])=>t>=a&&t<b)){best=l;bt=t}});return best}
+function counterAlertMessage(){const c=state.counter||{},rem=Number(c.target||0)-counterTonnes(),last=counterLastLoad();// Name the driver when the load has one, otherwise the truck.
+  const name=last?(String(last.driverName||'').trim()||(state.trucks.find(t=>t.id===last.truckId)?.driver||'').trim()||truckDisplay(last)):'';
+  const who=last?name+' just unloaded'+(last.time?' at '+new Date(last.time).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'')+'. ':'';return 'Inoculant counter warning: '+who+money(Math.max(rem,0))+' '+state.unit+' remaining until the '+money(Number(c.target)||0)+' '+state.unit+' target. \u2014 Silage Tracker Pro'}
 function counterAlertDue(){const c=state.counter||{};if(!c.enabled||!c.alertNumber||!counterStarted()||!counterRunning())return false;const target=Number(c.target)||250,warn=Number(c.warning)||0,rem=target-counterTonnes();if(warn<=0||rem>warn)return false;return c.alertDismissedAt!==c.startAt}
 function dismissCounterAlert(){state.counter.alertDismissedAt=state.counter.startAt;save();renderCounterAlertBanner()}
 function counterAlertDigits(){return String(state.counter.alertNumber||'').replace(/[^0-9+]/g,'')}

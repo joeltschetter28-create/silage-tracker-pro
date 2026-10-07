@@ -1,5 +1,25 @@
 # Silage Tracker Pro Changelog
 
+## V3.13.1 — Build 2026.10.06.008
+- Export now lets you tick which sections and which load details go in the report, with Everything, Totals Only and Loads Only shortcuts — your choices are remembered
+- Exporting a single field names the file after the field
+
+## V3.13.0 — Build 2026.10.06.007
+- Print / PDF now prints just the filtered report: summary, field totals, harvest days and the loads
+- CSV exports now start with a summary — loads, harvest dates, dry matter, total yield and yield per acre where acres are known — followed by field totals, harvest days and every load
+- The driver on a recorded load can now be changed in Edit Load, or for many loads at once with Batch Edit
+
+## V3.12.5 — Build 2026.10.06.006
+- The inoculant counter warning now names the driver who just unloaded, or the truck if no driver is set
+
+## V3.12.4 — Build 2026.10.06.005
+- The inoculant counter warning message now says which truck just unloaded, and when
+
+## V3.12.3 — Build 2026.10.06.004
+- Day Starts At is now a slider
+- Longer setting descriptions are tucked behind the ⓘ icon — tap it to read the full explanation
+- Add to Home Screen instructions moved to Annual Activation and the activation window, with pictures of each button to tap
+
 ## V3.12.2 — Build 2026.10.06.003
 - Pasted links now preview as just “Silage Tracker Pro”, without a version number
 
