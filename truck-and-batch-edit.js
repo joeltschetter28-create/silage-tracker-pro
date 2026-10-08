@@ -38,6 +38,7 @@ function renderDayStartChoices(){
 }
 function renderDisplayChoices(){
   document.querySelectorAll('[data-theme-mode]').forEach(b=>b.classList.toggle('grey',b.dataset.themeMode!==state.themeMode));
+  document.querySelectorAll('[data-weight-view]').forEach(b=>b.classList.toggle('grey',b.dataset.weightView!==weightView()));
   document.querySelectorAll('[data-dim-seconds]').forEach(b=>b.classList.toggle('grey',Number(b.dataset.dimSeconds)!==Number(state.dimSeconds)));
   const n=document.getElementById('dimNote');if(n){const s=Number(state.dimSeconds);n.textContent=s>0?'The app dims itself after '+(s<60?s+' seconds':(s/60)+' minute'+(s===60?'':'s'))+' without a touch. Tap anywhere to brighten it.':'The app never dims itself.'}
 }
@@ -110,6 +111,7 @@ const INFO_TEXTS={
   clearAllLoads:{title:'Clear All Loads',text:'Summarises every field to the Archive page and clears the loads, ready for the next season.\n\nFields and their acres, trucks and their weights, storage locations, commodities and settings all stay exactly as they are, and the cleared loads are kept in Deleted Loads for 30 days.'},
   backup:{title:'Full backup',text:'A full backup contains trucks, fields, storage locations, loads, Trash, archived field summaries, dry-matter readings, weight history, and settings.\n\nRestoring replaces the current device data only after you confirm.'},
   terms:{title:'Terms of use',text:'By using this app, you agree that the information it provides is only as accurate as the data entered, and that real-world conditions can make results incorrect.\n\nSilage Tracker Pro and its developers are not liable for data loss, misuse, abuse, or any other damages arising from use of the app. This app is provided \u201cas is,\u201d without warranty of any kind.'},
+  weightView:{title:'Show weights as',text:'Both shows wet and dry weights, as before.\n\nWet Only or Dry Only hides the other weight on the Loads, Today and Reports pages, the Archive and Print / PDF, and totals, rates and yield per acre use the weight you picked.\n\nNothing is deleted \u2014 every load still keeps both weights, and you can switch back any time. CSV exports still include both unless you untick them. The inoculant counter always counts wet tonnes.'},
   haptic:{title:'Haptic feedback',text:'Not supported on iPhone. On Android it also needs your phone\u2019s vibration switched on.'},
   lastWide:{title:'Last Wide',text:'Only matters when there\u2019s an odd number of active trucks \u2014 it stretches the leftover button to fill the row instead of leaving it at half width.'},
   commodityToggle:{title:'Commodity tracking',text:'Switching this off only hides the feature. Your commodities, the commodity set on each field, and every per-commodity truck weight are kept exactly as they are, no load is recalculated, and it all comes straight back when you switch it on again.'},
@@ -199,14 +201,14 @@ function computeTodayStats(dayStart){
   const end=harvestDayEnd(dayStart);
   const loads=state.loads.filter(l=>{const t=new Date(l.time).getTime();return t>=dayStart.getTime()&&t<end.getTime()});
   const loadsCount=loads.length;
-  const wetTonnes=loads.reduce((s,l)=>s+Number(l.wetWeight||0),0);
+  const wetTonnes=wSum(loads);
   const avgDm=loadsCount?loads.reduce((s,l)=>s+Number(l.dryMatter||0),0)/loadsCount:null;
   const avgRate=harvestRatePerHour(loads.map(l=>l.time),wetTonnes);
   const hourTotals={};
-  loads.forEach(l=>{const hr=new Date(l.time).getHours();hourTotals[hr]=(hourTotals[hr]||0)+Number(l.wetWeight||0)});
+  loads.forEach(l=>{const hr=new Date(l.time).getHours();hourTotals[hr]=(hourTotals[hr]||0)+loadW(l)});
   const peakRate=Object.keys(hourTotals).length?Math.max(...Object.values(hourTotals)):null;
   const byTruck={};
-  loads.forEach(l=>{const key=l.truckName||'Unknown';if(!byTruck[key])byTruck[key]={count:0,wet:0};byTruck[key].count++;byTruck[key].wet+=Number(l.wetWeight||0)});
+  loads.forEach(l=>{const key=l.truckName||'Unknown';if(!byTruck[key])byTruck[key]={count:0,wet:0};byTruck[key].count++;byTruck[key].wet+=loadW(l)});
   return {loadsCount,wetTonnes,avgDm,avgRate,peakRate,byTruck};
 }
 function renderTodayPage(){
@@ -215,7 +217,7 @@ function renderTodayPage(){
   const end=harvestDayEnd(dayStart);
   const stats=computeTodayStats(dayStart);
   document.getElementById('todayLoadsCount').textContent=stats.loadsCount;
-  document.getElementById('todayWetTonnes').textContent=money(stats.wetTonnes)+' '+state.unit;
+  document.getElementById('todayWetTonnes').textContent=money(stats.wetTonnes)+' '+state.unit;{const lb=document.getElementById('todayWetLabel');if(lb)lb.textContent=weightView()==='dry'?'Dry Tonnes':'Wet Tonnes'}
   document.getElementById('todayDmLabel').textContent='Avg '+dmWord();
   document.getElementById('todayAvgDm').textContent=stats.avgDm!==null?dmPct(stats.avgDm):'\u2014';
   document.getElementById('todayAvgRate').textContent=stats.avgRate!==null?money(stats.avgRate)+' '+state.unit+'/hr':'\u2014';
@@ -229,6 +231,7 @@ function renderTodayPage(){
     const y=dayStart.getFullYear(),m=String(dayStart.getMonth()+1).padStart(2,'0'),d=String(dayStart.getDate()).padStart(2,'0');
     picker.value=y+'-'+m+'-'+d;
   }
+  const bt=document.getElementById('todayDateBtnText');if(bt)bt.textContent=(harvestDayKey(dayStart)===todayKeyNow()?'Today \u00b7 ':'')+dayStart.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',year:dayStart.getFullYear()!==new Date().getFullYear()?'numeric':undefined});
 }
 function bindTodayPage(){
   const picker=document.getElementById('todayDatePicker');
@@ -256,8 +259,8 @@ function bindVersionEasterEgg(){
   });
 }
 function applyTopStats(){
-  const map={loads:'statTileLoads',wet:'statTileWet',dry:'statTileDry',rate:'statTileRate'};
-  Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el)el.style.display=state.topStats[k]?'':'none'});
+  const map={loads:'statTileLoads',wet:'statTileWet',dry:'statTileDry',rate:'statTileRate'},ts=shownTopStats();
+  Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el)el.style.display=ts[k]?'':'none'});
 }
 function applyTruckLayout(){
   const grid=document.getElementById('truckGrid');if(!grid)return;
@@ -282,7 +285,7 @@ function statsGridPlan(n,layout){
   const sp=statsRowSplit(n,layout),top=sp[0],bottom=sp[1],gcd=(a,b)=>b?gcd(b,a%b):a;
   return {top,bottom,cols:bottom?top*bottom/gcd(top,bottom):top};
 }
-function visibleStatCount(){const ts=state.topStats||{};return ['loads','wet','dry','rate'].filter(k=>ts[k]).length+(state.counter&&state.counter.enabled?1:0)}
+function visibleStatCount(){const ts=shownTopStats();return ['loads','wet','dry','rate'].filter(k=>ts[k]).length+(state.counter&&state.counter.enabled?1:0)}
 function applyTopStatsLayout(){
   const grid=document.getElementById('topStatsGrid');if(!grid)return;
   const tiles=[...grid.children].filter(el=>el.classList.contains('stat')&&!el.hidden&&el.style.display!=='none');
@@ -656,7 +659,8 @@ function bindDriverModeSettings(){
 function renderThemeSwatches(){
   const row=document.getElementById('themeSwatchRow');if(!row)return;
   const cur=sanitizeTheme(state.theme);
-  row.innerHTML=THEME_PRESETS.map(p=>`<button type="button" class="theme-swatch${cur.id===p.id?' selected':''}" data-theme-id="${p.id}" style="background:linear-gradient(135deg,${p.accent},${p.accent2})" title="${esc(p.name)}" aria-label="${esc(p.name)}"></button>`).join('')+`<button type="button" class="theme-swatch theme-swatch-custom${cur.id==='custom'?' selected':''}" data-theme-id="custom" title="Custom" aria-label="Custom"></button>`;
+  row.innerHTML=THEME_PRESETS.map(p=>`<button type="button" class="theme-swatch${cur.id===p.id?' selected':''}" data-theme-id="${p.id}" style="background:${p.swatch||`linear-gradient(135deg,${p.accent},${p.accent2})`}" title="${esc(p.name)}" aria-label="${esc(p.name)}"></button>`).join('')+`<button type="button" class="theme-swatch theme-swatch-custom${cur.id==='custom'?' selected':''}" data-theme-id="custom" title="Custom" aria-label="Custom"></button>`;
+  const nm=document.getElementById('themeSwatchName');if(nm)nm.textContent=cur.id==='custom'?'Custom':(themePreset(cur.id)?.name||'');
   const customRow=document.getElementById('customThemeRow');
   if(customRow)customRow.style.display=cur.id==='custom'?'grid':'none';
   const ca=document.getElementById('customThemeAccent'),ca2=document.getElementById('customThemeAccent2');
@@ -737,3 +741,47 @@ function buildFieldArchiveEntry(field,loads){
 function selectInstallTab(t){document.querySelectorAll('.install-tab').forEach(b=>b.classList.toggle('active',b.dataset.installTab===t));document.querySelectorAll('.install-panel').forEach(p=>p.classList.toggle('active',p.dataset.installPanel===t))}
 function openInstallGuide(){const m=document.getElementById('installGuideModal');if(!m)return;const ua=navigator.userAgent||'';const ios=/iPhone|iPad|iPod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);selectInstallTab(/Android/i.test(ua)&&!ios?'android':'ios');m.classList.add('show')}
 document.addEventListener('click',e=>{const tab=e.target.closest('.install-tab');if(tab){selectInstallTab(tab.dataset.installTab);return}if(e.target.id==='installGuideCloseBtn'||e.target.id==='installGuideModal')document.getElementById('installGuideModal')?.classList.remove('show')});
+
+// ---------- Today page date picker ----------
+// Only harvest days that have loads can be picked; the rest are greyed out.
+let todayCalMonth=null;
+function loadDayCounts(){const m={};state.loads.forEach(l=>{const t=new Date(l.time);if(!Number.isFinite(t.getTime()))return;const k=harvestDayKey(t);m[k]=(m[k]||0)+1});return m}
+function todayKeyNow(){return harvestDayKey(new Date())}
+function selectedTodayKey(){return todaySelectedDate||todayKeyNow()}
+function renderTodayCal(){
+  const counts=loadDayCounts(),keys=Object.keys(counts).sort();
+  const sel=selectedTodayKey(),now=todayKeyNow();
+  if(!todayCalMonth){const [y,m]=sel.split('-').map(Number);todayCalMonth={y,m:m-1}}
+  const {y,m}=todayCalMonth,first=new Date(y,m,1),days=new Date(y,m+1,0).getDate();
+  document.getElementById('todayCalTitle').textContent=first.toLocaleDateString([],{month:'long',year:'numeric'});
+  const ym=(Y,M)=>Y*12+M;
+  const minYM=keys.length?(()=>{const [a,b]=keys[0].split('-').map(Number);return ym(a,b-1)})():ym(y,m);
+  const nowYM=(()=>{const [a,b]=now.split('-').map(Number);const lastKey=keys.length?keys[keys.length-1].split('-').map(Number):[a,b];return Math.max(ym(a,b-1),ym(lastKey[0],lastKey[1]-1))})();
+  document.getElementById('todayCalPrev').disabled=ym(y,m)<=minYM;
+  document.getElementById('todayCalNext').disabled=ym(y,m)>=nowYM;
+  let h='';for(let i=0;i<first.getDay();i++)h+='<span></span>';
+  for(let d=1;d<=days;d++){const k=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),n=counts[k]||0;
+    h+='<button type="button" class="cal-day'+(k===sel?' selected':'')+(k===now?' today':'')+'" data-cal-day="'+k+'"'+(n?' aria-label="'+esc(fmtHarvestDay(k))+', '+n+' load'+(n===1?'':'s')+'"':' disabled aria-label="'+esc(fmtHarvestDay(k))+', no loads"')+'>'+d+(n?'<small>'+n+'</small>':'')+'</button>'}
+  document.getElementById('todayCalDays').innerHTML=h;
+}
+function openTodayCal(){todayCalMonth=null;renderTodayCal();document.getElementById('todayCalModal').classList.add('show')}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#todayDateBtn')){openTodayCal();return}
+  if(e.target.closest('#todayCalPrev')||e.target.closest('#todayCalNext')){if(e.target.closest('button').disabled)return;const step=e.target.closest('#todayCalPrev')?-1:1;let {y,m}=todayCalMonth;m+=step;if(m<0){m=11;y--}if(m>11){m=0;y++}todayCalMonth={y,m};renderTodayCal();return}
+  const day=e.target.closest('[data-cal-day]');if(day&&!day.disabled){todaySelectedDate=day.dataset.calDay;closeModal('todayCalModal');renderTodayPage()}
+});
+
+// In Wet Only / Dry Only there is one weight tile on the Loads page, so Appearance shows one weight switch.
+function shownTopStats(){const ts=Object.assign({},state.topStats||{}),v=weightView();if(v!=='both'){const on=!!(ts.wet||ts.dry);ts.wet=v==='wet'&&on;ts.dry=v==='dry'&&on}return ts}
+function applyWeightViewAppearance(){
+  const v=weightView(),w=document.getElementById('statShowWet'),d=document.getElementById('statShowDry');
+  const wr=w?.closest('.toggle-row'),dr=d?.closest('.toggle-row');
+  if(wr){wr.style.display='';const lab=wr.querySelector('label');if(lab)lab.textContent=v==='dry'?'Dry Total':'Wet Total'}
+  if(dr)dr.style.display=v==='both'?'':'none';
+  if(w&&v!=='both')w.checked=!!(state.topStats.wet||state.topStats.dry);
+  document.querySelectorAll('.stat-chip-row').forEach(row=>{const chips=[...row.querySelectorAll('.stat-chip')];const wc=chips.find(c=>(c.dataset.k||c.textContent.trim())==='Wet'),dc=chips.find(c=>(c.dataset.k||c.textContent.trim())==='Dry');if(!wc||!dc)return;
+    if(!wc.dataset.k){wc.dataset.k='Wet';dc.dataset.k='Dry';wc.dataset.on=wc.classList.contains('on')?'1':'';dc.dataset.on=dc.classList.contains('on')?'1':''}
+    if(v==='both'){wc.textContent='Wet';wc.classList.toggle('on',!!wc.dataset.on);dc.style.display=''}
+    else{wc.textContent=v==='dry'?'Dry':'Wet';wc.classList.toggle('on',!!(wc.dataset.on||dc.dataset.on));dc.style.display='none'}});
+}
+document.addEventListener('change',e=>{if(e.target.id!=='statShowWet'||weightView()==='both')return;if(!e.target.checked)state.topStats.dry=false;save();applyTopStats();applyTopStatsLayout();renderStatsArrangementCards()});

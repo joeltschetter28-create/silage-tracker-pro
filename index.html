@@ -101,6 +101,23 @@ html.kb-open body{padding-bottom:calc(92px + var(--kb,0px))}
 .print-choice b{display:block;font-size:calc(17px * var(--text-scale))}
 .print-choice.last{border-color:var(--green)}
 </style>
+<style id="today-cal-css">
+.today-date-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:inherit;font-weight:800;font-size:calc(17px * var(--text-scale));cursor:pointer}
+.today-date-btn svg{flex-shrink:0;color:var(--green)}
+.cal-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cal-title{flex:1;text-align:center;font-weight:900;font-size:calc(18px * var(--text-scale))}
+.cal-nav{min-width:46px;font-size:24px!important;flex:0 0 auto}
+.cal-nav:disabled{opacity:.35}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow span{text-align:center;font-size:calc(11px * var(--text-scale));font-weight:800;color:var(--muted);text-transform:uppercase;padding:4px 0}
+.cal-day{aspect-ratio:1;border:0;border-radius:10px;font:inherit;font-weight:800;font-size:calc(16px * var(--text-scale));background:color-mix(in srgb,var(--green) 14%,var(--card));color:var(--text);cursor:pointer;padding:0;position:relative}
+.cal-day small{position:absolute;left:0;right:0;bottom:3px;font-size:9px;font-weight:700;color:var(--green)}
+.cal-day:disabled{background:transparent;color:var(--muted);opacity:.4;cursor:default;font-weight:600}
+.cal-day.today{outline:2px dashed var(--muted);outline-offset:-2px}
+.cal-day.selected{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff}
+.cal-day.selected small{color:#fff}
+</style>
+<style id="weight-view-css">body.wv-dry .w-wet,body.wv-wet .w-dry{display:none!important}</style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
 <style id="v18-settings-css">
@@ -152,7 +169,7 @@ html.kb-open body{padding-bottom:calc(92px + var(--kb,0px))}
 .theme-swatch-row{display:flex;flex-wrap:wrap;gap:10px}
 .theme-swatch{width:42px;height:42px;border-radius:50%;border:3px solid var(--line);padding:0;cursor:pointer}
 .theme-swatch.selected{border-color:var(--text);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text)}
-.theme-swatch-custom{background:conic-gradient(from 0deg,#1f7a3f,#1d4ed8,#b45309,#7e22ce,#1f7a3f)}
+.theme-swatch-custom{background:conic-gradient(from 0deg,#1f7a3f,#1d4ed8,#b45309,#7e22ce,#1f7a3f)}.theme-swatch-name{font-size:calc(13px * var(--text-scale));color:var(--muted);margin-top:6px;min-height:1.2em}
 .archive-breakdown{margin-top:12px}
 .archive-breakdown label{margin-bottom:2px}
 #archiveList .collapse-body{max-height:340px;overflow:auto}
@@ -272,11 +289,11 @@ html.ctx-compact .load-instructions{display:none}
   <section id="today" class="panel">
     <div class="card">
       <label>Today</label>
-      <div style="margin-bottom:10px"><input id="todayDatePicker" type="date"></div>
+      <div style="margin-bottom:10px"><input id="todayDatePicker" type="date" hidden><button type="button" class="today-date-btn" id="todayDateBtn"><span id="todayDateBtnText">Today</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button></div>
       <div id="todayDateLabel" class="recent-sub" style="margin-bottom:10px"></div>
       <div class="topgrid today-stats-grid">
         <div class="stat" data-stat-key="loads"><small>Loads</small><span id="todayLoadsCount">0</span></div>
-        <div class="stat" data-stat-key="wet"><small>Wet Tonnes</small><span id="todayWetTonnes">0</span></div>
+        <div class="stat" data-stat-key="wet"><small id="todayWetLabel">Wet Tonnes</small><span id="todayWetTonnes">0</span></div>
         <div class="stat" data-stat-key="dm"><small id="todayDmLabel">Avg Dry Matter</small><span id="todayAvgDm">—</span></div>
         <div class="stat" data-stat-key="rate"><small>Avg Rate</small><span id="todayAvgRate">—</span></div>
         <div class="stat" data-stat-key="peak"><small>Peak Rate/hr</small><span id="todayPeakRate">—</span></div>
@@ -343,7 +360,7 @@ html.ctx-compact .load-instructions{display:none}
 
   <section id="reports" class="panel">
     <div class="card no-print"><label>Report Filters</label><p class="note">Tap a filter to tick as many options as you need. Leaving one untouched includes everything.</p><div class="report-filters" id="reportFilterGrid"></div><div class="report-daterow" style="margin-top:8px"><div><label>From</label><input id="reportFrom" type="date"></div><div><label>To</label><input id="reportTo" type="date"></div><div class="report-sort"><label>Sort Loads By</label><select id="reportSort"></select></div></div><div id="reportFilterSummary" class="note" style="margin-top:8px"></div><div class="actions"><button class="btn grey" id="clearReportFilters">Clear Filters</button><button class="btn blue" id="reportCsvBtn">Export Filtered CSV</button><button class="btn secondary" id="reportPrintBtn">Print / PDF</button></div></div>
-    <div class="report-summary"><div class="stat"><small>Loads</small><span id="reportLoadCount">0</span></div><div class="stat"><small>Wet Weight</small><span id="reportWet">0.00</span></div><div class="stat"><small>Dry Weight</small><span id="reportDry">0.00</span></div><div class="stat"><small id="reportDmLabel">Average DM</small><span id="reportDm">0.00%</span></div></div>
+    <div class="report-summary"><div class="stat"><small>Loads</small><span id="reportLoadCount">0</span></div><div class="stat w-wet"><small>Wet Weight</small><span id="reportWet">0.00</span></div><div class="stat w-dry"><small>Dry Weight</small><span id="reportDry">0.00</span></div><div class="stat"><small id="reportDmLabel">Average DM</small><span id="reportDm">0.00%</span></div></div>
     <div class="report-tabs report-tab-strip no-print" id="reportTabStrip"><button class="report-tab active" data-report-tab="loads" type="button">Load Reports</button><button class="report-tab" data-report-tab="inoculant" type="button">Inoculant Reports</button><button class="report-tab" data-report-tab="editlogs" type="button">Edit Logs</button></div>
     <div id="reportLoadsPanel" class="report-subpanel active">
       <div class="card"><label>Field Totals</label><div id="fieldTotals"></div></div>
@@ -379,6 +396,10 @@ html.ctx-compact .load-instructions{display:none}
     <div class="settings-section">
       <label>Moisture</label>
       <div class="setting-row"><div><div class="setting-label-row"><b>Show moisture instead of dry matter</b><button type="button" class="info-icon" data-info="moisture">i</button></div><div class="note">Readings, loads, reports and the archive read as moisture % rather than dry matter %.</div></div><label class="switch"><input type="checkbox" id="settingsMoisture"><span class="slider"></span></label></div>
+    </div>
+    <div class="settings-section">
+      <label>Weights Shown</label>
+      <div class="setting-row" style="display:block"><div><div class="setting-label-row"><b>Show weights as</b><button type="button" class="info-icon" data-info="weightView">i</button></div><div class="note">Pick which weights show around the app.</div></div><div class="choice-grid"><button type="button" class="btn small grey" data-weight-view="both" onclick="setWeightView('both')">Both</button><button type="button" class="btn small grey" data-weight-view="wet" onclick="setWeightView('wet')">Wet Only</button><button type="button" class="btn small grey" data-weight-view="dry" onclick="setWeightView('dry')">Dry Only</button></div></div>
     </div>
     <div class="settings-section">
       <label>Weighing</label>
@@ -452,7 +473,7 @@ html.ctx-compact .load-instructions{display:none}
       <div class="setting-row" style="display:block"><div><b>Text Size</b><div class="note">Makes text bigger or smaller across the whole app.</div></div>
         <div class="minute-stepper" style="margin-top:8px"><button class="btn small grey" id="textScaleMinus" type="button" aria-label="Smaller text">&minus;</button><div style="flex:1;text-align:center;font-weight:900;font-size:19px" id="textScaleDisplay">100%</div><button class="btn small blue" id="textScalePlus" type="button" aria-label="Bigger text">+</button></div></div>
       <div class="setting-row" style="display:block"><div><b>Theme colour</b><div class="note">Pick an accent colour for buttons and highlights. Works with dark mode either way.</div></div>
-        <div class="theme-swatch-row" id="themeSwatchRow" style="margin-top:8px"></div>
+        <div class="theme-swatch-row" id="themeSwatchRow" style="margin-top:8px"></div><div class="theme-swatch-name" id="themeSwatchName"></div>
         <div id="customThemeRow" class="two" style="margin-top:8px;display:none">
           <div><label>Accent</label><input id="customThemeAccent" type="color"></div>
           <div><label>Accent (dark)</label><input id="customThemeAccent2" type="color"></div>
@@ -653,6 +674,13 @@ html.ctx-compact .load-instructions{display:none}
   <button type="button" class="print-choice" data-print-mode="totals"><b>Totals Only</b><span class="note">Summary, Field Totals and Harvest Days &mdash; no load list</span></button>
   <div class="actions"><button class="btn grey wide" type="button" onclick="closeModal('printOptionsModal')">Cancel</button></div>
 </div></div>
+<div id="todayCalModal" class="modal"><div class="modal-box">
+  <div class="cal-head"><button type="button" class="btn small grey cal-nav" id="todayCalPrev" aria-label="Previous month">&lsaquo;</button><div class="cal-title" id="todayCalTitle"></div><button type="button" class="btn small grey cal-nav" id="todayCalNext" aria-label="Next month">&rsaquo;</button></div>
+  <div class="cal-grid cal-dow"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+  <div class="cal-grid" id="todayCalDays"></div>
+  <p class="note" style="margin-top:8px">Greyed-out days have no loads logged.</p>
+  <div class="actions"><button class="btn grey wide" type="button" onclick="closeModal('todayCalModal')">Close</button></div>
+</div></div>
 <div id="exportModal" class="modal"><div class="modal-box">
   <div class="modal-title">Export Filtered CSV</div>
   <div class="note" id="exportFilterNote"></div>
@@ -669,7 +697,7 @@ html.ctx-compact .load-instructions{display:none}
 <div class="card" style="margin-top:0"><div class="stat"><small>Silage Since Counter Start</small><span id="counterModalCurrent">0.00 t</span></div><div class="note" id="counterModalStarted" style="margin-top:8px"></div></div>
 <div class="two"><div><label>Batch / Set Amount</label><input id="counterTarget" type="number" step="0.01" min="0.01" inputmode="decimal"></div><div><label>Warning Distance</label><input id="counterWarning" type="number" step="0.01" min="0" inputmode="decimal"></div></div>
 <label style="margin-top:10px">Alert Phone Number (optional)</label><input id="counterAlertNumber" type="tel" placeholder="e.g. 555-123-4567" inputmode="tel">
-<p class="note" style="margin-top:6px">When the warning level is reached, a <b>Send Alert</b> button appears on the Loads page with a message already typed out to this number &mdash; pick Text or WhatsApp, and it opens ready to send with one tap. Nothing sends on its own; no app can do that without you tapping Send yourself.</p>
+<p class="note" style="margin-top:6px">When the warning level is reached, a <b>Send Alert</b> button appears on the Loads page with a message already typed out to this number &mdash; pick Text or WhatsApp, and it opens ready to send with one tap.</p>
 <p class="note">The counter adds wet silage tonnes from loads entered after the counter was started or last reset. Pausing stops new loads from counting until you resume.</p>
 <div class="actions"><button class="btn" id="saveCounterSettingsBtn">Save Counter Settings</button><button class="btn" id="counterPauseBtn">⏸ Pause Counter</button><button class="btn blue" id="counterMissedStartBtn">Set Missed Start Time</button><button class="btn danger" id="resetCounterBtn">Reset Counter</button><button class="btn grey" id="closeCounterBtn">Close</button></div>
 <div class="card"><label>Counter Status</label><div id="counterStatus" class="note"></div></div></div></div>
@@ -728,28 +756,28 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.14.0</b><br>• Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.13.5</b><br>• Picking a day on the Today page now uses a calendar — days with no loads are greyed out and can’t be picked<br>• New theme colours: John Deere Green, Case Red, New Holland Yellow &amp; Blue and Claas Green — Autumn Rust removed<br>• Shortened the Inoculant Counter description</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.4</b><br>• Print / PDF now offers Full Report or Totals Only — Totals Only prints the summary, field totals and harvest days without the list of loads</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.3</b><br>• Print / PDF reliably prints only the filtered report, even on phones where the print screen opens late<br>• Printing from any other page prints just that page instead of the whole app</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.2</b><br>• Export Filtered CSV on Reports now opens an Export window where you choose the file name and what to include in the report</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.1</b><br>• Export now lets you tick which sections and which load details go in the report, with Everything, Totals Only and Loads Only shortcuts — your choices are remembered<br>• Exporting a single field names the file after the field</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.0</b><br>• Print / PDF now prints just the filtered report: summary, field totals, harvest days and the loads<br>• CSV exports now start with a summary — loads, harvest dates, dry matter, total yield and yield per acre where acres are known — followed by field totals, harvest days and every load<br>• The driver on a recorded load can now be changed in Edit Load, or for many loads at once with Batch Edit</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.5</b><br>• The inoculant counter warning now names the driver who just unloaded, or the truck if no driver is set</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.4</b><br>• The inoculant counter warning message now says which truck just unloaded, and when</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.3</b><br>• Day Starts At is now a slider<br>• Longer setting descriptions are tucked behind the ⓘ icon — tap it to read the full explanation<br>• Add to Home Screen instructions moved to Annual Activation and the activation window, with pictures of each button to tap</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.2</b><br>• Pasted links now preview as just “Silage Tracker Pro”, without a version number</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.12.1</b><br>• Pasted links now preview with the correct app name and version</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.12.0</b><br>• Weights on a truck’s page can be edited and deleted again, including their date and time<br>• Importing a snapshot now suggests a numbered label like “Imported from User 1”<br>• Field summaries, the Archive and Field Totals now show which days the field was harvested<br>• Added a Day Starts At setting under Harvest Day in Settings — loads after midnight but before that time count toward the previous day</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.11.0</b><br>• Choose Light, Dark or Same as System for the theme on Appearance<br>• Choose how long the screen stays bright before the app dims it, or never dim<br>• Inoculant Reports now show the most recent event at the top<br>• Opening a truck from Setup now starts at the top of its page, and going back returns you to the same spot in the list<br>• A truck’s weight history shows the two most recent weights, with the rest under Show All<br>• Text boxes now move up above the keyboard instead of hiding behind it</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.10.0</b><br>• Swiping between pages is smoother — the page follows your finger and glides into the next one<br>• The free-use countdown now counts calendar days, so it goes down by exactly one each day</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.9.0</b><br>• Erase All Data now asks whether to also remove the device's activation, or keep it<br>• A free month that's already running is no longer lost when you erase data<br>• Bug fixes</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.8.0</b><br>• Backups and snapshots no longer carry the activation, and restoring or importing one never changes a device's activation<br>• Devices updating from a version that didn't need a code get a one-month grace period from the update, shown in Settings and on the Loads page, then need a farm name and code</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.7.0</b><br>• The Current Field and Storage boxes now slide out of the way once you scroll past the trucks on the Loads page<br>• Simplified the Annual Activation section — it now shows when the device was activated, how long it's good for, and which farm<br>• Activation now always needs a farm name and a matching code — existing devices are no longer activated automatically<br>• Simplified the version log</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.10.0</b><br>• Swiping between pages is smoother — the page follows your finger and glides into the next one</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.9.0</b><br>• Erase All Data now asks whether to also remove the device's activation, or keep it</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.8.0</b><br>• Backups and snapshots no longer carry the activation, and restoring or importing one never changes a device's activation</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.7.0</b><br>• The Current Field and Storage boxes now slide out of the way once you scroll past the trucks on the Loads page</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.6.0</b><br>• Touch and hold any stat on the Loads or Today page, then drag it to a new spot — the order is remembered<br>• Added a Reset Stat Order button on Appearance</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.5.0</b><br>• Every pop-up that used to show the web address on Android (CSV export, deleting a truck, field or storage, clearing and restoring data, imports and more) is now a clean in-app dialog<br>• Top stat arrangement now offers every sensible split for the number of stats showing — with five: One Row, 2 Above 3 Below or 3 Above 2 Below<br>• Picking a field or commodity from a list is now tap-to-choose, and deleting a truck from its own page asks once<br>• Snapshot imports now ask for an optional label</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.4.0</b><br>• Top stats can be arranged as One Row or Two Rows, with visual previews on Appearance<br>• Deleting a load now asks with a clean “Move to Trash” sheet<br>• Haptic feedback buzzes longer so it can be felt on Android, and the switch tells you if vibration is blocked or unsupported<br>• Added a Remove Activation button in Settings, and code boxes no longer autocorrect what you type</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.3.2</b><br>• Bug fixes</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.3.1</b><br>• Truck layout and top stat templates are now visual previews you tap directly</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.3.0</b><br>• Added an Appearance page, between Settings and Deleted Loads, with Load Entry Feedback and Display moved onto it and the Inoculant Counter switch kept in sync with Settings<br>• Choose which Loads-page stats show, with Minimal, Standard and Full templates<br>• Truck buttons can be shown 1 or 2 per row</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.3.0</b><br>• Added an Appearance page</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.2.1</b><br>• Removed the moisture prompt from Weigh Load<br>• Bug fixes</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.2.0</b><br>• Weigh Load now has a gear button for gross/net entry — choose kg or lb, and enter net weight directly or gross and tare (tare is remembered per truck)<br>• Snapshot imports now ask for a label (like “Imported from user”), shown on each imported load<br>• Added home screen install instructions (iPhone and Android) under About</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.1.5</b><br>• Removed the Jump to Today button<br>• Added 5 min ago and 10 min ago buttons to Load Options for recording a missed load<br>• Clarified the wording of the activation prompt</div>
@@ -761,11 +789,7 @@ html.ctx-compact .load-instructions{display:none}
       <div class="note" style="margin-top:10px"><b>What’s new in V3.0.2</b><br>• The activation status in Settings now shows the activation date</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.0.1</b><br>• Settings descriptions are shorter, with tap-for-more (i) icons<br>• Truck weight history is clearer: Add Weight names the commodity and confirms, and a new Move button re-files a weight under the right commodity</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.0.0</b><br>• Activation no longer locks any page — a code is asked for only when it's needed: logging a load, changing Setup, or higher-stakes Settings actions<br>• Driver Mode now locks Reports too<br>• Added a support contact note under About<br>• Bug fixes</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V2.25.0</b><br>• Codes now work only during the calendar year they were made for<br>• When a device locks, only Reports stays available</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V2.24.1</b><br>• Activation codes are now a compact 7-character format (like D5G-W5BU)</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V2.24.0</b><br>• Activation is now always on instead of an optional switch<br>• Once activated, the farm name shows in the header</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V2.23.0</b><br>• Activation codes are now specific to a farm — the farm name and code must match<br>• A free first year is no longer given — a real farm name and code are needed from the start</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V2.22.0</b><br>• Added Annual Activation in Settings — a code keeps a device active for 12 months, with a grace period afterwards, entirely offline with no account or payment</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V2.22.0</b><br>• Added Annual Activation in Settings</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V2.21.1</b><br>• Added a haptic buzz when Driver Mode's slide-to-unlock completes (not supported on iPhone)</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V2.21.0</b><br>• Tapping the Rate stat now jumps to its setting<br>• Theme colours are more noticeable, and the Loads page header collapses more smoothly</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V2.20.0</b><br>• The Loads dashboard Rate is now a rolling window — set it under Settings → Cycle Time &amp; Rate (default 4 hours)<br>• Bug fixes</div>

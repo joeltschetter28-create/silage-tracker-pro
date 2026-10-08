@@ -1,5 +1,5 @@
-const VERSION='3.13.4';
-const BUILD='2026.10.06.011';
+const VERSION='3.14.0';
+const BUILD='2026.10.08.002';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');
@@ -14,7 +14,7 @@ const NO_NOTE='__nonote__';
 const KEEP_COMMODITY='__keep__';
 // Load edit logs are kept on the Reports page for 60 days, then drop off on their own.
 const EDIT_LOG_DAYS=60;
-const defaults={unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:false,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[{id:uid(),name:'North Field',size:0,note:'',commodityId:''},{id:uid(),name:'South Field',size:0,note:'',commodityId:''}],trucks:[{id:uid(),name:'Truck 1',driver:'',active:true,order:0,fullWeight:12,primaryColor:'#1f7a3f',secondaryColor:'#14532d'},{id:uid(),name:'Truck 2',driver:'',active:true,order:1,fullWeight:14,primaryColor:'#1d4ed8',secondaryColor:'#1e3a8a'}],storages:[{id:uid(),name:'Bunker 1'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],editLogs:[],darkMode:false,themeMode:'system',dimSeconds:60,dayStartHour:5,keepAwake:false,driverMode:false,textScale:1,rateWindowHours:4,licenseFarmName:'',licenseActivatedAt:null,licenseGraceDays:30,licenseLegacyChecked:true,licenseLegacyGraceUntil:null,weighLoadUnit:'kg',weighLoadEntryMode:'net',easterEggSound:false,easterEggDay:'',topStats:{loads:true,wet:true,dry:false,rate:true},truckLayout:'2',truckLayoutLastWide:false,topStatsLayout:'one',statOrder:['loads','wet','dry','rate','inoculant'],todayStatOrder:['loads','wet','dm','rate','peak'],counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+const defaults={unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:false,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[{id:uid(),name:'North Field',size:0,note:'',commodityId:''},{id:uid(),name:'South Field',size:0,note:'',commodityId:''}],trucks:[{id:uid(),name:'Truck 1',driver:'',active:true,order:0,fullWeight:12,primaryColor:'#1f7a3f',secondaryColor:'#14532d'},{id:uid(),name:'Truck 2',driver:'',active:true,order:1,fullWeight:14,primaryColor:'#1d4ed8',secondaryColor:'#1e3a8a'}],storages:[{id:uid(),name:'Bunker 1'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],editLogs:[],darkMode:false,themeMode:'system',dimSeconds:60,dayStartHour:5,weightView:'both',keepAwake:false,driverMode:false,textScale:1,rateWindowHours:4,licenseFarmName:'',licenseActivatedAt:null,licenseGraceDays:30,licenseLegacyChecked:true,licenseLegacyGraceUntil:null,weighLoadUnit:'kg',weighLoadEntryMode:'net',easterEggSound:false,easterEggDay:'',topStats:{loads:true,wet:true,dry:false,rate:true},truckLayout:'2',truckLayoutLastWide:false,topStatsLayout:'one',statOrder:['loads','wet','dry','rate','inoculant'],todayStatOrder:['loads','wet','dm','rate','peak'],counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
 let state=loadState();
 // A device that has just been given its one-month update grace needs that start date written down straight
 // away -- otherwise opening and closing the app with no other change would restart the clock every time.
@@ -177,6 +177,7 @@ document.getElementById('dmHourAgoBtn').onclick=()=>document.getElementById('dmE
 // Theme: Light, Dark, or follow the phone. Dim timer: how long before the app dims itself (0 = never).
 function setThemeMode(m){state.themeMode=m;applySettings();save();renderDisplayChoices()}
 function setDayStartHour(h){state.dayStartHour=h;save();render();showToast('Harvest day now starts at '+(h===0?'12 AM':h+' AM'))}
+function setWeightView(m){state.weightView=m;save();render();showToast(m==='both'?'Showing wet and dry weights':m==='wet'?'Showing wet weights only':'Showing dry weights only')}
 function setDimSeconds(n){state.dimSeconds=n;applySettings();save();renderDisplayChoices()}
 (function(){const mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');if(!mq)return;const f=()=>{if(state.themeMode==='system')applySettings()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)})();
 document.getElementById('wakeToggle').onchange=async e=>{state.keepAwake=e.target.checked;applySettings();save();if(state.keepAwake)await requestWakeLock();else releaseWakeLock()};

@@ -1,5 +1,13 @@
 # Silage Tracker Pro Changelog
 
+## V3.14.0 — Build 2026.10.08.002
+- Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app
+
+## V3.13.5 — Build 2026.10.08.001
+- Picking a day on the Today page now uses a calendar — days with no loads are greyed out and can’t be picked
+- New theme colours: John Deere Green, Case Red, New Holland Yellow & Blue and Claas Green — Autumn Rust removed
+- Shortened the Inoculant Counter description
+
 ## V3.13.4 — Build 2026.10.06.011
 - Print / PDF now offers Full Report or Totals Only — Totals Only prints the summary, field totals and harvest days without the list of loads
 
@@ -22,9 +30,6 @@
 ## V3.12.5 — Build 2026.10.06.006
 - The inoculant counter warning now names the driver who just unloaded, or the truck if no driver is set
 
-## V3.12.4 — Build 2026.10.06.005
-- The inoculant counter warning message now says which truck just unloaded, and when
-
 ## V3.12.3 — Build 2026.10.06.004
 - Day Starts At is now a slider
 - Longer setting descriptions are tucked behind the ⓘ icon — tap it to read the full explanation
@@ -32,9 +37,6 @@
 
 ## V3.12.2 — Build 2026.10.06.003
 - Pasted links now preview as just “Silage Tracker Pro”, without a version number
-
-## V3.12.1 — Build 2026.10.06.002
-- Pasted links now preview with the correct app name and version
 
 ## V3.12.0 — Build 2026.10.06.001
 - Weights on a truck’s page can be edited and deleted again, including their date and time
@@ -52,22 +54,15 @@
 
 ## V3.10.0 — Build 2026.10.04.003
 - Swiping between pages is smoother — the page follows your finger and glides into the next one
-- The free-use countdown now counts calendar days, so it goes down by exactly one each day
 
 ## V3.9.0 — Build 2026.10.04.001
 - Erase All Data now asks whether to also remove the device's activation, or keep it
-- A free month that's already running is no longer lost when you erase data
-- Bug fixes
 
 ## V3.8.0 — Build 2026.10.03.005
 - Backups and snapshots no longer carry the activation, and restoring or importing one never changes a device's activation
-- Devices updating from a version that didn't need a code get a one-month grace period from the update, shown in Settings and on the Loads page, then need a farm name and code
 
 ## V3.7.0 — Build 2026.10.03.004
 - The Current Field and Storage boxes now slide out of the way once you scroll past the trucks on the Loads page
-- Simplified the Annual Activation section — it now shows when the device was activated, how long it's good for, and which farm
-- Activation now always needs a farm name and a matching code — existing devices are no longer activated automatically
-- Simplified the version log
 
 ## V3.6.0 — Build 2026.10.03.003
 - Touch and hold any stat on the Loads or Today page, then drag it to a new spot — the order is remembered
@@ -92,9 +87,7 @@
 - Truck layout and top stat templates are now visual previews you tap directly
 
 ## V3.3.0 — Build 2026.09.30.001
-- Added an Appearance page, between Settings and Deleted Loads, with Load Entry Feedback and Display moved onto it and the Inoculant Counter switch kept in sync with Settings
-- Choose which Loads-page stats show, with Minimal, Standard and Full templates
-- Truck buttons can be shown 1 or 2 per row
+- Added an Appearance page
 
 ## V3.2.1 — Build 2026.09.29.001
 - Removed the moisture prompt from Weigh Load
@@ -141,23 +134,8 @@
 - Added a support contact note under About
 - Bug fixes
 
-## V2.25.0 — Build 2026.09.05.042
-- Codes now work only during the calendar year they were made for
-- When a device locks, only Reports stays available
-
-## V2.24.1 — Build 2026.09.05.041
-- Activation codes are now a compact 7-character format (like D5G-W5BU)
-
-## V2.24.0 — Build 2026.09.05.040
-- Activation is now always on instead of an optional switch
-- Once activated, the farm name shows in the header
-
-## V2.23.0 — Build 2026.09.05.039
-- Activation codes are now specific to a farm — the farm name and code must match
-- A free first year is no longer given — a real farm name and code are needed from the start
-
 ## V2.22.0 — Build 2026.09.05.038
-- Added Annual Activation in Settings — a code keeps a device active for 12 months, with a grace period afterwards, entirely offline with no account or payment
+- Added Annual Activation in Settings
 
 ## V2.21.1 — Build 2026.09.05.037
 - Added a haptic buzz when Driver Mode's slide-to-unlock completes (not supported on iPhone)
@@ -308,3 +286,4 @@
 
 ## V1.1.0 — Build 2026.08.04.001
 - Added version numbering and in-app release notes
+
