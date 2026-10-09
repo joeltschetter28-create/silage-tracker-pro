@@ -279,10 +279,10 @@ const THEME_PRESETS=[
   {id:'sky',name:'Sky Blue',accent:'#1d4ed8',accent2:'#1e3a8a'},
   {id:'slate',name:'Slate',accent:'#475569',accent2:'#1e293b'},
   {id:'grape',name:'Grape',accent:'#7e22ce',accent2:'#581c87'},
-  {id:'deere',name:'John Deere Green',accent:'#367c2b',accent2:'#1f4d17',swatch:'linear-gradient(135deg,#367c2b 0 62%,#ffde00 62%)'},
+  {id:'deere',name:'John Deere Green',accent:'#367c2b',accent2:'#1f4d17',hi:'#ffde00',hiText:true,swatch:'linear-gradient(135deg,#367c2b 0 62%,#ffde00 62%)'},
   {id:'case',name:'Case Red',accent:'#c8102e',accent2:'#7f0a1d'},
-  {id:'nh',name:'New Holland Yellow & Blue',accent:'#0a4aa6',accent2:'#062f6b',swatch:'linear-gradient(135deg,#ffd100 0 45%,#0a4aa6 45%)'},
-  {id:'claas',name:'Claas Green',accent:'#7a8c0f',accent2:'#4b5608',swatch:'linear-gradient(135deg,#b4c618 0 55%,#4b5608 55%)'}
+  {id:'nh',name:'New Holland Yellow & Blue',accent:'#0a4aa6',accent2:'#062f6b',hi:'#ffd100',hiText:true,swatch:'linear-gradient(135deg,#ffd100 0 45%,#0a4aa6 45%)'},
+  {id:'claas',name:'Claas Green',accent:'#7a8c0f',accent2:'#4b5608',hi:'#c4d61e',swatch:'linear-gradient(135deg,#b4c618 0 55%,#4b5608 55%)'}
 ];
 function themePreset(id){return THEME_PRESETS.find(t=>t.id===id)}
 const HEX_RE=/^#[0-9a-fA-F]{6}$/;
@@ -294,7 +294,7 @@ function sanitizeTheme(t){
 }
 // Set directly on <body> (not <html>) so it wins over both the base :root rule and the
 // body.dark override, regardless of which one is currently active.
-function applyTheme(){const t=sanitizeTheme(state.theme);document.body.style.setProperty('--green',t.accent);document.body.style.setProperty('--green2',t.accent2)}
+function applyTheme(){const t=sanitizeTheme(state.theme);document.body.style.setProperty('--green',t.accent);document.body.style.setProperty('--green2',t.accent2);const p=themePreset(t.id);document.body.classList.toggle('has-hi',!!(p&&p.hi));document.body.classList.toggle('hi-text',!!(p&&p.hiText));if(p&&p.hi)document.body.style.setProperty('--hi',p.hi);else document.body.style.removeProperty('--hi')}
 // Text size: the viewport is set to user-scalable=no (pinch-zoom deliberately disabled, so a
 // stray touch on a truck button mid-tap can't zoom the whole page out), and every font-size in
 // this file is a plain px value, so neither pinch-zoom nor an OS "larger text" setting can do

@@ -118,6 +118,18 @@ html.kb-open body{padding-bottom:calc(92px + var(--kb,0px))}
 .cal-day.selected small{color:#fff}
 </style>
 <style id="weight-view-css">body.wv-dry .w-wet,body.wv-wet .w-dry{display:none!important}</style>
+<style id="theme-highlight-css">
+/* Two-colour themes (John Deere, New Holland, Claas): the second colour shows as a stripe under the
+   header, the page title, switch knobs and the selected report tab; Deere and New Holland also put it on button text. */
+body.has-hi header{box-shadow:inset 0 -4px 0 var(--hi),0 3px 10px var(--shadow)}
+body.has-hi .page-title{color:var(--hi);opacity:1}
+body.has-hi input:checked+.slider{background:var(--green)}
+body.has-hi input:checked+.slider:before{background:var(--hi)}
+body.has-hi .report-tab.active{box-shadow:inset 0 -3px 0 var(--hi)}
+body.has-hi .side-menu .tab.active{box-shadow:inset 4px 0 0 var(--hi)}
+body.has-hi .cal-day.selected{box-shadow:inset 0 0 0 2px var(--hi)}
+body.hi-text .btn:not(.grey):not(.blue):not(.danger):not(.secondary),body.hi-text .report-tab.active,body.hi-text .side-menu .tab.active,body.hi-text .cal-day.selected,body.hi-text .cal-day.selected small{color:var(--hi)}
+</style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
 <style id="v18-settings-css">
@@ -359,7 +371,7 @@ html.ctx-compact .load-instructions{display:none}
   </section>
 
   <section id="reports" class="panel">
-    <div class="card no-print"><label>Report Filters</label><p class="note">Tap a filter to tick as many options as you need. Leaving one untouched includes everything.</p><div class="report-filters" id="reportFilterGrid"></div><div class="report-daterow" style="margin-top:8px"><div><label>From</label><input id="reportFrom" type="date"></div><div><label>To</label><input id="reportTo" type="date"></div><div class="report-sort"><label>Sort Loads By</label><select id="reportSort"></select></div></div><div id="reportFilterSummary" class="note" style="margin-top:8px"></div><div class="actions"><button class="btn grey" id="clearReportFilters">Clear Filters</button><button class="btn blue" id="reportCsvBtn">Export Filtered CSV</button><button class="btn secondary" id="reportPrintBtn">Print / PDF</button></div></div>
+    <div class="card no-print"><label>Report Filters</label><div class="report-filters" id="reportFilterGrid"></div><div class="report-daterow" style="margin-top:8px"><div><label>From</label><input id="reportFrom" type="date"></div><div><label>To</label><input id="reportTo" type="date"></div><div class="report-sort"><label>Sort Loads By</label><select id="reportSort"></select></div></div><div id="reportFilterSummary" class="note" style="margin-top:8px"></div><div class="actions"><button class="btn grey" id="clearReportFilters">Clear Filters</button><button class="btn blue" id="reportCsvBtn">Export Filtered CSV</button><button class="btn secondary" id="reportPrintBtn">Print / PDF</button></div></div>
     <div class="report-summary"><div class="stat"><small>Loads</small><span id="reportLoadCount">0</span></div><div class="stat w-wet"><small>Wet Weight</small><span id="reportWet">0.00</span></div><div class="stat w-dry"><small>Dry Weight</small><span id="reportDry">0.00</span></div><div class="stat"><small id="reportDmLabel">Average DM</small><span id="reportDm">0.00%</span></div></div>
     <div class="report-tabs report-tab-strip no-print" id="reportTabStrip"><button class="report-tab active" data-report-tab="loads" type="button">Load Reports</button><button class="report-tab" data-report-tab="inoculant" type="button">Inoculant Reports</button><button class="report-tab" data-report-tab="editlogs" type="button">Edit Logs</button></div>
     <div id="reportLoadsPanel" class="report-subpanel active">
@@ -371,8 +383,7 @@ html.ctx-compact .load-instructions{display:none}
     </div>
     <div id="reportEditLogsPanel" class="report-subpanel">
       <div class="card"><label>Load Edit Logs</label>
-        <p class="note">One entry for every edit made to the loads, whether a single load or a batch. <b>Undo</b> puts those loads back the way they were immediately before the edit and removes the entry. <b>Delete</b> clears the entry from this list and leaves the changes in place. Entries are kept for 60 days.</p>
-        <div id="editLogList" style="margin-top:10px"></div>
+        <div id="editLogList" style="margin-top:6px"></div>
       </div>
     </div>
   </section>
@@ -756,6 +767,7 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.14.1</b><br>• Polished UI</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.0</b><br>• Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.5</b><br>• Picking a day on the Today page now uses a calendar — days with no loads are greyed out and can’t be picked<br>• New theme colours: John Deere Green, Case Red, New Holland Yellow &amp; Blue and Claas Green — Autumn Rust removed<br>• Shortened the Inoculant Counter description</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.4</b><br>• Print / PDF now offers Full Report or Totals Only — Totals Only prints the summary, field totals and harvest days without the list of loads</div>

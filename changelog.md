@@ -1,5 +1,8 @@
 # Silage Tracker Pro Changelog
 
+## V3.14.1 — Build 2026.10.09.001
+- Polished UI
+
 ## V3.14.0 — Build 2026.10.08.002
 - Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app
 
