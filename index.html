@@ -130,6 +130,61 @@ body.has-hi .side-menu .tab.active{box-shadow:inset 4px 0 0 var(--hi)}
 body.has-hi .cal-day.selected{box-shadow:inset 0 0 0 2px var(--hi)}
 body.hi-text .btn:not(.grey):not(.blue):not(.danger):not(.secondary),body.hi-text .report-tab.active,body.hi-text .side-menu .tab.active,body.hi-text .cal-day.selected,body.hi-text .cal-day.selected small{color:var(--hi)}
 </style>
+<style id="ui-extras-css">
+/* Loads page sections */
+.loads-split{display:flex;flex-direction:column}
+.loads-split .split-stats{order:1}.loads-split .split-trucks{order:2;margin-top:12px}
+.loads-split.trucks-first .split-trucks{order:0;margin-top:0}.loads-split.trucks-first .split-stats{margin-top:12px}
+.loads-split .split-trucks>.card{margin-top:0}
+html.land .loads-split{display:grid;grid-template-columns:var(--stats-w,27%) minmax(0,1fr);gap:10px;align-items:start}
+html.land .loads-split.trucks-first{grid-template-columns:minmax(0,1fr) var(--stats-w,27%)}
+html.land .loads-split .split-stats,html.land .loads-split .split-trucks{margin-top:0!important}
+html.land .loads-split .split-stats{order:1}html.land .loads-split .split-trucks{order:2}
+html.land .loads-split.trucks-first .split-trucks{order:1}html.land .loads-split.trucks-first .split-stats{order:2}
+html.land .split-stats .topgrid{align-content:start}
+html.land .app{max-width:none}
+/* Short landscape screens (phones on their side): tighter so trucks and stats fit without scrolling */
+html.land-short #headDetails{display:none}
+html.land-short header{padding-top:calc(6px + env(safe-area-inset-top))!important;padding-bottom:6px!important}
+html.land-short .app{padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right))}
+html.land-short .split-trucks>.card{padding:8px}
+html.land-short .truck-button{min-height:0}
+html.land-short .truck-head{min-height:0;padding:7px 10px;font-size:calc(16px * var(--text-scale))}
+html.land-short .truck-action{min-height:0;padding:9px 6px;font-size:calc(14px * var(--text-scale))}
+html.land-short .truck-grid{gap:8px}
+html.land-short .split-stats .topgrid{gap:6px}
+html.land-short .split-stats .stat{padding:5px 4px}
+html.land-short .split-stats .stat small{font-size:calc(9px * var(--text-scale))}
+html.land-short .split-stats .stat span{font-size:calc(17px * var(--text-scale));margin-top:1px}
+html.land-short .active-context{padding:6px 9px;margin-top:0}
+html.land-short .menu-btn{width:38px;height:38px;font-size:calc(21px * var(--text-scale))}
+html.land-short .head-bar{margin-top:0}
+html.land-short .active-context label{font-size:calc(10px * var(--text-scale));margin-bottom:2px}
+html.land-short .pick-btn{min-height:38px;padding:5px 10px;font-size:calc(15px * var(--text-scale))}
+html.land-short #currentCommodityNote{display:none}
+html.land-short .load-instructions{display:none}
+html.land-short #main>.instruction-banner{font-size:calc(12px * var(--text-scale));padding:5px 8px;margin:6px 0}
+html.land-short .app{padding-top:6px}
+/* Field / Storage picker */
+.pick-hidden{display:none!important}
+.pick-btn{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:inherit;font-size:calc(17px * var(--text-scale));text-align:left;cursor:pointer}
+.pick-btn-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick-btn-icon{display:flex;color:var(--muted);flex-shrink:0}
+.pick-search{position:relative;margin-top:4px}
+.pick-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.pick-search input{padding-left:42px!important;width:100%}
+.pick-sorts-label{font-size:calc(12px * var(--text-scale));font-weight:800;color:var(--muted);text-transform:uppercase;margin:10px 0 4px}
+.pick-sorts{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.pick-sorts::-webkit-scrollbar{display:none}
+.pick-sort{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:var(--card);color:var(--text);font:inherit;font-weight:700;font-size:calc(13px * var(--text-scale));cursor:pointer}
+.pick-sort.on{background:var(--green);border-color:var(--green);color:#fff}
+.pick-list{margin-top:10px;max-height:min(52vh,420px);overflow:auto;display:flex;flex-direction:column;gap:6px}
+.pick-item{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--card);color:var(--text);font:inherit;cursor:pointer}
+.pick-item b{display:block;font-size:calc(16px * var(--text-scale))}
+.pick-item span{display:block;font-size:calc(13px * var(--text-scale));color:var(--muted);margin-top:2px}
+.pick-item.selected{border:2px solid var(--green);background:color-mix(in srgb,var(--green) 10%,var(--card))}
+html.kb-open .pick-list{max-height:none}
+</style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
 <style id="v18-settings-css">
@@ -305,7 +360,7 @@ html.ctx-compact .load-instructions{display:none}
       <div id="todayDateLabel" class="recent-sub" style="margin-bottom:10px"></div>
       <div class="topgrid today-stats-grid">
         <div class="stat" data-stat-key="loads"><small>Loads</small><span id="todayLoadsCount">0</span></div>
-        <div class="stat" data-stat-key="wet"><small id="todayWetLabel">Wet Tonnes</small><span id="todayWetTonnes">0</span></div>
+        <div class="stat" data-stat-key="wet"><small id="todayWetLabel">Total</small><span id="todayWetTonnes">0</span></div>
         <div class="stat" data-stat-key="dm"><small id="todayDmLabel">Avg Dry Matter</small><span id="todayAvgDm">—</span></div>
         <div class="stat" data-stat-key="rate"><small>Avg Rate</small><span id="todayAvgRate">—</span></div>
         <div class="stat" data-stat-key="peak"><small>Peak Rate/hr</small><span id="todayPeakRate">—</span></div>
@@ -318,7 +373,7 @@ html.ctx-compact .load-instructions{display:none}
   </section>
   <section id="main" class="panel active">
     <div class="card active-context"><div class="selector-grid"><div><label>Current Field</label><select id="fieldSelect"></select></div><div><label>Storage</label><select id="storageSelect"></select></div></div><div id="currentCommodityNote" class="note" style="margin-top:8px"></div></div>
-    <div class="topgrid" id="topStatsGrid"><div class="stat" id="statTileLoads" data-stat-key="loads"><small>Loads</small><span id="fieldLoads">0</span></div><div class="stat" id="statTileWet" data-stat-key="wet"><small>Wet Total</small><span id="fieldTonnes">0.00</span></div><div class="stat" id="statTileDry" data-stat-key="dry"><small>Dry Total</small><span id="fieldDryTonnes">0.00</span></div><button class="stat no-print" id="statTileRate" data-stat-key="rate" type="button" aria-label="Open Rate window setting"><small>Rate</small><span id="fieldRate">—</span></button><button class="stat counter-stat no-print" id="counterStat" data-stat-key="inoculant" type="button" aria-label="Open inoculant counter"><small>Inoculant</small><span id="counterDisplay">0 / 250</span></button></div>
+    <div class="topgrid" id="topStatsGrid"><div class="stat" id="statTileLoads" data-stat-key="loads"><small>Loads</small><span id="fieldLoads">0</span></div><div class="stat" id="statTileWet" data-stat-key="wet"><small>Total</small><span id="fieldTonnes">0.00</span></div><div class="stat" id="statTileDry" data-stat-key="dry"><small>Dry Total</small><span id="fieldDryTonnes">0.00</span></div><button class="stat no-print" id="statTileRate" data-stat-key="rate" type="button" aria-label="Open Rate window setting"><small>Rate</small><span id="fieldRate">—</span></button><button class="stat counter-stat no-print" id="counterStat" data-stat-key="inoculant" type="button" aria-label="Open inoculant counter"><small>Inoculant</small><span id="counterDisplay">0 / 250</span></button></div>
     <div id="licenseBanner" class="instruction-banner counter-alert-banner" style="display:none"><span id="licenseBannerText"></span></div>
     <div id="counterAlertBanner" class="instruction-banner counter-alert-banner" style="display:none"><span id="counterAlertBannerText"></span><div class="actions" style="justify-content:center;margin-top:8px"><button class="btn small" id="counterAlertSmsBtn" type="button">💬 Text</button><button class="btn small" id="counterAlertWhatsAppBtn" type="button">🟢 WhatsApp</button><button class="btn small grey" id="counterAlertDismissBtn" type="button">Dismiss</button></div></div>
     <div class="card"><div class="instruction-banner load-instructions">Tap = Full Load<br>Press &amp; Hold = Partial Load, Custom Weight, or Manual Time</div><div id="truckGrid" class="truck-grid"></div></div>
@@ -354,7 +409,7 @@ html.ctx-compact .load-instructions{display:none}
     <div class="card"><label>Add Storage Location</label><div class="formrow"><input id="newStorageName" placeholder="Storage name"><button class="btn" id="addStorageBtn">Add Storage</button></div></div>
     <div class="card"><label>Storage Locations</label><div id="storageList"></div></div>
 
-    <div class="card"><label>Units</label><select id="unitSelect"><option value="t">Metric tonnes (t)</option><option value="Tn">US tons (Tn)</option><option value="kg">Kilograms (kg)</option><option value="lb">Pounds (lb)</option></select><p class="note">Changing units converts truck weights and existing load totals.</p></div>
+    <div class="card"><label>Units</label><select id="unitSelect"><option value="t">Metric tonnes (mt)</option><option value="Tn">US tons (Tn)</option><option value="kg">Kilograms (kg)</option><option value="lb">Pounds (lb)</option></select><p class="note">Changing units converts truck weights and existing load totals.</p></div>
     <div class="card"><label>Import Loads</label><button class="btn blue wide" id="importLoadsBtn" type="button">Import Loads CSV</button><input id="importLoadsFileInput" type="file" accept=".csv,text/csv" style="display:none"><p class="note">Import a CSV exported from Silage Tracker. Imported loads are added to your existing loads and will appear on the Loads and Reports pages. Existing loads are not replaced.</p></div>
     <div class="card"><label>Device Snapshot</label><button class="btn blue wide" id="saveSnapshotBtn" type="button">Save Device Snapshot</button><button class="btn secondary wide" id="restoreSnapshotBtn" type="button" style="margin-top:8px">Import Device Snapshot</button><input id="snapshotFileInput" type="file" accept="application/json,.json" style="display:none"><p class="note"><b>Save Device Snapshot</b> writes the whole profile to a snapshot file &mdash; trucks and their weights, every field with its acres, note and commodity, the loads with their weights and dry matter, storage locations, dry-matter history and archived summaries. The file is saved to this device and the share sheet opens so it can be sent to whoever is taking over.</p><p class="note" style="margin-top:6px"><b>Import Device Snapshot</b> merges a snapshot someone has shared into this device. Nothing already here is erased, and loads that are already recorded are recognised and never entered twice, so the snapshot can be passed back and forth between operators. A load the snapshot still holds but this device has moved to the Trash is brought back out of the Trash rather than landing beside the copy already here. If the snapshot carries a dry matter reading this device has not seen, you are asked whether the loads already logged here should be moved onto it.</p><button class="btn secondary wide" id="saveFieldSnapshotBtn" type="button" style="margin-top:12px">Save Current Field Snapshot</button><p class="note" style="margin-top:6px"><b>Save Current Field Snapshot</b> is the same idea, scoped to just the field currently selected on the Loads page: that field's acres, note and commodity, every one of its loads in full detail, and the trucks and storage locations those loads used. Nothing else on this device is included. Bring it into another device with <b>Import Device Snapshot</b> above &mdash; it reads the same file format.</p></div>
   </section>
@@ -372,7 +427,7 @@ html.ctx-compact .load-instructions{display:none}
 
   <section id="reports" class="panel">
     <div class="card no-print"><label>Report Filters</label><div class="report-filters" id="reportFilterGrid"></div><div class="report-daterow" style="margin-top:8px"><div><label>From</label><input id="reportFrom" type="date"></div><div><label>To</label><input id="reportTo" type="date"></div><div class="report-sort"><label>Sort Loads By</label><select id="reportSort"></select></div></div><div id="reportFilterSummary" class="note" style="margin-top:8px"></div><div class="actions"><button class="btn grey" id="clearReportFilters">Clear Filters</button><button class="btn blue" id="reportCsvBtn">Export Filtered CSV</button><button class="btn secondary" id="reportPrintBtn">Print / PDF</button></div></div>
-    <div class="report-summary"><div class="stat"><small>Loads</small><span id="reportLoadCount">0</span></div><div class="stat w-wet"><small>Wet Weight</small><span id="reportWet">0.00</span></div><div class="stat w-dry"><small>Dry Weight</small><span id="reportDry">0.00</span></div><div class="stat"><small id="reportDmLabel">Average DM</small><span id="reportDm">0.00%</span></div></div>
+    <div class="report-summary"><div class="stat"><small>Loads</small><span id="reportLoadCount">0</span></div><div class="stat w-wet"><small>Total Weight</small><span id="reportWet">0.00</span></div><div class="stat w-dry"><small>Dry Weight</small><span id="reportDry">0.00</span></div><div class="stat"><small id="reportDmLabel">Average DM</small><span id="reportDm">0.00%</span></div></div>
     <div class="report-tabs report-tab-strip no-print" id="reportTabStrip"><button class="report-tab active" data-report-tab="loads" type="button">Load Reports</button><button class="report-tab" data-report-tab="inoculant" type="button">Inoculant Reports</button><button class="report-tab" data-report-tab="editlogs" type="button">Edit Logs</button></div>
     <div id="reportLoadsPanel" class="report-subpanel active">
       <div class="card"><label>Field Totals</label><div id="fieldTotals"></div></div>
@@ -492,6 +547,13 @@ html.ctx-compact .load-instructions{display:none}
       </div>
     </div>
     <div class="settings-section">
+      <label>Loads Page Layout</label>
+      <div class="setting-row" style="display:block"><div><b>Upright (portrait)</b></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="layoutTrucksFirst" data-layout-val="0">Stats on Top</button><button type="button" class="btn small grey" data-layout-key="layoutTrucksFirst" data-layout-val="1">Trucks on Top</button></div></div>
+      <div class="setting-row" style="display:block"><div><b>Sideways (landscape)</b><div class="note">Stats on one side, trucks on the other.</div></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landTrucksLeft" data-layout-val="0">Trucks on Right</button><button type="button" class="btn small grey" data-layout-key="landTrucksLeft" data-layout-val="1">Trucks on Left</button></div></div>
+      <div class="setting-row" style="display:block"><div><b>Sideways stats</b></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landStatCols" data-layout-val="1">1 Wide</button><button type="button" class="btn small grey" data-layout-key="landStatCols" data-layout-val="2">2 Wide</button></div></div>
+      <div class="setting-row" style="display:block"><div><b>Sideways trucks</b></div><div class="choice-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="1">1 Wide</button><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="2">2 Wide</button><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="3">3 Wide</button></div></div>
+    </div>
+    <div class="settings-section">
       <label>Truck Button Layout</label>
       <p class="note">Tap a layout to use it on the Loads page.</p>
       <div class="layout-template-row">
@@ -531,7 +593,7 @@ html.ctx-compact .load-instructions{display:none}
       <div class="layout-template-row" id="statsArrangementRow"></div>
       <p class="note" style="margin-top:10px">Or choose individually:</p>
       <div class="toggle-row"><input type="checkbox" id="statShowLoads"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Loads</label></div>
-      <div class="toggle-row"><input type="checkbox" id="statShowWet"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Wet Total</label></div>
+      <div class="toggle-row"><input type="checkbox" id="statShowWet"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Total</label></div>
       <div class="toggle-row"><input type="checkbox" id="statShowDry"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Dry Total</label></div>
       <div class="toggle-row"><input type="checkbox" id="statShowRate"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Rate</label></div>
       <div class="toggle-row"><input type="checkbox" id="settingsInoculant"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Inoculant Counter</label></div>
@@ -692,6 +754,13 @@ html.ctx-compact .load-instructions{display:none}
   <p class="note" style="margin-top:8px">Greyed-out days have no loads logged.</p>
   <div class="actions"><button class="btn grey wide" type="button" onclick="closeModal('todayCalModal')">Close</button></div>
 </div></div>
+<div id="pickModal" class="modal"><div class="modal-box">
+  <div class="modal-title" id="pickTitle">Choose</div>
+  <div class="pick-search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="pickSearch" type="search" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search"></div>
+  <div class="pick-sorts-label">Sort by</div><div class="pick-sorts" id="pickSorts"></div>
+  <div class="pick-list" id="pickList"></div>
+  <div class="actions"><button class="btn grey wide" type="button" id="pickCloseBtn">Close</button></div>
+</div></div>
 <div id="exportModal" class="modal"><div class="modal-box">
   <div class="modal-title">Export Filtered CSV</div>
   <div class="note" id="exportFilterNote"></div>
@@ -767,6 +836,7 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.15.0</b><br>• Weights now read in mt (or your chosen unit), and only dry weights are labelled<br>• Field and Storage on the Loads page open a searchable list with Sort By options<br>• Field and storage names must be unique<br>• Added a landscape layout with stats on one side and trucks on the other, and Loads Page Layout options on Appearance</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.1</b><br>• Polished UI</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.0</b><br>• Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.13.5</b><br>• Picking a day on the Today page now uses a calendar — days with no loads are greyed out and can’t be picked<br>• New theme colours: John Deere Green, Case Red, New Holland Yellow &amp; Blue and Claas Green — Autumn Rust removed<br>• Shortened the Inoculant Counter description</div>
@@ -850,5 +920,6 @@ html.ctx-compact .load-instructions{display:none}
 <script src="app-init.js"></script>
 <script src="scroll-collapse.js"></script>
 <script src="keyboard-assist.js"></script>
+<script src="ui-extras.js"></script>
 </body>
 </html>

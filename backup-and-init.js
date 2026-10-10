@@ -23,7 +23,7 @@ async function clearAllData(){
   try{
     const keepAct=hasAct&&!removeAct?{a:state.licenseActivatedAt,f:state.licenseFarmName}:null,keepUntil=state.licenseLegacyGraceUntil;
     localStorage.removeItem(SNAPSHOT_KEY);
-    const fresh={licenseLegacyChecked:true,unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,themeMode:'system',dimSeconds:60,dayStartHour:5,weightView:'both',keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
+    const fresh={licenseLegacyChecked:true,unit:'t',dryMatter:35,commodities:[],commoditiesEnabled:true,dmDisplayMode:'dm',weighEveryLoad:false,duplicateWatch:{loadMinutes:0,importMinutes:0},fields:[],trucks:[],storages:[{id:uid(),name:'Unassigned'}],loads:[],dmReadings:[],loadWeightHistory:[],trash:[],archive:[],darkMode:false,themeMode:'system',dimSeconds:60,dayStartHour:5,weightView:'both',layoutTrucksFirst:false,landTrucksLeft:false,landStatCols:1,landTruckCols:2,keepAwake:false,counter:{enabled:false,target:250,warning:25,startAt:null,lastResetAt:null,lastNotificationTargetAt:null,lastNotificationWarningAt:null,events:[]}};
     if(keepAct){fresh.licenseActivatedAt=keepAct.a;fresh.licenseFarmName=keepAct.f}
     if(keepUntil)fresh.licenseLegacyGraceUntil=keepUntil;
     // Built through loadState(), the same path a restore uses, so every setting the app has (including any added

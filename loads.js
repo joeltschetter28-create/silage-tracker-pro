@@ -131,7 +131,7 @@ function loadsNearInTime(pool,truckId,iso,minutes,excludeId){
   return pool.filter(l=>l&&l.truckId===truckId&&l.id!==excludeId&&Number.isFinite(new Date(l.time).getTime())&&Math.abs(new Date(l.time).getTime()-t)<=ms)
     .sort((a,b)=>Math.abs(new Date(a.time).getTime()-t)-Math.abs(new Date(b.time).getTime()-t))}
 function possibleDuplicateLoads(record){return loadsNearInTime(state.loads,record.truckId,record.time,dupLoadMinutes(),record.id)}
-function dupLoadLine(l){return `<div class="dup-main">${esc(truckDisplay(l))}${l.driverName?' · '+esc(l.driverName):''} · ${esc(l.type)} · ${money(l.wetWeight)} ${esc(l.unit||state.unit)}</div><div class="dup-sub">${fmtDateTime(l.time)} · ${esc(fieldDisplay(l))}${storageDisplay(l)?' · '+esc(storageDisplay(l)):''}</div>`}
+function dupLoadLine(l){return `<div class="dup-main">${esc(truckDisplay(l))}${l.driverName?' · '+esc(l.driverName):''} · ${esc(l.type)} · ${money(l.wetWeight)} ${esc(uL(l.unit))}</div><div class="dup-sub">${fmtDateTime(l.time)} · ${esc(fieldDisplay(l))}${storageDisplay(l)?' · '+esc(storageDisplay(l)):''}</div>`}
 function dupApart(a,b){const mins=Math.abs(new Date(a).getTime()-new Date(b).getTime())/60000;if(!Number.isFinite(mins))return 'time unknown';if(mins<1)return 'under a minute apart';if(mins<1.5)return 'about a minute apart';return Math.round(mins)+' minutes apart'}
 function commitLoadRecord(record){if(licenseGraceInfo().locked)return requireActivation(()=>commitLoadRecord(record));if(typeof record.inoculated!=='boolean')record.inoculated=wasInoculated(record,inoculantSpans());state.loads.unshift(record);loadEntryFeedback(lastLoadEntryButton);lastLoadEntryButton=null;save();render();showToast('Load saved')}
 function openDuplicateLoadPrompt(record,near){

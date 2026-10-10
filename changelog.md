@@ -1,5 +1,11 @@
 # Silage Tracker Pro Changelog
 
+## V3.15.0 — Build 2026.10.10.001
+- Weights now read in mt (or your chosen unit), and only dry weights are labelled
+- Field and Storage on the Loads page open a searchable list with Sort By options
+- Field and storage names must be unique
+- Added a landscape layout with stats on one side and trucks on the other, and Loads Page Layout options on Appearance
+
 ## V3.14.1 — Build 2026.10.09.001
 - Polished UI
 
