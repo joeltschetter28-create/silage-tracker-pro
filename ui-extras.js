@@ -14,7 +14,7 @@
   const mqShort=window.matchMedia?matchMedia('(orientation: landscape) and (max-height: 600px)'):null;
   window.isLandscapeLayout=()=>!!(mqLand&&mqLand.matches);
   function applyOrientation(){
-    const root=document.documentElement,land=isLandscapeLayout();
+    const root=document.documentElement,land=isLandscapeLayout();if(!land)root.classList.remove('ctx-peek');
     root.classList.toggle('land',land);root.classList.toggle('land-short',land&&!!(mqShort&&mqShort.matches));
     applyLoadsLayout();
   }
@@ -25,6 +25,7 @@
     if(typeof applyTopStatsLayout==='function')applyTopStatsLayout();
     if(typeof applyTruckLayout==='function')applyTruckLayout();
     if(window.__loadsScroll)window.__loadsScroll.sync();
+    if(typeof measureLandSplit==='function')measureLandSplit();
   };
   [mqLand,mqShort].forEach(m=>{if(!m)return;if(m.addEventListener)m.addEventListener('change',applyOrientation);else if(m.addListener)m.addListener(applyOrientation)});
   window.addEventListener('resize',()=>{clearTimeout(window.__layoutT);window.__layoutT=setTimeout(applyOrientation,120)});
@@ -71,3 +72,33 @@ document.addEventListener('click',e=>{
   const it=e.target.closest('[data-pick-id]');if(it&&pickKind){const sel=document.getElementById(pickConfig(pickKind).select);sel.value=it.dataset.pickId;sel.dispatchEvent(new Event('change',{bubbles:true}));closeModal('pickModal');pickKind=null;syncPickButtons();return}
   if(e.target.id==='pickModal'||e.target.id==='pickCloseBtn'){closeModal('pickModal');pickKind=null}
 });
+
+// ---------- Landscape: fill the screen, and the Field / Storage pull-down ----------
+function measureLandSplit(){
+  const root=document.documentElement,split=document.getElementById('loadsSplit'),hdr=document.querySelector('header');
+  if(hdr)root.style.setProperty('--hdr-h',Math.round(hdr.getBoundingClientRect().height)+'px');
+  if(!split)return;
+  if(!root.classList.contains('land-short')||!document.querySelector('#main.panel.active')){split.style.removeProperty('--split-h');return}
+  const top=split.getBoundingClientRect().top+(window.scrollY||0);
+  split.style.setProperty('--split-h',Math.max(200,Math.round(window.innerHeight-top-10))+'px');
+}
+(function(){
+  const root=document.documentElement;let timer=null,sx=0,sy=0,armed=false;
+  const landLoads=()=>root.classList.contains('land-short')&&!!document.querySelector('#main.panel.active');
+  const pickerOpen=()=>document.getElementById('pickModal')?.classList.contains('show');
+  function hideLater(ms){clearTimeout(timer);timer=setTimeout(()=>{if(pickerOpen())return hideLater(2000);root.classList.remove('ctx-peek')},ms)}
+  window.peekFieldStorage=function(){if(!landLoads())return;root.classList.add('ctx-peek');hideLater(10000)};
+  document.addEventListener('touchstart',e=>{armed=false;if(!landLoads()||e.touches.length!==1)return;if(e.target.closest('.active-context')){if(root.classList.contains('ctx-peek'))hideLater(10000);return}if(e.target.closest('.modal,.side-menu'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;armed=true},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!armed)return;const dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;if(window.statDragUntil&&Date.now()<window.statDragUntil){armed=false;return}if(dy>35&&Math.abs(dy)>Math.abs(dx)*1.4){armed=false;peekFieldStorage()}},{passive:true});
+  document.addEventListener('wheel',e=>{if(e.deltaY<-20)peekFieldStorage()},{passive:true});
+  document.addEventListener('change',e=>{if(e.target.id==='fieldSelect'||e.target.id==='storageSelect'){if(root.classList.contains('ctx-peek'))hideLater(10000)}});
+  window.addEventListener('resize',()=>setTimeout(measureLandSplit,150));
+  setTimeout(measureLandSplit,0);
+})();
+
+// ---------- Share App ----------
+function appShareUrl(){const l=location;if(/^https?:$/.test(l.protocol)&&!/^(localhost|127\.|10\.|192\.168\.)/.test(l.hostname))return l.origin+l.pathname;return 'https://dairyguyj.github.io/silage-tracker-pro/index.html'}
+function renderShareApp(){const url=appShareUrl(),q=document.getElementById('shareQr'),u=document.getElementById('shareUrl');if(q&&typeof qrSvg==='function'&&q.dataset.url!==url){q.innerHTML=qrSvg(url,'#000','#fff',{logo:'icon-192.png'});q.dataset.url=url}if(u)u.textContent=url}
+async function shareAppLink(){const url=appShareUrl();try{if(navigator.share){await navigator.share({title:'Silage Tracker Pro',text:'Silage Tracker Pro',url});return}}catch(e){if(e&&e.name==='AbortError')return}copyAppLink()}
+async function copyAppLink(){const url=appShareUrl();try{await navigator.clipboard.writeText(url);showToast('Link copied')}catch(e){uiPrompt('Copy this link',url,{confirmText:'Done'})}}
+renderShareApp();

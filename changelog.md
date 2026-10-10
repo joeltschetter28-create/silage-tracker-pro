@@ -1,5 +1,12 @@
 # Silage Tracker Pro Changelog
 
+## V3.16.1 — Build 2026.10.10.003
+- The Share App QR code now has the app icon in the middle
+
+## V3.16.0 — Build 2026.10.10.002
+- Sideways, the trucks and stats fill the screen and Field and Storage are tucked away — pull down to show them for 10 seconds
+- Added a Share App page at the bottom of the menu with a QR code for the app
+
 ## V3.15.0 — Build 2026.10.10.001
 - Weights now read in mt (or your chosen unit), and only dry weights are labelled
 - Field and Storage on the Loads page open a searchable list with Sort By options

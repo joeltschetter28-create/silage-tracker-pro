@@ -1,5 +1,5 @@
-const VERSION='3.15.0';
-const BUILD='2026.10.10.001';
+const VERSION='3.16.1';
+const BUILD='2026.10.10.003';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');
@@ -48,8 +48,8 @@ let pendingImportDuplicates=[];
 // Restoring a stamped duplicate: show what it looks like a copy of, and let it either
 // take that load's place or sit beside it.
 let pendingRestore=null,pendingRestoreChoice='';
-const PAGE_TITLES={today:'Today',main:'Loads',setup:'Setup',reports:'Reports',settings:'Settings',appearance:'Appearance',trash:'Deleted Loads',archive:'Archive',truckEdit:'Edit Truck'};
-const PAGE_ORDER=['today','main','reports','setup','settings','appearance','trash','archive'];
+const PAGE_TITLES={today:'Today',main:'Loads',setup:'Setup',reports:'Reports',settings:'Settings',appearance:'Appearance',trash:'Deleted Loads',archive:'Archive',share:'Share App',truckEdit:'Edit Truck'};
+const PAGE_ORDER=['today','main','reports','setup','settings','appearance','trash','archive','share'];
 const HOME_PAGE='main';
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 document.getElementById('menuBtn')?.addEventListener('click',openMenu);

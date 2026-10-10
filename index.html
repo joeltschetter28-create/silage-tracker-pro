@@ -147,16 +147,20 @@ html.land .app{max-width:none}
 html.land-short #headDetails{display:none}
 html.land-short header{padding-top:calc(6px + env(safe-area-inset-top))!important;padding-bottom:6px!important}
 html.land-short .app{padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right))}
-html.land-short .split-trucks>.card{padding:8px}
-html.land-short .truck-button{min-height:0}
-html.land-short .truck-head{min-height:0;padding:7px 10px;font-size:calc(16px * var(--text-scale))}
-html.land-short .truck-action{min-height:0;padding:9px 6px;font-size:calc(14px * var(--text-scale))}
-html.land-short .truck-grid{gap:8px}
-html.land-short .split-stats .topgrid{gap:6px}
-html.land-short .split-stats .stat{padding:5px 4px}
-html.land-short .split-stats .stat small{font-size:calc(9px * var(--text-scale))}
-html.land-short .split-stats .stat span{font-size:calc(17px * var(--text-scale));margin-top:1px}
-html.land-short .active-context{padding:6px 9px;margin-top:0}
+/* Trucks and stats stretch to fill the screen; the Missed Load button sits just below, a scroll away. */
+html.land-short .split-trucks>.card{padding:8px;min-height:var(--split-h,0px);display:flex;flex-direction:column;margin-bottom:0}
+html.land-short .split-trucks .truck-grid{flex:1;gap:8px;grid-auto-rows:minmax(72px,1fr);align-content:stretch}
+html.land-short .truck-button{min-height:0;height:100%;display:flex;flex-direction:column}
+html.land-short .truck-head{flex:0 0 auto;min-height:0;padding:9px 12px;font-size:calc(20px * var(--text-scale))}
+html.land-short .truck-action{flex:1;min-height:0;padding:8px 6px;font-size:calc(17px * var(--text-scale))}
+html.land-short .split-stats .topgrid{gap:8px;min-height:var(--split-h,0px);grid-auto-rows:minmax(58px,1fr);align-content:stretch}
+html.land-short .split-stats .stat{display:flex;flex-direction:column;justify-content:center;padding:6px 4px}
+html.land-short .split-stats .stat small{font-size:calc(11px * var(--text-scale))}
+html.land-short .split-stats .stat span{font-size:calc(26px * var(--text-scale));margin-top:2px}
+html.land-short #manualLoadBtn{margin-top:12px}
+/* Field and Storage are tucked away sideways; pulling down slides them over the page for 10 seconds. */
+html.land-short #main .active-context{position:fixed!important;top:calc(var(--hdr-h,52px) + 4px)!important;left:calc(10px + env(safe-area-inset-left));right:calc(10px + env(safe-area-inset-right));margin:0!important;z-index:30;padding:6px 9px;box-shadow:0 8px 24px var(--shadow);transform:translateY(-130%)!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:transform .35s ease,opacity .8s ease,visibility 0s linear .8s!important}
+html.land-short.ctx-peek #main .active-context{transform:none!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;transition:transform .3s ease,opacity .2s ease!important}
 html.land-short .menu-btn{width:38px;height:38px;font-size:calc(21px * var(--text-scale))}
 html.land-short .head-bar{margin-top:0}
 html.land-short .active-context label{font-size:calc(10px * var(--text-scale));margin-bottom:2px}
@@ -184,6 +188,12 @@ html.land-short .app{padding-top:6px}
 .pick-item span{display:block;font-size:calc(13px * var(--text-scale));color:var(--muted);margin-top:2px}
 .pick-item.selected{border:2px solid var(--green);background:color-mix(in srgb,var(--green) 10%,var(--card))}
 html.kb-open .pick-list{max-height:none}
+</style>
+<style id="share-css">
+.share-qr{width:min(260px,72vw);margin:12px auto 8px;padding:10px;background:#fff;border-radius:16px;box-shadow:0 2px 10px var(--shadow)}
+.share-qr svg{display:block;width:100%;height:auto}
+.share-url{text-align:center;font-size:calc(13px * var(--text-scale));color:var(--muted);word-break:break-all;margin-bottom:6px}
+html.land .share-card{max-width:520px;margin-left:auto;margin-right:auto}
 </style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
@@ -350,6 +360,7 @@ html.ctx-compact .load-instructions{display:none}
   <button class="tab" data-tab="appearance">🎨 Appearance</button>
   <button class="tab" data-tab="trash">🗑 Deleted Loads</button>
   <button class="tab" data-tab="archive">📦 Archive</button>
+  <button class="tab" data-tab="share">📲 Share App</button>
   <div class="side-menu-version" id="menuVersionText"></div>
 </nav>
 <div class="app">
@@ -611,6 +622,16 @@ html.ctx-compact .load-instructions{display:none}
     <div class="card"><label>Archive</label><p class="note">Every time a field is summarised and cleared from the Reports page, its totals are saved here. Archived summaries are kept until you delete them, and are included in backups.</p></div>
     <div id="archiveList"></div>
   </section>
+<section id="share" class="panel">
+  <div class="card share-card"><label>Share App</label>
+    <p class="note">Point a phone&rsquo;s camera at the code to open Silage Tracker Pro.</p>
+    <div class="share-qr" id="shareQr"></div>
+    <div class="share-url" id="shareUrl"></div>
+    <div class="actions"><button class="btn" type="button" onclick="shareAppLink()">Share Link</button><button class="btn grey" type="button" onclick="copyAppLink()">Copy Link</button></div>
+    <button type="button" class="btn secondary wide" style="margin-top:10px" onclick="openInstallGuide()">How to Add It to the Home Screen</button>
+  </div>
+</section>
+
 </div>
 
 <div id="loadModal" class="modal"><div class="modal-box">
@@ -836,6 +857,8 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.1</b><br>• The Share App QR code now has the app icon in the middle</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.0</b><br>• Sideways, the trucks and stats fill the screen and Field and Storage are tucked away — pull down to show them for 10 seconds<br>• Added a Share App page at the bottom of the menu with a QR code for the app</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.15.0</b><br>• Weights now read in mt (or your chosen unit), and only dry weights are labelled<br>• Field and Storage on the Loads page open a searchable list with Sort By options<br>• Field and storage names must be unique<br>• Added a landscape layout with stats on one side and trucks on the other, and Loads Page Layout options on Appearance</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.1</b><br>• Polished UI</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.0</b><br>• Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app</div>
@@ -920,6 +943,7 @@ html.ctx-compact .load-instructions{display:none}
 <script src="app-init.js"></script>
 <script src="scroll-collapse.js"></script>
 <script src="keyboard-assist.js"></script>
+<script src="qr-code.js"></script>
 <script src="ui-extras.js"></script>
 </body>
 </html>
