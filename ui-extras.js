@@ -34,7 +34,8 @@
 function setLayoutPref(key,val){state[key]=val;save();applyLoadsLayout();renderLayoutChoices()}
 function renderLayoutChoices(){
   const val={layoutTrucksFirst:state.layoutTrucksFirst?'1':'0',landTrucksLeft:state.landTrucksLeft?'1':'0',landStatCols:String(state.landStatCols||1),landTruckCols:String(state.landTruckCols||2)};
-  document.querySelectorAll('[data-layout-key]').forEach(b=>b.classList.toggle('grey',val[b.dataset.layoutKey]!==b.dataset.layoutVal));
+  document.querySelectorAll('[data-layout-key]').forEach(b=>{const on=val[b.dataset.layoutKey]===b.dataset.layoutVal;if(b.classList.contains('layout-template'))b.classList.toggle('selected',on);else b.classList.toggle('grey',!on)});
+  if(typeof renderLoadsPageSettings==='function')renderLoadsPageSettings();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-layout-key]');if(!b)return;const k=b.dataset.layoutKey,v=b.dataset.layoutVal;setLayoutPref(k,k==='landStatCols'||k==='landTruckCols'?Number(v):v==='1')});
 
@@ -102,3 +103,21 @@ function renderShareApp(){const url=appShareUrl(),q=document.getElementById('sha
 async function shareAppLink(){const url=appShareUrl();try{if(navigator.share){await navigator.share({title:'Silage Tracker Pro',text:'Silage Tracker Pro',url});return}}catch(e){if(e&&e.name==='AbortError')return}copyAppLink()}
 async function copyAppLink(){const url=appShareUrl();try{await navigator.clipboard.writeText(url);showToast('Link copied')}catch(e){uiPrompt('Copy this link',url,{confirmText:'Done'})}}
 renderShareApp();
+
+// ---------- Appearance: Loads Page section ----------
+let lpOrient=null;
+function renderLoadsPageSettings(){
+  if(!lpOrient)lpOrient=(typeof isLandscapeLayout==='function'&&isLandscapeLayout())?'land':'port';
+  document.querySelectorAll('[data-lp-tab]').forEach(b=>b.classList.toggle('on',b.dataset.lpTab===lpOrient));
+  document.querySelectorAll('[data-lp-pane]').forEach(p=>p.classList.toggle('on',p.dataset.lpPane===lpOrient));
+  renderStatChips();
+}
+const STAT_CHIP_IDS=['statShowLoads','statShowWet','statShowDry','statShowRate','settingsInoculant'];
+function renderStatChips(){
+  const box=document.getElementById('statChips');if(!box)return;
+  box.innerHTML=STAT_CHIP_IDS.map(id=>{const cb=document.getElementById(id);if(!cb)return '';const row=cb.closest('.toggle-row');if(row&&row.style.display==='none')return '';const label=(row?.querySelector('label')?.textContent||'').replace('Inoculant Counter','Inoculant').trim();return '<button type="button" class="stat-chip-btn'+(cb.checked?' on':'')+'" data-stat-chip="'+id+'" aria-pressed="'+(cb.checked?'true':'false')+'">'+esc(label)+'</button>'}).join('');
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-lp-tab]');if(t){lpOrient=t.dataset.lpTab;renderLoadsPageSettings();return}
+  const c=e.target.closest('[data-stat-chip]');if(c){const cb=document.getElementById(c.dataset.statChip);if(!cb)return;cb.checked=!cb.checked;cb.dispatchEvent(new Event('change',{bubbles:true}));setTimeout(renderStatChips,0)}
+});

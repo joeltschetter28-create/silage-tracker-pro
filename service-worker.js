@@ -1,4 +1,4 @@
-const CACHE='silage-tracker-pro-v3.16.1-001';
+const CACHE='silage-tracker-pro-v3.16.3-001';
 const ASSETS=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png','./silage-banner.png','./load-sound.mp3','./chime-alt.mp3','./core-state.js','./loads.js','./navigation-setup.js','./counter-and-picker.js','./truck-and-batch-edit.js','./render-and-reports.js','./csv-io.js','./backup-and-init.js','./app-init.js','./scroll-collapse.js','./keyboard-assist.js','./ui-extras.js','./qr-code.js'];
 self.addEventListener('install',event=>{
   // Cached one at a time on purpose: addAll() rejects the whole install if a

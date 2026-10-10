@@ -1,5 +1,10 @@
-function closeMenu(){document.getElementById('sideMenu')?.classList.remove('open');document.getElementById('menuBackdrop')?.classList.remove('open')}
-function openMenu(){document.getElementById('sideMenu')?.classList.add('open');document.getElementById('menuBackdrop')?.classList.add('open')}
+// While the menu is open the page behind is pinned in place (phones ignore overflow:hidden for touch scrolling),
+// so a swipe on the menu scrolls the menu, not the page. Closing puts the page back exactly where it was.
+let menuLockY=null;
+function lockPageScroll(){if(menuLockY!==null)return;menuLockY=window.scrollY||0;const b=document.body.style;b.position='fixed';b.top=(-menuLockY)+'px';b.left='0';b.right='0';b.width='100%'}
+function unlockPageScroll(){if(menuLockY===null)return;const y=menuLockY;menuLockY=null;const b=document.body.style;b.position='';b.top='';b.left='';b.right='';b.width='';window.scrollTo(0,y)}
+function closeMenu(){unlockPageScroll();document.documentElement.classList.remove('menu-open');document.getElementById('sideMenu')?.classList.remove('open');document.getElementById('menuBackdrop')?.classList.remove('open')}
+function openMenu(){lockPageScroll();document.documentElement.classList.add('menu-open');document.getElementById('sideMenu')?.classList.add('open');document.getElementById('menuBackdrop')?.classList.add('open')}
 // Panels a driver shouldn't need day-to-day. Only Loads (main) stays open; everything else,
 // Reports included, needs the slide. Unlocking is in-memory only (never saved), so it always
 // resets on reload and re-locks the moment navigation returns to the Loads page.

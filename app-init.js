@@ -1,5 +1,5 @@
-const VERSION='3.16.1';
-const BUILD='2026.10.10.003';
+const VERSION='3.16.3';
+const BUILD='2026.10.10.005';
 // The banner used to carry the version as hard-coded text, so it drifted behind
 // VERSION on every release. Everything on screen is now stamped from these two.
 const SHORT_VERSION='V'+VERSION.split('.').slice(0,2).join('.');

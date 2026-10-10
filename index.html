@@ -158,7 +158,7 @@ html.land-short .split-stats .stat{display:flex;flex-direction:column;justify-co
 html.land-short .split-stats .stat small{font-size:calc(11px * var(--text-scale))}
 html.land-short .split-stats .stat span{font-size:calc(26px * var(--text-scale));margin-top:2px}
 html.land-short #manualLoadBtn{margin-top:12px}
-/* Field and Storage are tucked away sideways; pulling down slides them over the page for 10 seconds. */
+/* Field and Storage are tucked away in landscape; pulling down slides them over the page for 10 seconds. */
 html.land-short #main .active-context{position:fixed!important;top:calc(var(--hdr-h,52px) + 4px)!important;left:calc(10px + env(safe-area-inset-left));right:calc(10px + env(safe-area-inset-right));margin:0!important;z-index:30;padding:6px 9px;box-shadow:0 8px 24px var(--shadow);transform:translateY(-130%)!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:transform .35s ease,opacity .8s ease,visibility 0s linear .8s!important}
 html.land-short.ctx-peek #main .active-context{transform:none!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;transition:transform .3s ease,opacity .2s ease!important}
 html.land-short .menu-btn{width:38px;height:38px;font-size:calc(21px * var(--text-scale))}
@@ -194,6 +194,43 @@ html.kb-open .pick-list{max-height:none}
 .share-qr svg{display:block;width:100%;height:auto}
 .share-url{text-align:center;font-size:calc(13px * var(--text-scale));color:var(--muted);word-break:break-all;margin-bottom:6px}
 html.land .share-card{max-width:520px;margin-left:auto;margin-right:auto}
+</style>
+<style id="menu-scroll-css">
+/* The menu scrolls on its own when the pages don't fit; the page behind stays put. On a phone in landscape the menu shows two columns so every page fits. */
+.side-menu{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.side-menu .tab{flex:0 0 auto}
+html.menu-open,html.menu-open body{overflow:hidden;overscroll-behavior:none}
+html.land-short .side-menu{padding-top:calc(10px + env(safe-area-inset-top));gap:6px}
+html.land-short .side-menu .tab{padding-top:9px;padding-bottom:9px}
+html.land-short .side-menu{display:grid;grid-template-columns:1fr 1fr;align-content:start;width:min(560px,82vw);padding-bottom:calc(12px + env(safe-area-inset-bottom));padding-left:calc(14px + env(safe-area-inset-left))}
+html.land-short .side-menu-title,html.land-short .side-menu-version{grid-column:1 / -1}
+.side-menu{max-height:100vh;max-height:100dvh;touch-action:pan-y}
+.menu-backdrop{touch-action:none}
+</style>
+<style id="appearance-compact-css">
+.lp-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);padding:4px;border-radius:12px;margin:4px 0 6px}
+.lp-tab{border:0;border-radius:9px;padding:9px 6px;font:inherit;font-weight:800;font-size:calc(15px * var(--text-scale));background:transparent;color:var(--text);cursor:pointer}
+.lp-tab.on{background:var(--card);box-shadow:0 1px 4px var(--shadow)}
+.lp-pane{display:none}.lp-pane.on{display:block}
+.lp-group{margin-top:12px}
+.lp-group-title{font-size:calc(12px * var(--text-scale));font-weight:800;text-transform:uppercase;color:var(--muted);letter-spacing:.3px}
+.lp-group .layout-template-row{margin-top:6px}
+.lp-prev{height:46px;margin-bottom:6px;display:grid;gap:3px}
+.lp-col{display:flex;flex-direction:column}
+.lp-col .lp-trucks{flex:1;height:auto}
+.lp-col .lp-stats-strip{flex:0 0 9px}
+.lp-row{grid-template-rows:1fr}
+.lp-stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;height:9px}
+.lp-stats-col{display:grid;grid-template-rows:repeat(3,1fr);gap:3px}
+.lp-stats-grid{display:grid;gap:3px;height:100%}
+.lp-trucks{display:grid;gap:3px;height:100%;grid-auto-rows:1fr}
+.lp-stat{background:color-mix(in srgb,var(--muted) 35%,var(--card));border-radius:2px}
+.layout-template.selected .lp-stat{background:color-mix(in srgb,var(--green) 45%,var(--card))}
+.stat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.stat-chip-btn{border:2px solid var(--line);border-radius:999px;padding:8px 14px;background:var(--card);color:var(--text);font:inherit;font-weight:800;font-size:calc(14px * var(--text-scale));cursor:pointer}
+.stat-chip-btn.on{background:var(--green);border-color:var(--green);color:#fff}
+body.hi-text .stat-chip-btn.on{color:var(--hi)}
+.lp-reorder{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-size:calc(14px * var(--text-scale));color:var(--muted)}
 </style>
 <style id="load-entry-feedback">.truck-button.load-entry-feedback{filter:brightness(1.28);transform:scale(.97);box-shadow:0 0 0 4px rgba(255,193,7,.7),0 0 18px rgba(255,193,7,.8)!important}</style><style id="batch-edit-css">.load-select{width:24px!important;height:24px!important;margin:0 8px 0 0!important}.recent-item.batch-selected{background:color-mix(in srgb,var(--green) 12%,var(--card));border-radius:10px;padding-left:8px;padding-right:8px}.counter-log-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}</style>
 
@@ -307,7 +344,7 @@ header{padding:0 12px 10px}
 .head-bar{display:flex;align-items:center;gap:10px;margin-top:8px}
 .head-bar .menu-btn{width:44px;height:44px;font-size:calc(25px * var(--text-scale))}
 .head-bar .page-title{margin-top:0;flex:1;min-width:0;font-size:calc(15px * var(--text-scale));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body.loads-active header{top:calc(-1 * var(--head-collapse,0px));transition:top .18s ease}
+header{top:calc(-1 * var(--head-collapse,0px));transition:top .18s ease}
 .scroll-point{height:0;overflow:hidden}
 html.loads-snap{scroll-snap-type:y proximity}
 html.loads-snap #scrollTopPoint{scroll-snap-align:start}
@@ -542,7 +579,28 @@ html.ctx-compact .load-instructions{display:none}
       <div class="setting-row"><div><div class="setting-label-row"><b>Haptic feedback</b><button type="button" class="info-icon" data-info="haptic">i</button></div><div class="note">Vibrate when entering a load.</div></div><label class="switch"><input type="checkbox" id="settingsHapticLoad"><span class="slider"></span></label></div>
     </div>
     <div class="settings-section">
-      <label>Display</label>
+      <label>Loads Page</label>
+      <div class="lp-tabs" role="tablist"><button type="button" class="lp-tab" data-lp-tab="port">Portrait</button><button type="button" class="lp-tab" data-lp-tab="land">Landscape</button></div>
+      <div class="lp-pane" data-lp-pane="port"><div class="lp-group"><div class="lp-group-title">Section order</div><div class="layout-template-row"><div class="layout-template lp-card" data-layout-key="layoutTrucksFirst" data-layout-val="0"><div class="lp-prev lp-col"><div class="lp-stats-strip"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div><div class="lp-trucks" style="grid-template-columns:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div></div><div class="layout-template-label">Stats on Top</div></div><div class="layout-template lp-card" data-layout-key="layoutTrucksFirst" data-layout-val="1"><div class="lp-prev lp-col"><div class="lp-trucks" style="grid-template-columns:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div><div class="lp-stats-strip"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div></div><div class="layout-template-label">Trucks on Top</div></div></div></div><div class="lp-group"><div class="lp-group-title">Truck buttons</div><div class="layout-template-row">
+        <div class="layout-template" id="truckTemplate1" data-layout="1" data-wide="0">
+          <div class="layout-template-preview" style="grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div></div>
+          <div class="layout-template-label">1 Per Row</div>
+        </div>
+        <div class="layout-template" id="truckTemplate2" data-layout="2" data-wide="0">
+          <div class="layout-template-preview" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div>
+          <div class="layout-template-label">2 Per Row</div>
+        </div>
+        <div class="layout-template" id="truckTemplate2Wide" data-layout="2" data-wide="1">
+          <div class="layout-template-preview" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box" style="grid-column:1 / -1"></div></div>
+          <div class="layout-template-label">2 Per Row, Last Wide</div>
+        </div>
+      </div><p class="note"><span class="setting-label-row" style="display:inline-flex">What &ldquo;Last Wide&rdquo; does<button type="button" class="info-icon" data-info="lastWide">i</button></span></p></div><div class="lp-group"><div class="lp-group-title">Stat arrangement</div><div class="layout-template-row" id="statsArrangementRow"></div></div></div>
+      <div class="lp-pane" data-lp-pane="land"><div class="lp-group"><div class="lp-group-title">Section order</div><div class="layout-template-row"><div class="layout-template lp-card" data-layout-key="landTrucksLeft" data-layout-val="0"><div class="lp-prev lp-row" style="grid-template-columns:1fr 2fr"><div class="lp-stats-col"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div><div class="lp-trucks" style="grid-template-columns:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div></div><div class="layout-template-label">Trucks on Right</div></div><div class="layout-template lp-card" data-layout-key="landTrucksLeft" data-layout-val="1"><div class="lp-prev lp-row" style="grid-template-columns:2fr 1fr"><div class="lp-trucks" style="grid-template-columns:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div><div class="lp-stats-col"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div></div><div class="layout-template-label">Trucks on Left</div></div></div></div><div class="lp-group"><div class="lp-group-title">Stats</div><div class="layout-template-row"><div class="layout-template lp-card" data-layout-key="landStatCols" data-layout-val="1"><div class="lp-prev"><div class="lp-stats-grid" style="grid-template-columns:repeat(1,1fr)"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div></div><div class="layout-template-label">1 Wide</div></div><div class="layout-template lp-card" data-layout-key="landStatCols" data-layout-val="2"><div class="lp-prev"><div class="lp-stats-grid" style="grid-template-columns:repeat(2,1fr)"><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div><div class="lp-stat"></div></div></div><div class="layout-template-label">2 Wide</div></div></div></div><div class="lp-group"><div class="lp-group-title">Truck buttons</div><div class="layout-template-row"><div class="layout-template lp-card" data-layout-key="landTruckCols" data-layout-val="1"><div class="lp-prev"><div class="lp-trucks" style="grid-template-columns:repeat(1,1fr)"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div></div><div class="layout-template-label">1 Wide</div></div><div class="layout-template lp-card" data-layout-key="landTruckCols" data-layout-val="2"><div class="lp-prev"><div class="lp-trucks" style="grid-template-columns:repeat(2,1fr)"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div></div><div class="layout-template-label">2 Wide</div></div><div class="layout-template lp-card" data-layout-key="landTruckCols" data-layout-val="3"><div class="lp-prev"><div class="lp-trucks" style="grid-template-columns:repeat(3,1fr)"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div></div><div class="layout-template-label">3 Wide</div></div></div></div></div>
+      <div class="lp-group"><div class="lp-group-title">Stats shown</div><div class="stat-chips" id="statChips"></div><div class="lp-reorder"><span class="setting-label-row" style="display:inline-flex">Reorder stats<button type="button" class="info-icon" data-info="statOrder">i</button></span><button type="button" class="btn small grey" id="resetStatOrderBtn">Reset Order</button></div></div>
+      <div id="statToggleStore" hidden><div class="toggle-row"><input type="checkbox" id="statShowLoads"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Loads</label></div><div class="toggle-row"><input type="checkbox" id="statShowWet"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Total</label></div><div class="toggle-row"><input type="checkbox" id="statShowDry"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Dry Total</label></div><div class="toggle-row"><input type="checkbox" id="statShowRate"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Rate</label></div><div class="toggle-row"><input type="checkbox" id="settingsInoculant"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Inoculant Counter</label></div></div>
+    </div>
+    <div class="settings-section">
+      <label>Display &amp; Theme</label>
       <div class="setting-row" style="display:block"><div><b>Theme</b><div class="note">Same as System follows your phone's light or dark setting.</div></div><div class="choice-grid"><button type="button" class="btn small grey" data-theme-mode="light" onclick="setThemeMode('light')">Light</button><button type="button" class="btn small grey" data-theme-mode="dark" onclick="setThemeMode('dark')">Dark</button><button type="button" class="btn small grey" data-theme-mode="system" onclick="setThemeMode('system')">Same as System</button></div></div>
       <div class="setting-row"><div><b>Keep screen awake</b></div><label class="switch"><input type="checkbox" id="wakeToggle"><span class="slider"></span></label></div>
       <div class="setting-row" style="display:block"><div><b>Dim screen after</b><div class="note" id="dimNote">The app dims itself after 1 minute without a touch. Tap anywhere to brighten it.</div></div><div class="choice-grid"><button type="button" class="btn small grey" data-dim-seconds="30" onclick="setDimSeconds(30)">30 sec</button><button type="button" class="btn small grey" data-dim-seconds="60" onclick="setDimSeconds(60)">1 min</button><button type="button" class="btn small grey" data-dim-seconds="120" onclick="setDimSeconds(120)">2 min</button><button type="button" class="btn small grey" data-dim-seconds="300" onclick="setDimSeconds(300)">5 min</button><button type="button" class="btn small grey" data-dim-seconds="600" onclick="setDimSeconds(600)">10 min</button><button type="button" class="btn small grey" data-dim-seconds="0" onclick="setDimSeconds(0)">Never</button></div></div>
@@ -556,60 +614,6 @@ html.ctx-compact .load-instructions{display:none}
           <div><label>Accent (dark)</label><input id="customThemeAccent2" type="color"></div>
         </div>
       </div>
-    </div>
-    <div class="settings-section">
-      <label>Loads Page Layout</label>
-      <div class="setting-row" style="display:block"><div><b>Upright (portrait)</b></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="layoutTrucksFirst" data-layout-val="0">Stats on Top</button><button type="button" class="btn small grey" data-layout-key="layoutTrucksFirst" data-layout-val="1">Trucks on Top</button></div></div>
-      <div class="setting-row" style="display:block"><div><b>Sideways (landscape)</b><div class="note">Stats on one side, trucks on the other.</div></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landTrucksLeft" data-layout-val="0">Trucks on Right</button><button type="button" class="btn small grey" data-layout-key="landTrucksLeft" data-layout-val="1">Trucks on Left</button></div></div>
-      <div class="setting-row" style="display:block"><div><b>Sideways stats</b></div><div class="choice-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landStatCols" data-layout-val="1">1 Wide</button><button type="button" class="btn small grey" data-layout-key="landStatCols" data-layout-val="2">2 Wide</button></div></div>
-      <div class="setting-row" style="display:block"><div><b>Sideways trucks</b></div><div class="choice-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="1">1 Wide</button><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="2">2 Wide</button><button type="button" class="btn small grey" data-layout-key="landTruckCols" data-layout-val="3">3 Wide</button></div></div>
-    </div>
-    <div class="settings-section">
-      <label>Truck Button Layout</label>
-      <p class="note">Tap a layout to use it on the Loads page.</p>
-      <div class="layout-template-row">
-        <div class="layout-template" id="truckTemplate1" data-layout="1" data-wide="0">
-          <div class="layout-template-preview" style="grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div></div>
-          <div class="layout-template-label">1 Per Row</div>
-        </div>
-        <div class="layout-template" id="truckTemplate2" data-layout="2" data-wide="0">
-          <div class="layout-template-preview" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box"></div></div>
-          <div class="layout-template-label">2 Per Row</div>
-        </div>
-        <div class="layout-template" id="truckTemplate2Wide" data-layout="2" data-wide="1">
-          <div class="layout-template-preview" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr"><div class="layout-template-box"></div><div class="layout-template-box"></div><div class="layout-template-box" style="grid-column:1 / -1"></div></div>
-          <div class="layout-template-label">2 Per Row, Last Wide</div>
-        </div>
-      </div>
-      <p class="note"><span class="setting-label-row" style="display:inline-flex">What &ldquo;Last Wide&rdquo; does<button type="button" class="info-icon" data-info="lastWide">i</button></span></p>
-    </div>
-    <div class="settings-section">
-      <label>Top Stats</label>
-      <p class="note">Tap a template to use it, then fine-tune below if you like.</p>
-      <div class="layout-template-row">
-        <div class="layout-template" id="statsTemplateMinimalBtn">
-          <div class="stat-chip-row"><span class="stat-chip on">Loads</span><span class="stat-chip on">Wet</span><span class="stat-chip">Dry</span><span class="stat-chip">Rate</span></div>
-          <div class="layout-template-label">Minimal</div>
-        </div>
-        <div class="layout-template" id="statsTemplateStandardBtn">
-          <div class="stat-chip-row"><span class="stat-chip on">Loads</span><span class="stat-chip on">Wet</span><span class="stat-chip">Dry</span><span class="stat-chip on">Rate</span></div>
-          <div class="layout-template-label">Standard</div>
-        </div>
-        <div class="layout-template" id="statsTemplateFullBtn">
-          <div class="stat-chip-row"><span class="stat-chip on">Loads</span><span class="stat-chip on">Wet</span><span class="stat-chip on">Dry</span><span class="stat-chip on">Rate</span></div>
-          <div class="layout-template-label">Full</div>
-        </div>
-      </div>
-      <p class="note" style="margin-top:10px">Arrangement on the Loads page &mdash; the previews match how many stats you have showing:</p>
-      <div class="layout-template-row" id="statsArrangementRow"></div>
-      <p class="note" style="margin-top:10px">Or choose individually:</p>
-      <div class="toggle-row"><input type="checkbox" id="statShowLoads"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Loads</label></div>
-      <div class="toggle-row"><input type="checkbox" id="statShowWet"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Total</label></div>
-      <div class="toggle-row"><input type="checkbox" id="statShowDry"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Dry Total</label></div>
-      <div class="toggle-row"><input type="checkbox" id="statShowRate"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Rate</label></div>
-      <div class="toggle-row"><input type="checkbox" id="settingsInoculant"><label style="margin:0;text-transform:none;font-weight:800;font-size:calc(16px * var(--text-scale))">Inoculant Counter</label></div>
-      <p class="note" style="margin-top:12px">Tip: touch and hold any stat on the Loads or Today page, then drag it to a new spot.</p>
-      <button type="button" class="btn small grey" id="resetStatOrderBtn" style="margin-top:6px">Reset Stat Order</button>
     </div>
   </div>
 </section>
@@ -857,8 +861,8 @@ html.ctx-compact .load-instructions{display:none}
   <div id="changelogModalBody" class="fullsheet-body">
     <div class="fullsheet-handle"></div>
     <div class="recent-main" style="font-size:calc(20px * var(--text-scale));font-weight:800;margin-bottom:10px">What’s New</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.1</b><br>• The Share App QR code now has the app icon in the middle</div>
-      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.0</b><br>• Sideways, the trucks and stats fill the screen and Field and Storage are tucked away — pull down to show them for 10 seconds<br>• Added a Share App page at the bottom of the menu with a QR code for the app</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.3</b><br>• Compacted the Appearance page</div>
+      <div class="note" style="margin-top:10px"><b>What’s new in V3.16.2</b><br>• Polished UI</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.15.0</b><br>• Weights now read in mt (or your chosen unit), and only dry weights are labelled<br>• Field and Storage on the Loads page open a searchable list with Sort By options<br>• Field and storage names must be unique<br>• Added a landscape layout with stats on one side and trucks on the other, and Loads Page Layout options on Appearance</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.1</b><br>• Polished UI</div>
       <div class="note" style="margin-top:10px"><b>What’s new in V3.14.0</b><br>• Added Weights Shown in Settings — show Both, Wet Only or Dry Only across the app</div>
